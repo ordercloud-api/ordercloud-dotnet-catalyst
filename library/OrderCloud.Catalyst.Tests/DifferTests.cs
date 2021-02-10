@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using OrderCloud.Catalyst;
 
 namespace OrderCloud.DataMovement.Tests
 {

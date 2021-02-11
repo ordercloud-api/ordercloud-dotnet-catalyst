@@ -1,4 +1,4 @@
-# OrderCloud.AzureApp
+# ordercloud-dotnet-catalyst
 
 [![OrderCloud.Catalyst](https://img.shields.io/nuget/v/OrderCloud.AzureApp.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.AzureApp/)
 
@@ -71,20 +71,6 @@ public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConf
 ```
 
 Webhook payload types (such as `WebhookPayloads.Addresses.Save` above) are defined in the [OrderCloud.io .NET SDK](https://github.com/ordercloud-api/ordercloud-dotnet-sdk).
-
-#### 3. (Optional) Allow multiple webhooks to use the same endpoint.
-
-Some developers find it simpler to configure a single endpoint to handle multiple webhooks in OrderCloud.io. However, by default, ASP.NET Core will only allow you to define one action method per route/HTTP verb, otherwise it will throw an `AmbiguousActionException`. So developers often resort to a single action method with ugly switch logic to determine which webhook to handle. `OrderCloud.Catalyst` provides an alternative action selector that inspects the route, HTTP verb, _and_ webhook payload object passed to the method, allowing you to provide an action method per webhook, even if multiple have the same route. Enable this in your `Startup` class:
-
-```c#
-public virtual void ConfigureServices(IServiceCollection services) {
-    ...
-
-    services
-        .AddMvc()
-        .DisambiguateWebhooks();
-}
-```
 
 ## Dependency injection helpers
 

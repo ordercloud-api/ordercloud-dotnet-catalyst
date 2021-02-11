@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo", "demo", "{8B971560-E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.DemoWebApi", "demo\OrderCloud.DemoWebApi\OrderCloud.DemoWebApi.csproj", "{4EC1404C-7DDD-488E-9977-FEA3B44A6E22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderCloud.DemoWebApi.Tests", "demo\OrderCloud.DemoWebApi.Tests\OrderCloud.DemoWebApi.Tests.csproj", "{F3D052CF-A69D-4A38-A674-6FD164D34884}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.DemoWebApi.Tests", "demo\OrderCloud.DemoWebApi.Tests\OrderCloud.DemoWebApi.Tests.csproj", "{F3D052CF-A69D-4A38-A674-6FD164D34884}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "library", "library", "{04D2632E-8BB1-449B-9E2F-751295F5C2EF}"
 EndProject
@@ -15,7 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Catalyst", "libr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Catalyst.Tests", "library\OrderCloud.Catalyst.Tests\OrderCloud.Catalyst.Tests.csproj", "{BE648C2F-33BD-4C6E-AD1E-87FE9DCBB7CB}"
 EndProject
-
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,27 +25,27 @@ Global
 		{4EC1404C-7DDD-488E-9977-FEA3B44A6E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EC1404C-7DDD-488E-9977-FEA3B44A6E22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EC1404C-7DDD-488E-9977-FEA3B44A6E22}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BE648C2F-33BD-4C6E-AD1E-87FE9DCBB7CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE648C2F-33BD-4C6E-AD1E-87FE9DCBB7CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE648C2F-33BD-4C6E-AD1E-87FE9DCBB7CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE648C2F-33BD-4C6E-AD1E-87FE9DCBB7CB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DD1D1B0F-7582-4EC7-86C9-3869398F3F2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DD1D1B0F-7582-4EC7-86C9-3869398F3F2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DD1D1B0F-7582-4EC7-86C9-3869398F3F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD1D1B0F-7582-4EC7-86C9-3869398F3F2A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F3D052CF-A69D-4A38-A674-6FD164D34884}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F3D052CF-A69D-4A38-A674-6FD164D34884}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3D052CF-A69D-4A38-A674-6FD164D34884}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3D052CF-A69D-4A38-A674-6FD164D34884}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD1D1B0F-7582-4EC7-86C9-3869398F3F2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD1D1B0F-7582-4EC7-86C9-3869398F3F2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD1D1B0F-7582-4EC7-86C9-3869398F3F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD1D1B0F-7582-4EC7-86C9-3869398F3F2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE648C2F-33BD-4C6E-AD1E-87FE9DCBB7CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE648C2F-33BD-4C6E-AD1E-87FE9DCBB7CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE648C2F-33BD-4C6E-AD1E-87FE9DCBB7CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE648C2F-33BD-4C6E-AD1E-87FE9DCBB7CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4EC1404C-7DDD-488E-9977-FEA3B44A6E22} = {8B971560-E70A-427B-98EF-A65E7C1B67B0}
-		{BE648C2F-33BD-4C6E-AD1E-87FE9DCBB7CB} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
-		{DD1D1B0F-7582-4EC7-86C9-3869398F3F2A} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
 		{F3D052CF-A69D-4A38-A674-6FD164D34884} = {8B971560-E70A-427B-98EF-A65E7C1B67B0}
+		{DD1D1B0F-7582-4EC7-86C9-3869398F3F2A} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
+		{BE648C2F-33BD-4C6E-AD1E-87FE9DCBB7CB} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A5996C63-5092-41D0-9499-2B3B330BA82E}

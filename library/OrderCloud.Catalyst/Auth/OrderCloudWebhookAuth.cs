@@ -9,7 +9,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -43,7 +43,7 @@ namespace OrderCloud.Catalyst
 				return AuthenticateResult.Fail("X-oc-hash header was not sent. Endpoint can only be hit from a valid OrderCloud webhook.");
 			}
 
-			Context.Request.EnableRewind();
+			Context.Request.EnableBuffering();
 
 			try {
 				var keyBytes = Encoding.UTF8.GetBytes(Options.HashKey);

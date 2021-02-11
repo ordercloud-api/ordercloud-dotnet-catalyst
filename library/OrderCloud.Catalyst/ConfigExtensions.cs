@@ -38,10 +38,10 @@ namespace OrderCloud.Catalyst
 		/// based on payload type. For example, if you have an action method with a [FromBody] parameter of type WebhookPayloads.Orders.Submit,
 		/// then order submit webhooks will be correctly routed to this method.
 		/// </summary>
-		public static IMvcBuilder DisambiguateWebhooks(this IMvcBuilder builder) {
-			builder.Services.AddSingleton<IActionSelector, WebhookActionSelector>();
-			return builder;
-		}
+		//public static IMvcBuilder DisambiguateWebhooks(this IMvcBuilder builder) {
+		//	builder.Services.AddSingleton<IActionSelector, WebhookActionSelector>();
+		//	return builder;
+		//}
 
 		/// <summary>
 		/// Binds your appsettings.json file (or other config source, such as App Settings in the Azure portal) to the AppSettings class
@@ -64,15 +64,19 @@ namespace OrderCloud.Catalyst
 		/// OrderCloud access token in the Authorization header. Add [OrderCloudUserAuth] attribute to specific controllers or actions
 		/// where this should be enforced. Typical use case is custom endpoints for front-end user apps.
 		/// </summary>
-		public static AuthenticationBuilder AddOrderCloudUser(this AuthenticationBuilder builder, Action<OrderCloudUserAuthOptions> configureOptions) {
-			return builder.AddScheme<OrderCloudUserAuthOptions, OrderCloudUserAuthHandler>("OrderCloudUser", null, configureOptions);
+		public static AuthenticationBuilder AddOrderCloudUser(this IServiceCollection services) {
+			return services
+				.AddAuthentication()
+				.AddScheme<OrderCloudUserAuthOptions, OrderCloudUserAuthHandler>("OrderCloudUser", null);
 		}
 
 		/// <summary>
 		/// Call inside of services.AddAuthorization(...) (typically in Startup.ConfigureServices) to enable validation of incoming webhooks.
 		/// </summary>
-		public static AuthenticationBuilder AddOrderCloudWebhooks(this AuthenticationBuilder builder, Action<OrderCloudWebhookAuthOptions> configureOptions) {
-			return builder.AddScheme<OrderCloudWebhookAuthOptions, OrderCloudWebhookAuthHandler>("OrderCloudWebhook", null, configureOptions);
+		public static AuthenticationBuilder AddOrderCloudWebhooks(this IServiceCollection services, Action<OrderCloudWebhookAuthOptions> configureOptions) {
+			return services
+				.AddAuthentication()
+				.AddScheme<OrderCloudWebhookAuthOptions, OrderCloudWebhookAuthHandler>("OrderCloudWebhook", null, configureOptions);
 		}
 	}
 }

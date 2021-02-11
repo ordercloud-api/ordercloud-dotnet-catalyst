@@ -48,8 +48,6 @@ namespace OrderCloud.Catalyst
 				var clientID = jwt.Claims.FirstOrDefault(x => x.Type == "cid")?.Value;
 				if (clientID == null)
 					return AuthenticateResult.Fail("The provided bearer token does not contain a 'cid' (Client ID) claim.");
-				if (!Options.ValidClientIDs.Contains(clientID, StringComparer.InvariantCultureIgnoreCase))
-					return AuthenticateResult.Fail("Client ID from token is not valid for this integration.");
 
 				// we've validated the token as much as we can on this end, go make sure it's ok on OC
 				var user = await _ocClient.Me.GetAsync(token);
@@ -87,16 +85,5 @@ namespace OrderCloud.Catalyst
 		}
 	}
 
-	public class OrderCloudUserAuthOptions : AuthenticationSchemeOptions
-	{
-		public List<string> ValidClientIDs { get; set; } = new List<string>();
-
-		/// <summary>
-		/// Enforce that only tokens associated with specific OrderCloud client ID(s) are allowed to access endpoints marked with [OrderCloudUserAuth].
-		/// </summary>
-		public OrderCloudUserAuthOptions AddValidClientIDs(params string[] clientIDs) {
-			ValidClientIDs.AddRange(clientIDs);
-			return this;
-		}
-	}
+	public class OrderCloudUserAuthOptions : AuthenticationSchemeOptions { }
 }

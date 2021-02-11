@@ -9,8 +9,8 @@ using OrderCloud.SDK;
 
 namespace SampleApp.WebApi.Controllers
 {
-	[Route("test")]
-	public class TestController : Controller
+	[Route("demo")]
+	public class DemoController : Controller
 	{
 		[HttpGet("shop"), OrderCloudUserAuth(ApiRole.Shopper)]
 		public object Shop() => "hello shopper!";
@@ -27,23 +27,23 @@ namespace SampleApp.WebApi.Controllers
 		[HttpGet("anon")]
 		public object Anon() => "hello anon!";
 
-		[Route("webhook"), OrderCloudWebhookAuth]
-		public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConfigData> payload) {
-			return new {
-				Action = "HandleAddressSave",
-				City = payload.Request.Body.City,
-				Foo = payload.ConfigData.Foo
-			};
-		}
+		//[Route("webhook"), OrderCloudWebhookAuth]
+		//public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConfigData> payload) {
+		//	return new {
+		//		Action = "HandleAddressSave",
+		//		City = payload.Request.Body.City,
+		//		Foo = payload.ConfigData.Foo
+		//	};
+		//}
 
-		[Route("webhook"), OrderCloudWebhookAuth]
-		public object HandleGenericWebhook([FromBody] WebhookPayload payload) {
-			return new {
-				Action = "HandleGenericWebhook",
-				City = payload.Request.Body.City,
-				Foo = payload.ConfigData.Foo
-			};
-		}
+		//[Route("webhook"), OrderCloudWebhookAuth]
+		//public object HandleGenericWebhook([FromBody] WebhookPayload payload) {
+		//	return new {
+		//		Action = "HandleGenericWebhook",
+		//		City = payload.Request.Body.City,
+		//		Foo = payload.ConfigData.Foo
+		//	};
+		//}
 	}
 
 	public class MyConfigData

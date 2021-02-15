@@ -1,9 +1,7 @@
 ﻿using OrderCloud.SDK;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace OrderCloud.Catalyst.Errors
+namespace OrderCloud.Catalyst
 {
 	public class CatalystBaseException : Exception
     {

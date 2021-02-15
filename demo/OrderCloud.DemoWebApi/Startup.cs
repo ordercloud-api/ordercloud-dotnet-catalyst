@@ -8,10 +8,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
-using ordercloud.integrations.common;
-using OrderCloud.Catalyst.Startup;
 using OrderCloud.SDK;
 using NSubstitute;
+using OrderCloud.DemoWebApi;
 
 namespace OrderCloud.TestWebApi
 {
@@ -33,8 +32,7 @@ namespace OrderCloud.TestWebApi
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public virtual void ConfigureServices(IServiceCollection services) {
-			services.ConfigureServices();
-			services.AddOrderCloudUser();
+			services.ConfigureServices(new AppSettings());
 			services.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig()));
 		}
 
@@ -52,11 +50,12 @@ namespace OrderCloud.TestWebApi
 
 		public override void ConfigureServices(IServiceCollection services)
 		{
+			// Inject services as normal
 			base.ConfigureServices(services);
 
 			// then replace some of them with fakes
 			var oc = Substitute.For<IOrderCloudClient>();
-			oc.Me.GetAsync(Arg.Any<string>()).Returns(new MeUser { Username = "joe", AvailableRoles = new[] { "Shopper" } });
+			oc.Me.GetAsync(Arg.Any<string>()).Returns(new MeUser { Username = "joe", ID = "", Active = true, AvailableRoles = new[] { "Shopper" } });
 			services.AddSingleton(oc);
 		}
 	}

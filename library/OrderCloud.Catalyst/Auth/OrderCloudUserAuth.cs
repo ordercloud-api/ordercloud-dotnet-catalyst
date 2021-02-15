@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -19,14 +20,15 @@ namespace OrderCloud.Catalyst
 	public class OrderCloudUserAuthAttribute : AuthorizeAttribute
 	{
 		/// <param name="roles">Optional list of roles. If provided, user must have just one of them, otherwise authorization fails.</param>
-		public OrderCloudUserAuthAttribute(params ApiRole[] roles) {
+		public OrderCloudUserAuthAttribute(params ApiRole[] roles)
+		{
 			AuthenticationSchemes = "OrderCloudUser";
 			if (roles.Any())
 				Roles = string.Join(",", roles);
 		}
 	}
 
-	public class OrderCloudUserAuthHandler : AuthenticationHandler<OrderCloudUserAuthOptions>
+	public class OrderCloudUserAuthHandler<TSettings> : AuthenticationHandler<OrderCloudUserAuthOptions>
 	{
 		private readonly IOrderCloudClient _ocClient;
 
@@ -44,23 +46,27 @@ namespace OrderCloud.Catalyst
 				if (string.IsNullOrEmpty(token))
 					return AuthenticateResult.Fail("The OrderCloud bearer token was not provided in the Authorization header.");
 
-				var jwt = new JwtSecurityToken(token);
-				var clientID = jwt.Claims.FirstOrDefault(x => x.Type == "cid")?.Value;
-				if (clientID == null)
+				var jwt = new JwtOrderCloud(token);
+				if (jwt.ClientID == null)
 					return AuthenticateResult.Fail("The provided bearer token does not contain a 'cid' (Client ID) claim.");
 
 				// we've validated the token as much as we can on this end, go make sure it's ok on OC
 				var user = await _ocClient.Me.GetAsync(token);
-
+				if (!user.Active)
+                    return AuthenticateResult.Fail("Authentication failure");
 				var cid = new ClaimsIdentity("OcUser");
-				cid.AddClaim(new Claim("clientid", clientID));
+				cid.AddClaim(new Claim("clientid", jwt.ClientID));
 				cid.AddClaim(new Claim("accesstoken", token));
 				cid.AddClaim(new Claim("username", user.Username));
+				cid.AddClaim(new Claim("userid", user.ID));
+				cid.AddClaim(new Claim("email", user.Email ?? ""));
+				cid.AddClaim(new Claim("buyer", user.Buyer?.ID ?? ""));
+				cid.AddClaim(new Claim("supplier", user.Supplier?.ID ?? ""));
+				cid.AddClaim(new Claim("seller", user?.Seller?.ID ?? ""));
 				cid.AddClaims(user.AvailableRoles.Select(r => new Claim(ClaimTypes.Role, r)));
 
-				var anon = jwt.Claims.FirstOrDefault(x => x.Type == "orderid");
-				if (anon != null)
-					cid.AddClaim(new Claim("anonorderid", anon.Value));
+				if (jwt.IsAnon)
+					cid.AddClaim(new Claim("anonorderid", jwt.OrderID));
 
 				var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcUser");
 				return AuthenticateResult.Success(ticket);
@@ -68,6 +74,28 @@ namespace OrderCloud.Catalyst
 			catch (Exception ex) {
 				return AuthenticateResult.Fail(ex.Message);
 			}
+		}
+
+		protected override Task HandleForbiddenAsync(AuthenticationProperties properties)
+		{
+			var token = GetTokenFromAuthHeader();
+			var jwt = new JwtOrderCloud(token);
+			throw new InsufficientRolesException(new InsufficientRolesError()
+			{
+				SufficientRoles = GetUserAuthAttribute().Roles.Select(r => r.ToString()).ToList(),
+				AssignedRoles = jwt.Roles,
+			});
+		}
+
+		private OrderCloudUserAuthAttribute GetUserAuthAttribute()
+		{
+			var controllerName = Request.RouteValues["controller"].ToString();
+			var actionName = Request.RouteValues["action"].ToString();
+			var assembly = Assembly.GetAssembly(typeof(TSettings));
+			var controlType = assembly.GetTypes().First(t => t.Name == $"{controllerName}Controller");
+			return controlType
+				.GetMethod(actionName)
+				.GetCustomAttribute(typeof(OrderCloudUserAuthAttribute)) as OrderCloudUserAuthAttribute;
 		}
 
 		private string GetTokenFromAuthHeader() {

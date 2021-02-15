@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using OrderCloud.Catalyst.Errors;
 using OrderCloud.SDK;
 
-namespace ordercloud.integrations.common
+namespace OrderCloud.Catalyst
 {
     public static class GlobalExceptionHandler 
     {

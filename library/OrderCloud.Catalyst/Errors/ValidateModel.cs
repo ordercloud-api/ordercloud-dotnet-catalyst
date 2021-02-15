@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using OrderCloud.SDK;
 
-namespace ordercloud.integrations.common
+namespace OrderCloud.Catalyst
 {
     public class ValidateModelAttribute : ActionFilterAttribute
     {

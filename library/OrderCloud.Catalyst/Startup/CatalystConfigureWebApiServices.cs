@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
-using ordercloud.integrations.common;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace OrderCloud.Catalyst.Startup
+namespace OrderCloud.Catalyst
 {
 	public static class CatalystConfigureWebApiServices
 	{
-		public static IServiceCollection ConfigureServices(this IServiceCollection services)
+		public static IServiceCollection ConfigureServices<TSettings>(this IServiceCollection services, TSettings settings, OrderCloudWebhookAuthOptions webhookConfig = null)
+			where TSettings : class, new()
 		{
 			services.AddControllers()
 			.ConfigureApiBehaviorOptions(o =>
@@ -21,7 +18,7 @@ namespace OrderCloud.Catalyst.Startup
 				options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
 			});
 
-			//services.AddSingleton(settings ?? new TSettings());
+			services.AddSingleton(settings ?? new TSettings());
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 			services.AddMvc().AddNewtonsoftJson(options => options.SerializerSettings.Converters.Add(new StringEnumConverter()));
 			services.AddMvc(o =>
@@ -32,7 +29,11 @@ namespace OrderCloud.Catalyst.Startup
 			services.AddCors(o => o.AddPolicy("integrationcors",
 				builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }));
 
-			//services.AddAuthenticationScheme<OrderCloudAuthOptions, OrderCloudAuthHandler<TSettings>>("OrderCloudIntegrations");
+			services
+				.AddAuthentication()
+				.AddScheme<OrderCloudUserAuthOptions, OrderCloudUserAuthHandler<TSettings>>("OrderCloudUser", null)
+				.AddScheme<OrderCloudWebhookAuthOptions, OrderCloudWebhookAuthHandler>("OrderCloudWebhook", null, opts => opts = webhookConfig);
+
 			return services;
 		}
 	}

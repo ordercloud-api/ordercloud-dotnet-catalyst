@@ -13,13 +13,12 @@
 	  <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
 	  <PackageIconUrl></PackageIconUrl>
 	  <PackageTags>ecommerce b2b azure aspnetcore webjobs four51 ordercloud</PackageTags>
-	  <PackageLicenseUrl></PackageLicenseUrl>
+	  <PackageLicenseUrl>https://raw.githubusercontent.com/ordercloud-api/ordercloud-dotnet-sdk-extensions/master/LICENSE</PackageLicenseUrl>
 	  <RepositoryUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</RepositoryUrl>
 	  <RepositoryType>git</RepositoryType>
 	  <Company>Four51 Inc</Company>
 	  <Product>Ordercloud</Product>
-	  <PackageIcon>ordercloud-logo-blue.png</PackageIcon>
-	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <PackageIcon>four51-logo-blue.png</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -30,13 +29,12 @@
 	  <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.2" />
 	  <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.1.2" />
 	  <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.12" />
-    <PackageReference Include="OrderCloud.SDK" Version="0.10.0" />
+    <PackageReference Include="OrderCloud.SDK" Version="0.6.9" />
     <PackageReference Include="StackExchange.Redis" Version="2.2.4" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.3.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\ordercloud-logo-blue.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

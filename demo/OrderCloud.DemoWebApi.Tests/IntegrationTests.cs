@@ -15,7 +15,6 @@ using OrderCloud.SDK;
 using OrderCloud.TestWebApi;
 using FluentAssertions;
 using System.Net;
-using OrderCloud.Catalyst.Startup;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore;
@@ -58,12 +57,25 @@ namespace OrderCloud.DemoWebApi.Tests
 			result.Should().Be("hello shopper!");
 		}
 
+		[Test]
+		public async Task can_get_username_from_verified_user()
+		{
+			var result = await CreateServer()
+				.CreateFlurlClient()
+				.WithFakeOrderCloudToken("mYcLiEnTiD") // check should be case insensitive
+				.Request("demo/username")
+				.GetStringAsync();
+
+			result.Should().Be("hello joe!");
+		}
+
 		[TestCase("demo/shop", true)]
 		[TestCase("demo/admin", false)]
 		[TestCase("demo/either", true)]
 		[TestCase("demo/anybody", true)]
 		[TestCase("demo/anon", true)]
-		public async Task can_authorize_by_role(string endpoint, bool success) {
+		public async Task can_authorize_by_role(string endpoint, bool success)
+		{
 			var resp = await CreateServer()
 				.CreateFlurlClient()
 				.AllowAnyHttpStatus()

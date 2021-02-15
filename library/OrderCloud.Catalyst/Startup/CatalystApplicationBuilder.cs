@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using ordercloud.integrations.common;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Startup
+namespace OrderCloud.Catalyst
 {
 	public static class CatalystApplicationBuilder
 	{

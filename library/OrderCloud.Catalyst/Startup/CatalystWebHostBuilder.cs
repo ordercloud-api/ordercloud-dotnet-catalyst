@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Startup
+namespace OrderCloud.Catalyst
 {
 	public static class CatalystWebHostBuilder
 	{

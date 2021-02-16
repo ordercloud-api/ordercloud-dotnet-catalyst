@@ -19,7 +19,7 @@ namespace OrderCloud.Catalyst
     {
         public NotFoundException() : base("NotFound", 404, $"Not found.") { }
 
-        public NotFoundException(string thingName, string interopID) : base("NotFound", 404, $"{thingName} with ID {interopID} not found") { }
+        public NotFoundException(string thingName, string  thingID) : base("NotFound", 404, "Not Found.", new { ObjectType = thingName, ObjectID = thingID }) { }
     }
 
     public class InsufficientRolesError

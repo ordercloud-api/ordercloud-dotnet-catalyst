@@ -69,6 +69,23 @@ namespace OrderCloud.DemoWebApi.Tests
 			result.Should().Be("hello joe!");
 		}
 
+		[Test]
+		public async Task user_authorization_is_cached()
+		{
+			var token = FakeOrderCloudToken.Create("a_fake_client_id");
+			var request = CreateServer()
+				.CreateFlurlClient()
+				.WithOAuthBearerToken(token)
+				.Request("demo/shop");
+			TestStartup.OC.ClearReceivedCalls();
+			// Two back-to-back requests 
+			await request.GetAsync();
+			await request.GetAsync();
+
+			// But exactly one request to Ordercloud
+			TestStartup.OC.Received(1).Me.GetAsync(token);
+		}
+
 		[TestCase("demo/shop", true)]
 		[TestCase("demo/admin", false)]
 		[TestCase("demo/either", true)]

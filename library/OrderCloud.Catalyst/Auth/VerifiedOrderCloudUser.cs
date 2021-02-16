@@ -26,7 +26,8 @@ namespace OrderCloud.Catalyst
         public string UserType => _token.UserType;
         public string AuthUrl => _token.AuthUrl;
         public string ApiUrl => _token.ApiUrl;
-        public DateTime AccessTokenExpiresUTC => _token.ExpiresUTC;
+		public DateTime AccessTokenExpiresUTC => _token.ExpiresUTC;
+        public string AnonOrderID => _token.AnonOrderID;
         public string UserID => GetPrincipalClaim("userid");
         public string Username => GetPrincipalClaim("username");
         public string ClientID => GetPrincipalClaim("clientid");

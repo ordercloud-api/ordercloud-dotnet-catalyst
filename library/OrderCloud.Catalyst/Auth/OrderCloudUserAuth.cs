@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Flurl.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
@@ -31,14 +32,21 @@ namespace OrderCloud.Catalyst
 	public class OrderCloudUserAuthHandler<TSettings> : AuthenticationHandler<OrderCloudUserAuthOptions>
 	{
 		private readonly IOrderCloudClient _ocClient;
+		private readonly ISimpleCache _cache;
 
-		public OrderCloudUserAuthHandler(IOptionsMonitor<OrderCloudUserAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IOrderCloudClient ocClient)
+		public OrderCloudUserAuthHandler(
+			IOptionsMonitor<OrderCloudUserAuthOptions> options, 
+			ILoggerFactory logger, 
+			UrlEncoder encoder, 
+			ISystemClock clock, 
+			ISimpleCache cache,
+			IOrderCloudClient ocClient)
 			: base(options, logger, encoder, clock)
 		{
 			_ocClient = ocClient;
+			_cache = cache;
 		}
 
-		// todo: add caching?
 		protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
 			try {
 				var token = GetTokenFromAuthHeader();
@@ -50,9 +58,29 @@ namespace OrderCloud.Catalyst
 				if (jwt.ClientID == null)
 					return AuthenticateResult.Fail("The provided bearer token does not contain a 'cid' (Client ID) claim.");
 
-				// we've validated the token as much as we can on this end, go make sure it's ok on OC
-				var user = await _ocClient.Me.GetAsync(token);
-				if (!user.Active)
+				// we've validated the token as much as we can on this end, go make sure it's ok on OC	
+				var allowFetchUserRetry = false;
+				var user = await _cache.GetOrAddAsync(token, () =>
+				{
+					try
+					{
+						return _ocClient.Me.GetAsync(token);
+					}
+					catch (FlurlHttpException ex) when ((int?)ex.Call.Response?.StatusCode < 500)
+					{
+						return null;
+					}
+					catch (Exception)
+					{
+						allowFetchUserRetry = true;
+						return null;
+					}
+				}, TimeSpan.FromMinutes(5));
+
+				if (allowFetchUserRetry)
+					_cache.Remove(token); // not their fault, don't make them wait 5 min
+
+				if (user == null || !user.Active)
                     return AuthenticateResult.Fail("Authentication failure");
 				var cid = new ClaimsIdentity("OcUser");
 				cid.AddClaim(new Claim("clientid", jwt.ClientID));
@@ -66,7 +94,7 @@ namespace OrderCloud.Catalyst
 				cid.AddClaims(user.AvailableRoles.Select(r => new Claim(ClaimTypes.Role, r)));
 
 				if (jwt.IsAnon)
-					cid.AddClaim(new Claim("anonorderid", jwt.OrderID));
+					cid.AddClaim(new Claim("anonorderid", jwt.AnonOrderID));
 
 				var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcUser");
 				return AuthenticateResult.Success(ticket);

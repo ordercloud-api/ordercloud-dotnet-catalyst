@@ -16,7 +16,7 @@ namespace OrderCloud.Catalyst.Tests
             var minWaitTime = 100; //min wait time parameter
             var maxConcurrent = 5;
             var numberOfIterations = 20; 
-            var functionWaitTimes = CreateRandomList(90, 150, numberOfIterations); //create a random list of times our test function will take to run.
+            var functionWaitTimes = CreateRandomList(100, 200, numberOfIterations); //create a random list of times our test function will take to run.
             //act 
             var elapsedTime = await RunAndTimeThrottler(functionWaitTimes, minWaitTime, maxConcurrent);
 
@@ -29,7 +29,7 @@ namespace OrderCloud.Catalyst.Tests
         {
             var watch = new Stopwatch();
             watch.Start();
-            var times = await Throttler.RunAsync(waitTimes, minWaitTime, maxConcurrent, t => TestAsyncFunction(t));
+            await Throttler.RunAsync(waitTimes, minWaitTime, maxConcurrent, t => TestAsyncFunction(t));
             watch.Stop();
             return watch.ElapsedMilliseconds;
         }

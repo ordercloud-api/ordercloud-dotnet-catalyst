@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -23,6 +23,21 @@ namespace OrderCloud.Catalyst.Tests
             //assert
             Assert.IsTrue(elapsedTime >= minWaitTime * (numberOfIterations - 1)); //ensures it waited the minWaitTime for each function call except the first
             Assert.IsTrue(elapsedTime < functionWaitTimes.Sum()); //assert the total time the throttler took to run is less than the sum of each individual function
+        }
+
+        [Test]
+        public async Task TestThrollterNoConcurrent()
+        {
+            //arrange. 
+            var minWaitTime = 100; //min wait time parameter
+            var maxConcurrent = 0;
+            var numberOfIterations = 20;
+            var functionWaitTimes = CreateRandomList(100, 200, numberOfIterations); //create a random list of times our test function will take to run.
+            //act 
+            var elapsedTime = await RunAndTimeThrottler(functionWaitTimes, minWaitTime, maxConcurrent);
+
+            //assert
+            Assert.IsTrue(elapsedTime >= functionWaitTimes.Sum());
         }
 
         private async Task<long> RunAndTimeThrottler(List<int> waitTimes, int minWaitTime, int maxConcurrent)

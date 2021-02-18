@@ -18,8 +18,8 @@ The throttler will start after every **minPuase** interval. However, if the **ma
 //allSuppliers is a list of all the suppliers in our OrderCloud organization
 var allSuppliers = await ListAllAsync.List(page => orderCloudClient.Suppliers.ListAsync<HSSupplier>(page: page, pageSize: 100));
 
-//We can use the throttler to iterate over all the suppliers ino our list and patch each supplier with an xp value for a notification recipient email.
-//This will send a new patch request every 500 milliseconds and allow for a maximum of 20 concurrent requests.
+//We can use the throttler to iterate over all the suppliers in our list and patch each supplier with an xp value for a notification recipient email.
+//This will send a new patch request every 100 milliseconds and allow for a maximum of 20 concurrent requests.
 await Throttler.RunAsync(allSuppliers, 100, 20, supplier =>
     orderCloudClient.Suppliers.PatchAsync(supplier.ID, new PartialSupplier { xp = new { NotificationRcpt: 'test@noreply.com' } }));
 

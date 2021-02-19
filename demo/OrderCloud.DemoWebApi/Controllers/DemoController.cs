@@ -41,6 +41,9 @@ namespace SampleApp.WebApi.Controllers
 		[HttpPost("modelvalidation")]
 		public ExampleModel ModelValidation(ExampleModel model) => model;
 
+		[HttpGet("listargs")]
+		public IListArgs DeserializeListArgs(ListArgs<ExampleModel> args) => args;
+
 		//[Route("webhook"), OrderCloudWebhookAuth]
 		//public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConfigData> payload) {
 		//	return new {

@@ -24,7 +24,7 @@ namespace OrderCloud.Catalyst
 
     public class InvalidPropertyException : CatalystBaseException
     {
-        public InvalidPropertyException(Type type, string name) : base("Invalid Property", 400, $"{type.Name}.{name}", null) { }
+        public InvalidPropertyException(Type type, string name) : base("InvalidProperty", 400, $"{type.Name}.{name}", null) { }
     }
 
     public class UserErrorException : CatalystBaseException

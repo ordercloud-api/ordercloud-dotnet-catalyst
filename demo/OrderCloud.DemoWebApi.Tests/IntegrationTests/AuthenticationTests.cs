@@ -1,34 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentAssertions;
 using Flurl.Http;
-using OrderCloud.Catalyst;
-using Flurl.Http.Configuration;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NUnit.Framework;
-using OrderCloud.SDK;
+using OrderCloud.Catalyst;
 using OrderCloud.TestWebApi;
-using FluentAssertions;
+using System;
+using System.Collections.Generic;
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Builder;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OrderCloud.DemoWebApi.Tests
 {
 	[TestFixture]
-	public class IntegrationTests
+	class AuthenticationTests
 	{
 		[Test]
-		public async Task can_allow_anonymous() {
-			var result = await CreateServer()
-				.CreateFlurlClient()
+		public async Task can_allow_anonymous()
+		{
+			var result = await TestFramework.Client
 				.Request("demo/anon")
 				.GetStringAsync();
 
@@ -36,20 +26,19 @@ namespace OrderCloud.DemoWebApi.Tests
 		}
 
 		[Test]
-		public async Task should_deny_access_without_oc_token() {
-			var resp = await CreateServer()
-				.CreateFlurlClient()
-				.AllowAnyHttpStatus()
+		public async Task should_deny_access_without_oc_token()
+		{
+			var resp = await TestFramework.Client
 				.Request("demo/shop")
 				.GetAsync();
 
-			resp.StatusCode.Should().Be((HttpStatusCode)401);
+			resp.ShouldHaveStatusCode(401);
 		}
 
 		[Test]
-		public async Task can_auth_with_oc_token() {
-			var result = await CreateServer()
-				.CreateFlurlClient()
+		public async Task can_auth_with_oc_token()
+		{
+			var result = await TestFramework.Client
 				.WithFakeOrderCloudToken("mYcLiEnTiD") // check should be case insensitive
 				.Request("demo/shop")
 				.GetStringAsync();
@@ -60,8 +49,7 @@ namespace OrderCloud.DemoWebApi.Tests
 		[Test]
 		public async Task can_get_username_from_verified_user()
 		{
-			var result = await CreateServer()
-				.CreateFlurlClient()
+			var result = await TestFramework.Client
 				.WithFakeOrderCloudToken("mYcLiEnTiD") // check should be case insensitive
 				.Request("demo/username")
 				.GetStringAsync();
@@ -73,8 +61,7 @@ namespace OrderCloud.DemoWebApi.Tests
 		public async Task user_authorization_is_cached()
 		{
 			var token = FakeOrderCloudToken.Create("a_fake_client_id");
-			var request = CreateServer()
-				.CreateFlurlClient()
+			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/shop");
 			TestStartup.OC.ClearReceivedCalls();
@@ -93,14 +80,12 @@ namespace OrderCloud.DemoWebApi.Tests
 		[TestCase("demo/anon", true)]
 		public async Task can_authorize_by_role(string endpoint, bool success)
 		{
-			var resp = await CreateServer()
-				.CreateFlurlClient()
-				.AllowAnyHttpStatus()
+			var resp = await TestFramework.Client
 				.WithFakeOrderCloudToken("myclientid")
 				.Request(endpoint)
 				.GetAsync();
 
-			resp.StatusCode.Should().Be((HttpStatusCode)(success ? 200 : 403));
+			resp.ShouldHaveStatusCode(success ? 200 : 403);
 		}
 
 		//[Test]
@@ -129,14 +114,5 @@ namespace OrderCloud.DemoWebApi.Tests
 		//	Assert.AreEqual(resp.City, "Minneapolis");
 		//	Assert.AreEqual(resp.Foo, "blah");
 		//}
-
-		private TestServer CreateServer() {
-			return new TestServer(CatalystWebHostBuilder.CreateWebHostBuilder<TestStartup>(new string[] { }));
-		}
-	}
-
-	public static class TestServerExtensions
-	{
-		public static IFlurlClient CreateFlurlClient(this TestServer server) => new FlurlClient(server.CreateClient());
 	}
 }

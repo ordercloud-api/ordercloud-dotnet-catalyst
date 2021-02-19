@@ -1,23 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace ordercloud.integrations.library
+namespace OrderCloud.Catalyst
 {
+    public enum ListFilterOperator { Equal, GreaterThan, LessThan, GreaterThanOrEqual, LessThanOrEqual, NotEqual }
+
+    public class ListFilterValue
+    {
+        public string Term { get; set; } = "";
+        public ListFilterOperator Operator { get; set; } = ListFilterOperator.Equal;
+        public IList<int> WildcardPositions { get; set; } = new List<int>();
+        public bool HasWildcard => WildcardPositions.Any();
+    }
+
     public class ListFilter
     {
-        public string Name { get; set; }
+        public string PropertyName { get; set; }
+        public string FilterExpression { get; set; }
 
         /// <summary>
         /// If multiple, OR them together
         /// </summary>
-        public IList<ListFilterValue> Values { get; set; } = new List<ListFilterValue>();
-        public IList<Tuple<string, string>> QueryParams = new List<Tuple<string, string>>();
+        public IList<ListFilterValue> FilterValues { get; set; } = new List<ListFilterValue>();
 
-        // used in ModelBinder
         public static ListFilter Parse(string name, string expression)
         {
-            var result = new ListFilter { Name = name };
+            var result = new ListFilter { PropertyName = name, FilterExpression = expression };
             var value = new ListFilterValue();
             var escape = false;
             var negate = false;
@@ -35,8 +45,9 @@ namespace ordercloud.integrations.library
                 }
                 else if (c == '!' && value.Term == "")
                 {
-                    value.Operator = ListFilterOperator.NotEqual;
-                    negate = true;
+                    // 2 wrongs make a right
+                    negate = !negate;
+                    value.Operator = negate ? ListFilterOperator.NotEqual : ListFilterOperator.Equal;
                 }
                 else if (c == '>' && value.Term == "")
                 {
@@ -64,8 +75,9 @@ namespace ordercloud.integrations.library
                 }
                 else if (c == '|')
                 {
-                    result.Values.Add(value);
-                    value = new ListFilterValue();
+                    result.FilterValues.Add(value);
+					value = new ListFilterValue();
+                    escape = false;
                     negate = false;
                 }
                 else
@@ -73,8 +85,7 @@ namespace ordercloud.integrations.library
                     value.Term += c.ToString();
                 }
             }
-            result.QueryParams.Add(new Tuple<string, string>(name, expression));
-            result.Values.Add(value);
+            result.FilterValues.Add(value);
             return result;
         }
     }

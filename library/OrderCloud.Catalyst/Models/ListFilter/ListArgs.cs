@@ -18,23 +18,6 @@ namespace OrderCloud.Catalyst
         void ValidateAndNormalize();
     }
 
-    public class ListArgsPageOnly
-    {
-        public ListArgsPageOnly()
-        {
-            Page = 1;
-            PageSize = 100;
-        }
-
-        public ListArgsPageOnly(int page, int pageSize)
-        {
-            Page = page;
-            PageSize = pageSize;
-        }
-        public int Page { get; set; }
-        public int PageSize { get; set; }
-    }
-
     [ModelBinder(typeof(ListArgsModelBinder))]
     public class ListArgs<T> : IListArgs
     {
@@ -86,16 +69,8 @@ namespace OrderCloud.Catalyst
 
         public string ToFilterString()
         {
-            var filterList = (
-                from filter in this.Filters
-                from param in filter.QueryParams
-                select new Tuple<string, string>(param.Item1, param.Item2))
-                .ToList();
-
-            var filterStrings = filterList.Select(t => $"{t.Item1}={t.Item2.Replace("&", "%26")}");
-
-
-            return string.Join("&", filterStrings);
+            var filters = Filters.Select(t => $"{t.PropertyName}={t.FilterExpression.Replace("&", "%26")}");
+            return string.Join("&", filters);
         }
     }
 }

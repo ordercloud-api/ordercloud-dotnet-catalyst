@@ -60,7 +60,7 @@ namespace OrderCloud.Catalyst
 
 				// we've validated the token as much as we can on this end, go make sure it's ok on OC	
 				var allowFetchUserRetry = false;
-				var user = await _cache.GetOrAddAsync(token, () =>
+				var user = await _cache.GetOrAddAsync<MeUser>(token, () =>
 				{
 					try
 					{

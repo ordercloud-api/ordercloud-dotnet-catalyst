@@ -22,6 +22,16 @@ namespace OrderCloud.Catalyst
         public NotFoundException(string thingName, string  thingID) : base("NotFound", 404, "Not Found.", new { ObjectType = thingName, ObjectID = thingID }) { }
     }
 
+    public class InvalidPropertyException : CatalystBaseException
+    {
+        public InvalidPropertyException(Type type, string name) : base("Invalid Property", 400, $"{type.Name}.{name}", null) { }
+    }
+
+    public class UserErrorException : CatalystBaseException
+    {
+        public UserErrorException(string message) : base("InvalidRequest", 400, message, null) { }
+    }
+
     public class InsufficientRolesError
     {
         public IList<string> SufficientRoles { get; set; }

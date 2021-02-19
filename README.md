@@ -103,7 +103,7 @@ This call will scan the assembly/namespace, and for every interface `IServiceNam
 services.AddTransient<IServiceName, ServiceName>();
 ```
 ## ISimpleCache 
-Caching can be a great way to improve the performance of data retrieval. For example, under the hood `[OrderCloudUserAuth]` caches a verified user's token for 5 minutes, removing the performance cost of duplicate verifications. 
+Caching can be a great way to improve the performance of data retrieval. For example, under the hood `[OrderCloudUserAuth]` caches a verified user's context for 5 minutes, removing the performance cost of duplicate verifications. 
 
 However, we don't want to dictate what cache technology your app uses. For flexibilty, Catalyst provides an interface [ISimpleCache](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/master/library/OrderCloud.Catalyst/DataMovement/ISimpleCache.cs). You can register your own implementation in [Startup](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/blob/master/demo/OrderCloud.DemoWebApi/Startup.cs) and the Catalyst library will use it.   
 

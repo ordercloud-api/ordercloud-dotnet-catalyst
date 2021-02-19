@@ -15,19 +15,15 @@ namespace OrderCloud.Catalyst.Tests
 {
     class ListAllAsyncTests
     {
-        private const string token = "super-secure-token";
-        private HttpRequest mockHttpRequest;
         private IOrderCloudClient mockOrderCloudClient;
 
         private Fixture _fixture;
-
 
         [SetUp]
         public void Setup()
         {
             //Setup mocks and substitutions for Http, Ordercloud, and Fixture
             _fixture = new Fixture();
-            mockHttpRequest = Substitute.For<HttpRequest>();
             mockOrderCloudClient = Substitute.For<IOrderCloudClient>();
         }
 

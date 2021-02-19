@@ -60,7 +60,7 @@ namespace OrderCloud.Catalyst
 
 				// we've validated the token as much as we can on this end, go make sure it's ok on OC	
 				var allowFetchUserRetry = false;
-				var user = await _cache.GetOrAddAsync<MeUser>(token, () =>
+				var user = await _cache.GetOrAddAsync(token, TimeSpan.FromMinutes(5), () =>
 				{
 					try
 					{
@@ -75,10 +75,10 @@ namespace OrderCloud.Catalyst
 						allowFetchUserRetry = true;
 						return null;
 					}
-				}, TimeSpan.FromMinutes(5));
+				});
 
 				if (allowFetchUserRetry)
-					_cache.Remove(token); // not their fault, don't make them wait 5 min
+					_cache.RemoveAsync(token); // not their fault, don't make them wait 5 min
 
 				if (user == null || !user.Active)
                     return AuthenticateResult.Fail("Authentication failure");

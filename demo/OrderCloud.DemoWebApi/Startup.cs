@@ -32,7 +32,7 @@ namespace OrderCloud.TestWebApi
 		public virtual void ConfigureServices(IServiceCollection services) {
 			services
 				.ConfigureServices(new AppSettings())
-				.AddSingleton<ISimpleCache, LazyCacheService>()
+				.AddSingleton<ISimpleCache, LazyCacheService>() // Replace LazyCacheService with RedisService if you have multiple server instances.
 				.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig()));
 		}
 

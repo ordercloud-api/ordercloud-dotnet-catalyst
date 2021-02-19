@@ -16,7 +16,7 @@ using OrderCloud.SDK;
 namespace OrderCloud.Catalyst
 {
 	/// <summary>
-	/// Apply to controllers or actions to require that a valid OrderCloud access token is provided in the Authorization heaader.
+	/// Apply to controllers or actions to require that a valid OrderCloud access token is provided in the Authorization header.
 	/// </summary>
 	public class OrderCloudUserAuthAttribute : AuthorizeAttribute
 	{

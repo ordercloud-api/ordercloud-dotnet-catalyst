@@ -7,14 +7,17 @@ using LazyCache;
 
 namespace OrderCloud.DemoWebApi.Services
 {
+	// Lazy Cache (https://github.com/alastairtree/LazyCache) is a local in-memory cache. 
+	// It requires no setup, but is likely not appropriate for a server with multiple instances. 
+	// Each instance would have a separate cache, and behavior would be inconsient.
 	public class LazyCacheService : ISimpleCache
 	{
 		private readonly IAppCache _cache = new CachingService();
 
-		public async Task<T> GetOrAddAsync<T>(string key, Func<Task<T>> addItemFactory, TimeSpan expireAfter) 
+		public async Task<T> GetOrAddAsync<T>(string key, TimeSpan expireAfter, Func<Task<T>> addItemFactory) 
 			=> await _cache.GetOrAddAsync(key, addItemFactory, expireAfter);
 
-		public void Remove(string key)
+		public async Task RemoveAsync(string key)
 			=> _cache.Remove(key);
 	}
 }

@@ -8,5 +8,7 @@ namespace OrderCloud.DemoWebApi
 	public class AppSettings
 	{
 		public string MyDBConnectionString { get; set; }
-	}
+
+		public string WebhookHashKey { get; } = "myhashkey"; 
+    }
 }

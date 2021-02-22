@@ -1,24 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Flurl.Http;
 using OrderCloud.Catalyst;
-using Flurl.Http.Configuration;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using NUnit.Framework;
-using OrderCloud.SDK;
 using OrderCloud.TestWebApi;
 using FluentAssertions;
 using System.Net;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Builder;
+using Newtonsoft.Json;
+using System.Text;
+using System.Security.Cryptography;
+using System;
 
 namespace OrderCloud.DemoWebApi.Tests
 {
@@ -86,40 +77,46 @@ namespace OrderCloud.DemoWebApi.Tests
 			resp.StatusCode.Should().Be((HttpStatusCode)(success ? 200 : 403));
 		}
 
-		//[Test]
-		//public async Task can_disambiguate_webhook() {
-		//	var payload = new {
-		//		Route = "v1/buyers/{buyerID}/addresses/{addressID}",
-		//		Verb = "PUT",
-		//		Request = new { Body = new { City = "Minneapolis" } },
-		//		ConfigData = new { Foo = "blah" }
-		//	};
+        [Test]
+        public async Task can_disambiguate_webhook()
+        {
+			var payload = new
+            {
+                Route = "v1/buyers/{buyerID}/addresses/{addressID}",
+                Verb = "PUT",
+                Request = new { Body = new { City = "Minneapolis" } },
+                ConfigData = new { Foo = "blah" }
+            };
 
-		//	//var json = JsonConvert.SerializeObject(payload);
-		//	//var keyBytes = Encoding.UTF8.GetBytes("myhashkey");
-		//	//var dataBytes = Encoding.UTF8.GetBytes(json);
-		//	//var hash = new HMACSHA256(keyBytes).ComputeHash(dataBytes);
-		//	//var base64 = Convert.ToBase64String(hash);
+            var json = JsonConvert.SerializeObject(payload);
+            var keyBytes = Encoding.UTF8.GetBytes("myhashkey");
+            var dataBytes = Encoding.UTF8.GetBytes(json);
+            var hash = new HMACSHA256(keyBytes).ComputeHash(dataBytes);
+            var base64 = Convert.ToBase64String(hash);
 
-		//	dynamic resp = await CreateServer()
-		//		.CreateFlurlClient()
-		//		.Request("demo/webhook")
-		//		.WithHeader("X-oc-hash", "4NPw1O9AviSOC1A3C+HqkDutRLNwyABneY/3M2OqByE=")
-		//		.PostJsonAsync(payload)
-		//		.ReceiveJson();
+            dynamic resp = await CreateServer()
+                .CreateFlurlClient()
+                .Request("demo/webhook")
+                .WithHeader("X-oc-hash", base64)
+                .PostJsonAsync(payload)
+                .ReceiveJson();
 
-		//	Assert.AreEqual(resp.Action, "HandleAddressSave");
-		//	Assert.AreEqual(resp.City, "Minneapolis");
-		//	Assert.AreEqual(resp.Foo, "blah");
-		//}
+            Assert.AreEqual(resp.Action, "HandleAddressSave");
+            Assert.AreEqual(resp.City, "Minneapolis");
+            Assert.AreEqual(resp.Foo, "blah");
+        }
 
-		private TestServer CreateServer() {
+        private TestServer CreateServer() {
 			return new TestServer(CatalystWebHostBuilder.CreateWebHostBuilder<TestStartup>(new string[] { }));
 		}
 	}
 
 	public static class TestServerExtensions
 	{
-		public static IFlurlClient CreateFlurlClient(this TestServer server) => new FlurlClient(server.CreateClient());
+		public static IFlurlClient CreateFlurlClient(this TestServer server) 
+		{
+			server.AllowSynchronousIO = true;
+			return new FlurlClient(server.CreateClient());
+		}
 	}
 }

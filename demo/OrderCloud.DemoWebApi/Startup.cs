@@ -18,21 +18,24 @@ namespace OrderCloud.TestWebApi
 	{
 		public static void Main(string[] args)
 		{
-			CatalystWebHostBuilder.CreateWebHostBuilder<Startup>(args).Build().Run();
+			CatalystWebHostBuilder.CreateWebHostBuilder<Startup, AppSettings>(args).Build().Run();
 		}
 	}
 
 	public class Startup
 	{
-		public Startup(IConfiguration configuration) {
+		private AppSettings _settings;
+		public Startup(AppSettings settings, IConfiguration configuration) {
 			Configuration = configuration;
+			_settings = settings;
 		}
 
 		public IConfiguration Configuration { get; }
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public virtual void ConfigureServices(IServiceCollection services) {
-			services.ConfigureServices(new AppSettings());
+			services.ConfigureServices(new AppSettings(), 
+				new OrderCloudWebhookAuthOptions() { HashKey = _settings.WebhookHashKey });
 			services.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig()));
 		}
 
@@ -46,7 +49,7 @@ namespace OrderCloud.TestWebApi
 	// But moving it there break all the tests and its unclear why.
 	public class TestStartup : Startup
 	{
-		public TestStartup(IConfiguration configuration) : base(configuration) { }
+		public TestStartup(AppSettings settings, IConfiguration configuration) : base(settings, configuration) { }
 
 		public override void ConfigureServices(IServiceCollection services)
 		{

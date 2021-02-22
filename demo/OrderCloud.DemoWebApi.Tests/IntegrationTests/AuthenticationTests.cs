@@ -3,6 +3,7 @@ using Flurl.Http;
 using NSubstitute;
 using NUnit.Framework;
 using OrderCloud.Catalyst;
+using OrderCloud.SDK;
 using OrderCloud.TestWebApi;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace OrderCloud.DemoWebApi.Tests
 				.Request("demo/shop")
 				.GetAsync();
 
-			resp.ShouldHaveStatusCode(401);
+			resp.ShouldBeApiError("InvalidToken", 401, "Access token is invalid or expired.");
 		}
 
 		[Test]
@@ -85,7 +86,15 @@ namespace OrderCloud.DemoWebApi.Tests
 				.Request(endpoint)
 				.GetAsync();
 
-			resp.ShouldHaveStatusCode(success ? 200 : 403);
+			if (success)
+			{
+				resp.ShouldHaveStatusCode(200);
+			} else
+			{
+				resp.ShouldBeApiError("InsufficientRoles", 403, "User does not have role(s) required to perform this action.");
+				var roles = (await resp.DeserializeAsync<ApiError<InsufficientRolesError>>()).Data.SufficientRoles;
+				Assert.AreEqual("OrderAdmin", roles[0]);
+			}	
 		}
 
 		//[Test]

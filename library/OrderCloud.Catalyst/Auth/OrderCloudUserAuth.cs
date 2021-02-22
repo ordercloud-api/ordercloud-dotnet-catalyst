@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst
@@ -52,11 +53,11 @@ namespace OrderCloud.Catalyst
 				var token = GetTokenFromAuthHeader();
 
 				if (string.IsNullOrEmpty(token))
-					return AuthenticateResult.Fail("The OrderCloud bearer token was not provided in the Authorization header.");
+					throw new UnAuthorizedException();
 
 				var jwt = new JwtOrderCloud(token);
 				if (jwt.ClientID == null)
-					return AuthenticateResult.Fail("The provided bearer token does not contain a 'cid' (Client ID) claim.");
+					throw new UnAuthorizedException();
 
 				// we've validated the token as much as we can on this end, go make sure it's ok on OC	
 				var allowFetchUserRetry = false;
@@ -81,26 +82,16 @@ namespace OrderCloud.Catalyst
 					_cache.RemoveAsync(token); // not their fault, don't make them wait 5 min
 
 				if (user == null || !user.Active)
-                    return AuthenticateResult.Fail("Authentication failure");
+					throw new UnAuthorizedException();
 				var cid = new ClaimsIdentity("OcUser");
-				cid.AddClaim(new Claim("clientid", jwt.ClientID));
 				cid.AddClaim(new Claim("accesstoken", token));
-				cid.AddClaim(new Claim("username", user.Username));
-				cid.AddClaim(new Claim("userid", user.ID));
-				cid.AddClaim(new Claim("email", user.Email ?? ""));
-				cid.AddClaim(new Claim("buyer", user.Buyer?.ID ?? ""));
-				cid.AddClaim(new Claim("supplier", user.Supplier?.ID ?? ""));
-				cid.AddClaim(new Claim("seller", user?.Seller?.ID ?? ""));
-				cid.AddClaims(user.AvailableRoles.Select(r => new Claim(ClaimTypes.Role, r)));
-
-				if (jwt.IsAnon)
-					cid.AddClaim(new Claim("anonorderid", jwt.AnonOrderID));
+				cid.AddClaim(new Claim("userrecordjson", JsonConvert.SerializeObject(user)));
 
 				var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcUser");
 				return AuthenticateResult.Success(ticket);
 			}
 			catch (Exception ex) {
-				return AuthenticateResult.Fail(ex.Message);
+				throw new UnAuthorizedException();
 			}
 		}
 
@@ -110,7 +101,7 @@ namespace OrderCloud.Catalyst
 			var jwt = new JwtOrderCloud(token);
 			throw new InsufficientRolesException(new InsufficientRolesError()
 			{
-				SufficientRoles = GetUserAuthAttribute().Roles.Select(r => r.ToString()).ToList(),
+				SufficientRoles = GetUserAuthAttribute().Roles.Split(","),
 				AssignedRoles = jwt.Roles,
 			});
 		}

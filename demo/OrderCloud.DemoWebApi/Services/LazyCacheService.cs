@@ -14,7 +14,7 @@ namespace OrderCloud.DemoWebApi.Services
 	{
 		private readonly IAppCache _cache = new CachingService();
 
-		public async Task<T> GetOrAddAsync<T>(string key, TimeSpan expireAfter, Func<Task<T>> addItemFactory) 
+		public async Task<T> GetOrAddAsync<T>(string key, TimeSpan expireAfter, Func<Task<T>> addItemFactory)
 			=> await _cache.GetOrAddAsync(key, addItemFactory, expireAfter);
 
 		public async Task RemoveAsync(string key)

@@ -7,13 +7,13 @@ namespace OrderCloud.Catalyst
 	[EnableCors("marketplacecors")]
 	public class BaseController : Controller
 	{
-		public VerifiedOrderCloudUser VerifiedUser;
+		public VerifiedUserContext Context;
 
 		public BaseController() { }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
 		{
-			VerifiedUser = new VerifiedOrderCloudUser(User);
+			Context = new VerifiedUserContext(User);
 			base.OnActionExecuting(context);
 		}
 	}

@@ -42,6 +42,5 @@ namespace OrderCloud.DemoWebApi.Tests
 			Assert.AreEqual(errorCode, error.ErrorCode);
 			Assert.AreEqual(message, error.Message);
 		}
-
 	}
 }

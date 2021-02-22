@@ -5,9 +5,14 @@ using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst
 {
+    public class UnAuthorizedException : CatalystBaseException
+	{
+        public UnAuthorizedException() : base("InvalidToken", 401, "Access token is invalid or expired.") { }
+    }
+
     public class InsufficientRolesException : CatalystBaseException
     {
-        public InsufficientRolesException(InsufficientRolesError data) : base("InsufficientRoles", 403, "Insufficient Roles", data) { }
+        public InsufficientRolesException(InsufficientRolesError data) : base("InsufficientRoles", 403, "User does not have role(s) required to perform this action.", data) { }
     }
 
     public class RequiredFieldException : CatalystBaseException

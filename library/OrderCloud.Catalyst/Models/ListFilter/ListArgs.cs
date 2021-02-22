@@ -15,7 +15,8 @@ namespace OrderCloud.Catalyst
         int Page { get; set; }
         int PageSize { get; set; }
         IList<ListFilter> Filters { get; set; }
-        void ValidateAndNormalize();
+		void ValidateAndNormalize();
+        string ToFilterString();
     }
 
     [ModelBinder(typeof(ListArgsModelBinder))]
@@ -55,7 +56,7 @@ namespace OrderCloud.Catalyst
 
             var queue = new Queue<string>(path.Split('.'));
             var prop = type.GetProperty(queue.Dequeue(), BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-            if (prop != null)
+            if (prop == null)
             {
                 throw new InvalidPropertyException(type, path);
             }

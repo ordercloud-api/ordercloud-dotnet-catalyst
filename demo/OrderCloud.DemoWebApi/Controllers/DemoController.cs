@@ -20,7 +20,7 @@ namespace SampleApp.WebApi.Controllers
 		public object Either() => "hello either!";
 
 		[HttpGet("username"), OrderCloudUserAuth]
-		public object Username() => $"hello {VerifiedUser.Username}!";
+		public object Username() => $"hello {Context.User.Username}!";
 
 		[HttpGet("anybody"), OrderCloudUserAuth]
 		public object Anybody() => "hello anybody!";

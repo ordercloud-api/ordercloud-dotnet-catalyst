@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using OrderCloud.Catalyst;
@@ -36,29 +36,13 @@ namespace SampleApp.WebApi.Controllers
 
 		[HttpPost("modelvalidation")]
 		public ExampleModel ModelValidation(ExampleModel model) => model;
+
+        [HttpGet("listargs")]
+        public IListArgs DeserializeListArgs(ListArgs<ExampleModel> args) => args;
     }
 
-		[HttpGet("listargs")]
-		public IListArgs DeserializeListArgs(ListArgs<ExampleModel> args) => args;
 
-		//[Route("webhook"), OrderCloudWebhookAuth]
-		//public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConfigData> payload) {
-		//	return new {
-		//		Action = "HandleAddressSave",
-		//		City = payload.Request.Body.City,
-		//		Foo = payload.ConfigData.Foo
-		//	};
-		//}
 
-		//[Route("webhook"), OrderCloudWebhookAuth]
-		//public object HandleGenericWebhook([FromBody] WebhookPayload payload) {
-		//	return new {
-		//		Action = "HandleGenericWebhook",
-		//		City = payload.Request.Body.City,
-		//		Foo = payload.ConfigData.Foo
-		//	};
-		//}
-	}
 
 	public class ExampleModel
 	{

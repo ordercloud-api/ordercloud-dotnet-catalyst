@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Flurl.Http;
 using OrderCloud.Catalyst.Tests.TestingHelpers;
 using NUnit.Framework;
@@ -30,8 +30,6 @@ namespace OrderCloud.Catalyst.Tests
             Fixture fixture = new Fixture();
             var payload = fixture.Create<WebhookPayloads.Addresses.Save>();
             payload.ConfigData = new { Foo = "blah" };
-            //payload.Route = "v1/buyers/{buyerID}/addresses/{addressID}";
-            //payload.Verb = "PUT";
 
             dynamic resp = await _service.SendWebhookReq(payload).ReceiveJson(); //SendWebhookReq(payload).ReceiveJson();
 

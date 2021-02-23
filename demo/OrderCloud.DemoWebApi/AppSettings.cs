@@ -9,6 +9,6 @@ namespace OrderCloud.DemoWebApi
 	{
 		public string MyDBConnectionString { get; set; }
 
-		public string WebhookHashKey { get; } = "myhashkey"; 
+		public string WebhookHashKey { get; } = "myhashkey"; //	Should match the HashKey configured on your webhook in the Ordercloud portal.
     }
 }

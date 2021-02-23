@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrderCloud.Catalyst;
 using OrderCloud.SDK;
@@ -40,17 +36,6 @@ namespace SampleApp.WebApi.Controllers
 
 		[HttpPost("modelvalidation")]
 		public ExampleModel ModelValidation(ExampleModel model) => model;
-
-        [Route("webhook"), OrderCloudWebhookAuth]
-        public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save payload)
-        {
-            return new
-            {
-                Action = "HandleAddressSave",
-                City = payload.Request.Body.City,
-                Foo = payload.ConfigData.Foo
-            };
-        }
     }
 
 	public class ExampleModel

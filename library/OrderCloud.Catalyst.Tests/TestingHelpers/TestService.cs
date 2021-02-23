@@ -39,7 +39,7 @@ namespace OrderCloud.Catalyst.Tests.TestingHelpers
 			return CreateServer()
 				.CreateFlurlClient()
 				.AllowAnyHttpStatus()
-				.Request("demo/webhook")
+				.Request("webhook/saveaddress")
 				.WithHeader("X-oc-hash", base64)
 				.PostJsonAsync(payload);
 		}

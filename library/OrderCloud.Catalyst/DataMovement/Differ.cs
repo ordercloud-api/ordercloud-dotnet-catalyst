@@ -59,7 +59,7 @@ namespace OrderCloud.Catalyst
 
 			try {
 				await db.StringSetAsync(TempIdKey, stateId);
-				await Throttler.RunAsync(data, 0, 1000, row => db.SetAddAsync(TempDataKey, row)).ConfigureAwait(false);
+				await Throttler.ForEachAsync(data, row => db.SetAddAsync(TempDataKey, row), 1000).ConfigureAwait(false);
 
 				// data load into temp keys is done. the rest is quick key swaps, do them all transactionally.
 

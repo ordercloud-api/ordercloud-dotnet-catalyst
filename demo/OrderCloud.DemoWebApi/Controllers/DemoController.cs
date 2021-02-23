@@ -20,7 +20,7 @@ namespace SampleApp.WebApi.Controllers
 		public object Either() => "hello either!";
 
 		[HttpGet("username"), OrderCloudUserAuth]
-		public object Username() => $"hello {Context.User.Username}!";
+		public object Username() => $"hello {VerifiedUser.Username}!";
 
 		[HttpGet("anybody"), OrderCloudUserAuth]
 		public object Anybody() => "hello anybody!";
@@ -35,32 +35,8 @@ namespace SampleApp.WebApi.Controllers
 		public object InternalError() => (new string[] { })[10];
 
 		[HttpPost("modelvalidation")]
-		public ExampleModel ModelValidation(ExampleModel model)
-		{
-			return model;
-		}
-
-		[HttpGet("listargs")]
-		public IListArgs DeserializeListArgs(ListArgs<ExampleModel> args) => args;
-
-		//[Route("webhook"), OrderCloudWebhookAuth]
-		//public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConfigData> payload) {
-		//	return new {
-		//		Action = "HandleAddressSave",
-		//		City = payload.Request.Body.City,
-		//		Foo = payload.ConfigData.Foo
-		//	};
-		//}
-
-		//[Route("webhook"), OrderCloudWebhookAuth]
-		//public object HandleGenericWebhook([FromBody] WebhookPayload payload) {
-		//	return new {
-		//		Action = "HandleGenericWebhook",
-		//		City = payload.Request.Body.City,
-		//		Foo = payload.ConfigData.Foo
-		//	};
-		//}
-	}
+		public ExampleModel ModelValidation(ExampleModel model) => model;
+    }
 
 	public class ExampleModel
 	{

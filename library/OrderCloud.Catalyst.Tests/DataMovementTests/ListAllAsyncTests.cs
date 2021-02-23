@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
+﻿using AutoFixture;
+using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using OrderCloud.Catalyst.DataMovement;
 using OrderCloud.SDK;
-using AutoFixture;
-using FluentAssertions;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst.Tests
 {
@@ -27,13 +24,10 @@ namespace OrderCloud.Catalyst.Tests
             mockOrderCloudClient = Substitute.For<IOrderCloudClient>();
         }
 
-        [Test]
-        public async Task ListAllWorking()
+        [Test, AutoNSubstituteData]
+        public async Task ListAllWorking(Task<ListPage<Supplier>> listSupplierResponse)
         {
-            Task<ListPage<Supplier>> listSupplierResponse;
-
             //Setup Supplier Response using AutoFixture
-            listSupplierResponse = _fixture.Create<Task<ListPage<Supplier>>>();
             listSupplierResponse.Result.Meta.TotalPages = 1;
             mockOrderCloudClient.Suppliers.ListAsync<Supplier>(page: 1, pageSize: 100).Returns(listSupplierResponse);
 
@@ -43,18 +37,16 @@ namespace OrderCloud.Catalyst.Tests
         }
 
 
-        [Test]
-        public async Task ListAll_MultiplePages_Working()
+        [Test, AutoNSubstituteData]
+        public async Task ListAll_MultiplePages_Working(Task<ListPage<Shipment>> listShipmentResponse)
         {
-            Task<ListPage<Shipment>> listShipmentResponse;
-
             //Setup Shipment Response using AutoFixture
             ListPage<Shipment> mockListMultiPageShipment = _fixture
                     .Build<ListPage<Shipment>>()
                     .With(x => x.Meta, new ListPageMeta() { TotalPages = 5 })
                     .With(x => x.Items, _fixture.CreateMany<Shipment>(100).ToList())
                     .Create();
-            listShipmentResponse = _fixture.Create<Task<ListPage<Shipment>>>();
+
             listShipmentResponse.Result.Meta.TotalPages = 5;
             ((List<Shipment>)listShipmentResponse.Result.Items).AddRange(mockListMultiPageShipment.Items);
 
@@ -66,10 +58,9 @@ namespace OrderCloud.Catalyst.Tests
             allSuppliers.Count.Should().BeGreaterThan(100);
         }
 
-        [Test]
-        public async Task ListWithFacets_Working()
+        [Test, AutoNSubstituteData]
+        public async Task ListWithFacets_Working(Task<ListPageWithFacets<Product>> response)
         {
-            Task<ListPageWithFacets<Product>> response = _fixture.Create<Task<ListPageWithFacets<Product>>>();
             response.Result.Meta.TotalPages = 1;
 
             mockOrderCloudClient.Products.ListAsync<Product>(pageSize: 20).Returns(response);

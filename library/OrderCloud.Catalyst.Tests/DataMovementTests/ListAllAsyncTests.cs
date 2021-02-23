@@ -53,7 +53,7 @@ namespace OrderCloud.Catalyst.Tests
             mockOrderCloudClient.Shipments.ListAsync<Shipment>(pageSize: 20).Returns(listShipmentResponse, listShipmentResponse, listShipmentResponse, listShipmentResponse);
 
 
-            var allSuppliers = await ListAllAsync.List(page => mockOrderCloudClient.Shipments.ListAsync<Shipment>(pageSize: 20));
+            var allSuppliers = await ListAllAsync.List((page, filter) => mockOrderCloudClient.Shipments.ListAsync<Shipment>(page: page, filters: filter, pageSize: 20)) ;
             listShipmentResponse.Result.Meta.Page.Should().BeGreaterThan(1); //expect multiple pages with multiple shipment responses.
             allSuppliers.Count.Should().BeGreaterThan(100);
         }

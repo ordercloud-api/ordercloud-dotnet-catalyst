@@ -19,16 +19,21 @@ namespace OrderCloud.Catalyst.DataMovement
 		/// <typeparam name="T"></typeparam>
 		/// <param name="listFunc">Delegate representing the function call being attempted. The resulting list will be the type specified in this parameter</param>
 		/// <returns>Task<List<T>>. Determined by the listFunc passed in</returns>
-        public static async Task<List<T>> List<T>(Func<int, Task<ListPage<T>>> listFunc)
+        public static async Task<List<T>> List<T>(Func<int, object, Task<ListPage<T>>> listFunc)
         {
             var pageTasks = new List<Task<ListPage<T>>>();
             var totalPages = 0;
             int totalCount = 0;
             int totalCountCutoff = 10000;
             var i = 1;
+            var filter = "";
+
+
+
             do
             {
-                pageTasks.Add(listFunc(i++));
+                // only apply filter when listing all by ID (aka over 10000 records)
+                pageTasks.Add(listFunc(i++, filter));
                 var running = pageTasks.Where(t => !t.IsCompleted && !t.IsFaulted).ToList();
                 if (running.Count == 0 && pageTasks?.FirstOrDefault()?.Result?.Meta?.TotalPages != null)
                 {
@@ -45,7 +50,6 @@ namespace OrderCloud.Catalyst.DataMovement
                     var result = await await Task.WhenAny(running);
                     totalPages = result.Meta.TotalPages; //Set total number of pages based on returned Meta.
                     totalCount = result.Meta.TotalCount;
-
                 }
 
             } while (i <= totalPages);
@@ -64,7 +68,9 @@ namespace OrderCloud.Catalyst.DataMovement
             var list = await retryPolicy.ExecuteAsync(async () => await await Task.WhenAny(running));
             var allItems = list.Items.ToList();
             if (allItems.Count() > 0)
+            {
                 lastID = (string)(list.Items.Last()?.GetType().GetProperty("ID").GetValue(list.Items.Last(), null));
+            }
 
             do
             {

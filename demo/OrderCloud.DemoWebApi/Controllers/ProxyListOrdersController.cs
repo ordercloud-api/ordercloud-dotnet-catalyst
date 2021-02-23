@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.DemoWebApi.Controllers
 {
-	// This code snipt shows how to proxy an Ordercloud list route. 
+	// This code snippet shows how to proxy an Ordercloud list route. 
 	// Imagine a franchise business with multiple locations. Owners and Employees at a location both place orders. Only Owners should see all orders for their location.
 	// As the developer, you'd want to give buyer users with a specific flag read access to specific orders.
 	// You may need to proxy the Ordercloud List Orders endpoint server-side to achieve the correct permissions behavior.

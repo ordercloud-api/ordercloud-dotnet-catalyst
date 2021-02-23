@@ -82,7 +82,7 @@ namespace OrderCloud.DemoWebApi.Tests
 		public async Task can_authorize_by_role(string endpoint, bool success)
 		{
 			var resp = await TestFramework.Client
-				.WithFakeOrderCloudToken("myclientid", new List<string> { "Shopper" })
+				.WithFakeOrderCloudToken("myclientid")
 				.Request(endpoint)
 				.GetAsync();
 

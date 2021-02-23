@@ -16,24 +16,40 @@ namespace OrderCloud.TestWebApi
 	{
 		public static void Main(string[] args)
 		{
-			CatalystWebHostBuilder.CreateWebHostBuilder<Startup>(args).Build().Run();
+			// Links to an Azure App Configuration resource that holds the app settings.
+			// For local development, set this in your visual studio Env Variables.
+			var connectionString = Environment.GetEnvironmentVariable("APP_CONFIG_CONNECTION");
+
+			CatalystWebHostBuilder
+				.CreateWebHostBuilder<Startup, AppSettings>(args, connectionString)
+				// If you do not wish to use Azure App Configuration, replace the line above and bind AppSettings as you choose.
+				//.CreateWebHostBuilder<Startup>(args)
+				.Build()
+				.Run();
 		}
 	}
 
 	public class Startup
 	{
-		public Startup(IConfiguration configuration) {
-			Configuration = configuration;
-		}
+		private readonly AppSettings _settings;
 
-		public IConfiguration Configuration { get; }
+		public Startup(AppSettings settings)
+		{
+			_settings = settings;
+		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public virtual void ConfigureServices(IServiceCollection services) {
 			services
 				.ConfigureServices(new AppSettings())
 				.AddSingleton<ISimpleCache, LazyCacheService>() // Replace LazyCacheService with RedisService if you have multiple server instances.
-				.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig()));
+				.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig() {
+					ApiUrl = _settings.OrderCloudSettings.ApiUrl,
+					AuthUrl = _settings.OrderCloudSettings.ApiUrl,
+					ClientId = _settings.OrderCloudSettings.ClientID,
+					ClientSecret = _settings.OrderCloudSettings.ClientSecret,
+					Roles = new[] { ApiRole.FullAccess }
+				}));
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,7 +64,7 @@ namespace OrderCloud.TestWebApi
 	{
 		public static IOrderCloudClient OC;
 
-		public TestStartup(IConfiguration configuration) : base(configuration) { }
+		public TestStartup() : base(new AppSettings()) { }
 
 		public override void ConfigureServices(IServiceCollection services)
 		{

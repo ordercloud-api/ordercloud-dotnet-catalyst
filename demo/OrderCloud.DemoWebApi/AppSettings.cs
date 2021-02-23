@@ -7,6 +7,7 @@ namespace OrderCloud.DemoWebApi
 {
 	public class AppSettings
 	{
+		public OrderCloudSettings OrderCloudSettings { get; set; } = new OrderCloudSettings();
 		public EnvironmentSettings EnvironmentSettings { get; set; } = new EnvironmentSettings();
 		public RedisSettings RedisSettings { get; set; } = new RedisSettings();
 	}
@@ -20,5 +21,13 @@ namespace OrderCloud.DemoWebApi
 	public class EnvironmentSettings
 	{
 		public string BuildNumber { get; set; }
+	}
+
+	public class OrderCloudSettings
+	{
+		public string ApiUrl { get; set; }
+		public string ClientID { get; set; }
+		public string ClientSecret { get; set; }
+		public string WebhookHashKey { get; set; }
 	}
 }

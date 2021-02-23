@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -47,6 +47,17 @@ namespace SampleApp.WebApi.Controllers
             return new
             {
                 Action = "HandleAddressSave",
+                City = payload.Request.Body.City,
+                Foo = payload.ConfigData.Foo
+            };
+        }
+
+        [Route("webhook"), OrderCloudWebhookAuth]
+        public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Patch payload)
+        {
+            return new
+            {
+                Action = "HandleGenericWebhook",
                 City = payload.Request.Body.City,
                 Foo = payload.ConfigData.Foo
             };

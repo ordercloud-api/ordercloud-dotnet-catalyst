@@ -6,16 +6,18 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Flurl.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst
 {
 	/// <summary>
-	/// Apply to controllers or actions to require that a valid OrderCloud access token is provided in the Authorization heaader.
+	/// Apply to controllers or actions to require that a valid OrderCloud access token is provided in the Authorization header.
 	/// </summary>
 	public class OrderCloudUserAuthAttribute : AuthorizeAttribute
 	{
@@ -31,48 +33,65 @@ namespace OrderCloud.Catalyst
 	public class OrderCloudUserAuthHandler<TSettings> : AuthenticationHandler<OrderCloudUserAuthOptions>
 	{
 		private readonly IOrderCloudClient _ocClient;
+		private readonly ISimpleCache _cache;
 
-		public OrderCloudUserAuthHandler(IOptionsMonitor<OrderCloudUserAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IOrderCloudClient ocClient)
+		public OrderCloudUserAuthHandler(
+			IOptionsMonitor<OrderCloudUserAuthOptions> options, 
+			ILoggerFactory logger, 
+			UrlEncoder encoder, 
+			ISystemClock clock, 
+			ISimpleCache cache,
+			IOrderCloudClient ocClient)
 			: base(options, logger, encoder, clock)
 		{
 			_ocClient = ocClient;
+			_cache = cache;
 		}
 
-		// todo: add caching?
 		protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
 			try {
 				var token = GetTokenFromAuthHeader();
 
 				if (string.IsNullOrEmpty(token))
-					return AuthenticateResult.Fail("The OrderCloud bearer token was not provided in the Authorization header.");
+					throw new UnAuthorizedException();
 
 				var jwt = new JwtOrderCloud(token);
 				if (jwt.ClientID == null)
-					return AuthenticateResult.Fail("The provided bearer token does not contain a 'cid' (Client ID) claim.");
+					throw new UnAuthorizedException();
 
-				// we've validated the token as much as we can on this end, go make sure it's ok on OC
-				var user = await _ocClient.Me.GetAsync(token);
-				if (!user.Active)
-                    return AuthenticateResult.Fail("Authentication failure");
+				// we've validated the token as much as we can on this end, go make sure it's ok on OC	
+				var allowFetchUserRetry = false;
+				var user = await _cache.GetOrAddAsync(token, TimeSpan.FromMinutes(5), () =>
+				{
+					try
+					{
+						return _ocClient.Me.GetAsync(token);
+					}
+					catch (FlurlHttpException ex) when ((int?)ex.Call.Response?.StatusCode < 500)
+					{
+						return null;
+					}
+					catch (Exception)
+					{
+						allowFetchUserRetry = true;
+						return null;
+					}
+				});
+
+				if (allowFetchUserRetry)
+					_cache.RemoveAsync(token); // not their fault, don't make them wait 5 min
+
+				if (user == null || !user.Active)
+					throw new UnAuthorizedException();
 				var cid = new ClaimsIdentity("OcUser");
-				cid.AddClaim(new Claim("clientid", jwt.ClientID));
 				cid.AddClaim(new Claim("accesstoken", token));
-				cid.AddClaim(new Claim("username", user.Username));
-				cid.AddClaim(new Claim("userid", user.ID));
-				cid.AddClaim(new Claim("email", user.Email ?? ""));
-				cid.AddClaim(new Claim("buyer", user.Buyer?.ID ?? ""));
-				cid.AddClaim(new Claim("supplier", user.Supplier?.ID ?? ""));
-				cid.AddClaim(new Claim("seller", user?.Seller?.ID ?? ""));
-				cid.AddClaims(user.AvailableRoles.Select(r => new Claim(ClaimTypes.Role, r)));
-
-				if (jwt.IsAnon)
-					cid.AddClaim(new Claim("anonorderid", jwt.OrderID));
+				cid.AddClaim(new Claim("userrecordjson", JsonConvert.SerializeObject(user)));
 
 				var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcUser");
 				return AuthenticateResult.Success(ticket);
 			}
 			catch (Exception ex) {
-				return AuthenticateResult.Fail(ex.Message);
+				throw new UnAuthorizedException();
 			}
 		}
 
@@ -82,7 +101,7 @@ namespace OrderCloud.Catalyst
 			var jwt = new JwtOrderCloud(token);
 			throw new InsufficientRolesException(new InsufficientRolesError()
 			{
-				SufficientRoles = GetUserAuthAttribute().Roles.Select(r => r.ToString()).ToList(),
+				SufficientRoles = GetUserAuthAttribute().Roles.Split(","),
 				AssignedRoles = jwt.Roles,
 			});
 		}

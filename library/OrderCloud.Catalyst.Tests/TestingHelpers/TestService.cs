@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Flurl.Http;
 using OrderCloud.TestWebApi;
 using Microsoft.AspNetCore.TestHost;

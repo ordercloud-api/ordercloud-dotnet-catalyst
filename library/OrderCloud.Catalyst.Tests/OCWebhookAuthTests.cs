@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Flurl.Http;
 using OrderCloud.Catalyst.Tests.TestingHelpers;
 using NUnit.Framework;
@@ -25,47 +25,29 @@ namespace OrderCloud.Catalyst.Tests
         }
 
         [Test]
-        public async Task can_disambiguate_webhook()
+        public async Task hash_is_authenticated()
         {
             Fixture fixture = new Fixture();
             var payload = fixture.Create<WebhookPayloads.Addresses.Save>();
-            payload.Route = "v1/buyers/{buyerID}/addresses/{addressID}";
-            payload.Verb = "PUT";
+            payload.ConfigData = new { Foo = "blah" };
+            //payload.Route = "v1/buyers/{buyerID}/addresses/{addressID}";
+            //payload.Verb = "PUT";
 
-            //dynamic resp = await _service.SendWebhookReq(payload).ReceiveJson(); //SendWebhookReq(payload).ReceiveJson();
-
-            var _settings = new AppSettings();
-            var json = JsonConvert.SerializeObject(payload);
-            var keyBytes = Encoding.UTF8.GetBytes(_settings.WebhookHashKey);
-            var dataBytes = Encoding.UTF8.GetBytes(json);
-            var hash = new HMACSHA256(keyBytes).ComputeHash(dataBytes);
-            var base64 = Convert.ToBase64String(hash);
-
-            dynamic resp = _service.CreateServer()
-                .CreateFlurlClient()
-                .AllowAnyHttpStatus()
-                .Request("demo/webhook")
-                .WithHeader("X-oc-hash", base64)
-                .PostJsonAsync(payload);
+            dynamic resp = await _service.SendWebhookReq(payload).ReceiveJson(); //SendWebhookReq(payload).ReceiveJson();
 
             Assert.AreEqual(resp.Action, "HandleAddressSave");
-            Assert.AreEqual(resp.City, "Minneapolis");
+            Assert.AreEqual(resp.City, payload.Request.Body.City);
             Assert.AreEqual(resp.Foo, "blah");
         }
 
-        //[Test]
-        //public async Task hash_does_not_match()
-        //{
-        //    var payload = new
-        //    {
-        //        Route = "v1/buyers/{buyerID}/addresses/{addressID}",
-        //        Verb = "PUT",
-        //        Request = new { Body = new { City = "Minneapolis" } },
-        //        ConfigData = new { Foo = "blah" }
-        //    };
+        [Test]
+        public async Task hash_does_not_match()
+        {
+            Fixture fixture = new Fixture();
+            var payload = fixture.Create<WebhookPayloads.Addresses.Save>();
 
-        //    var resp = await _service.SendWebhookReq(payload, "dfadasfd");  //SendWebhookReq(payload, "dfadasfd");
-        //    resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        //}
+            var resp = await _service.SendWebhookReq(payload, "dfadasfd");  //SendWebhookReq(payload, "dfadasfd");
+            resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
     }
 }

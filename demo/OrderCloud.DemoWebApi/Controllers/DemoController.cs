@@ -51,17 +51,6 @@ namespace SampleApp.WebApi.Controllers
                 Foo = payload.ConfigData.Foo
             };
         }
-
-        [Route("webhook"), OrderCloudWebhookAuth]
-        public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Patch payload)
-        {
-            return new
-            {
-                Action = "HandleGenericWebhook",
-                City = payload.Request.Body.City,
-                Foo = payload.ConfigData.Foo
-            };
-        }
     }
 
 	public class ExampleModel

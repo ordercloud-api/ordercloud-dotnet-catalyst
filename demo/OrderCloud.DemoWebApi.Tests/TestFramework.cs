@@ -20,7 +20,8 @@ namespace OrderCloud.DemoWebApi.Tests
 		{
 			get
 			{
-				var server = new TestServer(CatalystWebHostBuilder.CreateWebHostBuilder<TestStartup>(new string[] { }));
+				var server = new TestServer(CatalystWebHostBuilder.CreateWebHostBuilder<TestStartup, AppSettings>(new string[] { }));
+				server.AllowSynchronousIO = true; // for webhook tests
 				return new FlurlClient(server.CreateClient())
 					.AllowAnyHttpStatus();  // This allows us to test error responses.
 			}

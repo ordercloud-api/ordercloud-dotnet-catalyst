@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace OrderCloud.DemoWebApi.Tests
 {
 	[TestFixture]
-	class AuthenticationTests
+	class UserAuthTests
 	{
 		[Test]
 		public async Task can_allow_anonymous()

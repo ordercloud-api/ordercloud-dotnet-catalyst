@@ -6,7 +6,7 @@ using System.Text;
 using Flurl.Http;
 using Microsoft.IdentityModel.Tokens;
 
-namespace OrderCloud.Catalyst.Tests.TestingHelpers
+namespace OrderCloud.Catalyst
 {
     public static class FakeOrderCloudToken
     {

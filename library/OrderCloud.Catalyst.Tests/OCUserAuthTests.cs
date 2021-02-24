@@ -4,7 +4,6 @@ using OrderCloud.Catalyst.Tests.TestingHelpers;
 using NUnit.Framework;
 using FluentAssertions;
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 
 namespace OrderCloud.Catalyst.Tests
 {

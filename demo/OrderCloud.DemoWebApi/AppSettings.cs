@@ -7,6 +7,9 @@ namespace OrderCloud.DemoWebApi
 {
 	public class AppSettings
 	{
+		public string MyDBConnectionString { get; set; }
+
+		public string WebhookHashKey { get; } = "myhashkey"; //	Should match the HashKey configured on your webhook in the Ordercloud portal.
 		public EnvironmentSettings EnvironmentSettings { get; set; } = new EnvironmentSettings();
 		public RedisSettings RedisSettings { get; set; } = new RedisSettings();
 	}

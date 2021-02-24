@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
 
@@ -32,7 +32,7 @@ namespace OrderCloud.Catalyst
 			services
 				.AddAuthentication()
 				.AddScheme<OrderCloudUserAuthOptions, OrderCloudUserAuthHandler<TSettings>>("OrderCloudUser", null)
-				.AddScheme<OrderCloudWebhookAuthOptions, OrderCloudWebhookAuthHandler>("OrderCloudWebhook", null, opts => opts = webhookConfig);
+				.AddScheme<OrderCloudWebhookAuthOptions, OrderCloudWebhookAuthHandler>("OrderCloudWebhook", null, opts => opts.HashKey = webhookConfig.HashKey);
 
 			return services;
 		}

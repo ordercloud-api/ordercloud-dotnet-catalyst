@@ -1,4 +1,4 @@
-﻿using OrderCloud.Catalyst;
+using OrderCloud.Catalyst;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -33,15 +33,14 @@ namespace OrderCloud.TestWebApi
 	{
 		private readonly AppSettings _settings;
 
-		public Startup(AppSettings settings)
-		{
+		public Startup(AppSettings settings) {
 			_settings = settings;
 		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public virtual void ConfigureServices(IServiceCollection services) {
 			services
-				.ConfigureServices(new AppSettings())
+				.ConfigureServices<AppSettings>(new OrderCloudWebhookAuthOptions() { HashKey = _settings.OrderCloudSettings.WebhookHashKey })
 				.AddSingleton<ISimpleCache, LazyCacheService>() // Replace LazyCacheService with RedisService if you have multiple server instances.
 				.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig() {
 					ApiUrl = _settings.OrderCloudSettings.ApiUrl,

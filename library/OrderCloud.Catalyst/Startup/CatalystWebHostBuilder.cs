@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore;
+using System;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OrderCloud.Catalyst
 {
@@ -13,9 +11,8 @@ namespace OrderCloud.Catalyst
 	{
 		public static IWebHostBuilder CreateWebHostBuilder<TStartup, TAppSettings>(string[] args) where TStartup : class where TAppSettings : class, new() =>
 			WebHost.CreateDefaultBuilder(args)
+				.UseDefaultServiceProvider(options => options.ValidateScopes = false)
 				.UseStartup<TStartup>()
-				.UseIISIntegration()
-
 				.ConfigureServices((ctx, services) =>
 				{
 					services.Configure<TAppSettings>(ctx.Configuration);
@@ -34,7 +31,8 @@ namespace OrderCloud.Catalyst
 						{
 							config.AddAzureAppConfiguration(azureConfigConnectionString);
 						})
-						.UseStartup<TStartup>().ConfigureServices((ctx, services) =>
+						.UseStartup<TStartup>()
+						.ConfigureServices((ctx, services) =>
 						{
 							services.Configure<TAppSettings>(ctx.Configuration);
 							services.AddTransient(sp => sp.GetService<IOptionsSnapshot<TAppSettings>>().Value);

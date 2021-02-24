@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace OrderCloud.Catalyst
 {
-	[EnableCors("marketplacecors")]
+	[EnableCors("integrationcors")]
 	public class BaseController : Controller
 	{
 		public VerifiedUserContext Context;

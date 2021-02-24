@@ -7,7 +7,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using OrderCloud.Catalyst;
 
-namespace OrderCloud.DataMovement.Tests
+namespace OrderCloud.Catalyst.Tests
 {
 	/// <summary>
 	/// You must run a local instance of Redis in order to run these tests.

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrderCloud.Catalyst;
 using OrderCloud.SDK;
@@ -24,7 +20,7 @@ namespace SampleApp.WebApi.Controllers
 		public object Either() => "hello either!";
 
 		[HttpGet("username"), OrderCloudUserAuth]
-		public object Username() => $"hello {VerifiedUser.Username}!";
+		public object Username() => $"hello {Context.User.Username}!";
 
 		[HttpGet("anybody"), OrderCloudUserAuth]
 		public object Anybody() => "hello anybody!";
@@ -39,7 +35,13 @@ namespace SampleApp.WebApi.Controllers
 		public object InternalError() => (new string[] { })[10];
 
 		[HttpPost("modelvalidation")]
-		public ExampleModel ModelValidation(ExampleModel model) => model;
+		public ExampleModel ModelValidation(ExampleModel model)
+		{
+			return model;
+		}
+
+		[HttpGet("listargs")]
+		public IListArgs DeserializeListArgs(ListArgs<ExampleModel> args) => args;
 
 		//[Route("webhook"), OrderCloudWebhookAuth]
 		//public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConfigData> payload) {

@@ -1,34 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentAssertions;
 using Flurl.Http;
-using OrderCloud.Catalyst;
-using Flurl.Http.Configuration;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NUnit.Framework;
+using OrderCloud.Catalyst;
 using OrderCloud.SDK;
 using OrderCloud.TestWebApi;
-using FluentAssertions;
+using System;
+using System.Collections.Generic;
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Builder;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OrderCloud.DemoWebApi.Tests
 {
 	[TestFixture]
-	public class IntegrationTests
+	class AuthenticationTests
 	{
 		[Test]
-		public async Task can_allow_anonymous() {
-			var result = await CreateServer()
-				.CreateFlurlClient()
+		public async Task can_allow_anonymous()
+		{
+			var result = await TestFramework.Client
 				.Request("demo/anon")
 				.GetStringAsync();
 
@@ -36,20 +27,19 @@ namespace OrderCloud.DemoWebApi.Tests
 		}
 
 		[Test]
-		public async Task should_deny_access_without_oc_token() {
-			var resp = await CreateServer()
-				.CreateFlurlClient()
-				.AllowAnyHttpStatus()
+		public async Task should_deny_access_without_oc_token()
+		{
+			var resp = await TestFramework.Client
 				.Request("demo/shop")
 				.GetAsync();
 
-			resp.StatusCode.Should().Be((HttpStatusCode)401);
+			resp.ShouldBeApiError("InvalidToken", 401, "Access token is invalid or expired.");
 		}
 
 		[Test]
-		public async Task can_auth_with_oc_token() {
-			var result = await CreateServer()
-				.CreateFlurlClient()
+		public async Task can_auth_with_oc_token()
+		{
+			var result = await TestFramework.Client
 				.WithFakeOrderCloudToken("mYcLiEnTiD") // check should be case insensitive
 				.Request("demo/shop")
 				.GetStringAsync();
@@ -60,13 +50,28 @@ namespace OrderCloud.DemoWebApi.Tests
 		[Test]
 		public async Task can_get_username_from_verified_user()
 		{
-			var result = await CreateServer()
-				.CreateFlurlClient()
+			var result = await TestFramework.Client
 				.WithFakeOrderCloudToken("mYcLiEnTiD") // check should be case insensitive
 				.Request("demo/username")
 				.GetStringAsync();
 
 			result.Should().Be("hello joe!");
+		}
+
+		[Test]
+		public async Task user_authorization_is_cached()
+		{
+			var token = FakeOrderCloudToken.Create("a_fake_client_id");
+			var request = TestFramework.Client
+				.WithOAuthBearerToken(token)
+				.Request("demo/shop");
+			TestStartup.OC.ClearReceivedCalls();
+			// Two back-to-back requests 
+			await request.GetAsync();
+			await request.GetAsync();
+
+			// But exactly one request to Ordercloud
+			TestStartup.OC.Received(1).Me.GetAsync(token);
 		}
 
 		[TestCase("demo/shop", true)]
@@ -76,14 +81,20 @@ namespace OrderCloud.DemoWebApi.Tests
 		[TestCase("demo/anon", true)]
 		public async Task can_authorize_by_role(string endpoint, bool success)
 		{
-			var resp = await CreateServer()
-				.CreateFlurlClient()
-				.AllowAnyHttpStatus()
+			var resp = await TestFramework.Client
 				.WithFakeOrderCloudToken("myclientid")
 				.Request(endpoint)
 				.GetAsync();
 
-			resp.StatusCode.Should().Be((HttpStatusCode)(success ? 200 : 403));
+			if (success)
+			{
+				resp.ShouldHaveStatusCode(200);
+			} else
+			{
+				resp.ShouldBeApiError("InsufficientRoles", 403, "User does not have role(s) required to perform this action.");
+				var roles = (await resp.DeserializeAsync<ApiError<InsufficientRolesError>>()).Data.SufficientRoles;
+				Assert.AreEqual("OrderAdmin", roles[0]);
+			}	
 		}
 
 		//[Test]
@@ -112,14 +123,5 @@ namespace OrderCloud.DemoWebApi.Tests
 		//	Assert.AreEqual(resp.City, "Minneapolis");
 		//	Assert.AreEqual(resp.Foo, "blah");
 		//}
-
-		private TestServer CreateServer() {
-			return new TestServer(CatalystWebHostBuilder.CreateWebHostBuilder<TestStartup>(new string[] { }));
-		}
-	}
-
-	public static class TestServerExtensions
-	{
-		public static IFlurlClient CreateFlurlClient(this TestServer server) => new FlurlClient(server.CreateClient());
 	}
 }

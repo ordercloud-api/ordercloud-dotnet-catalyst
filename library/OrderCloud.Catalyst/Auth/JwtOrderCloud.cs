@@ -21,8 +21,8 @@ namespace OrderCloud.Catalyst
 		public string SellerID => GetClaim("sid");
 		public string UserID => GetClaim("uid");
 		public string Username => GetClaim("usr");
-		public string OrderID => GetClaim("orderid");
-		public bool IsAnon => OrderID != null;
+		public string AnonOrderID => GetClaim("orderid");
+		public bool IsAnon => AnonOrderID != null;
 		public DateTime ExpiresUTC => UnixToDateTime(GetClaim("exp"));
 		public DateTime IssuedAtUTC => UnixToDateTime(GetClaim("iat"));
 		public DateTime NotValidBeforeUTC => UnixToDateTime(GetClaim("nbf"));

@@ -102,6 +102,22 @@ This call will scan the assembly/namespace, and for every interface `IServiceNam
 ```c#
 services.AddTransient<IServiceName, ServiceName>();
 ```
+
+## Getting Started - App Settings
+
+If you are using Azure, we recomend using [Azure App Configuration](https://docs.microsoft.com/en-us/azure/azure-app-configuration/overview) to store app settings. You can store settings for an environment in one place and apply them across API and Function projects, both hosted and while debugging locally.
+
+To get started, follow these steps. 
+- [Create a new Azure App Configuration resource](https://docs.microsoft.com/en-us/azure/azure-app-configuration/quickstart-dotnet-core-app).
+- Add your settings through the azure portal, making sure the keys match the name of your fields in AppSettings.cs. Field nesting is represented with a colon :. So the key for `settings.OrderCloudSettings.ClientSecret` would be `OrderCloudSettings:ClientSecret`.
+- Copy the connection string from your azure resource.
+- Add an environment variable with key "APP_CONFIG_CONNECTION" and value of the connection string.
+    - For **local** development - In Visual Studio right click the WebApi project and go to Properties -> Debug -> Environment Variables.
+    - For **hosted** apps - In Azure navigate to your app service. Go to the correct deployment slot, and go to Settings -> Configuration -> New application setting
+
+Repeat this process for each of your environments (e.g. Test, Stage, Prod).
+
+
 ## ISimpleCache 
 Caching can be a great way to improve the performance of data retrieval. For example, under the hood `[OrderCloudUserAuth]` caches a verified user's context for 5 minutes, removing the performance cost of duplicate verifications. 
 

@@ -6,7 +6,7 @@ namespace OrderCloud.Catalyst
 {
 	public static class CatalystConfigureWebApiServices
 	{
-		public static IServiceCollection ConfigureServices<TSettings>(this IServiceCollection services, TSettings settings, OrderCloudWebhookAuthOptions webhookConfig = null)
+		public static IServiceCollection ConfigureServices<TSettings>(this IServiceCollection services, OrderCloudWebhookAuthOptions webhookConfig = null)
 			where TSettings : class, new()
 		{
 			services.AddControllers()
@@ -17,8 +17,6 @@ namespace OrderCloud.Catalyst
 			{
 				options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
 			});
-
-			services.AddSingleton(settings ?? new TSettings());
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 			services.AddMvc().AddNewtonsoftJson(options => options.SerializerSettings.Converters.Add(new StringEnumConverter()));
 			services.AddMvc(o =>

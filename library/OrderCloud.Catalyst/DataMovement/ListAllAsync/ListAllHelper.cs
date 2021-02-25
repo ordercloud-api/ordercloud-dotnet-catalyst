@@ -13,16 +13,15 @@ namespace OrderCloud.Catalyst
 	/// </summary>
 	internal static class ListAllHelper
 	{
-		public const int MAX_PAGE_SIZE = 100;
 		public const int NUM_PARALLEL_REQUESTS = 16;
 
-		public static async Task<List<T>> ListAllByFilterAsync<T>(Func<ListFilter, Task<ListPage<T>>> listFunc)
+		public static async Task<List<T>> ListAllByFilterAsync<T>(Func<KeyValuePair<string, object>, Task<ListPage<T>>> listFunc)
 		{
 			var items = new List<T>();
 			var totalPages = 0;
 			var i = 1;
 			var idProperty = typeof(T).GetProperty("ID");
-			var filter = new ListFilter() { PropertyName = "ID", FilterExpression = "*" };
+			var filter = new KeyValuePair<string, object>("ID", null); // null filter will return all results
 			do
 			{
 				i++;
@@ -30,8 +29,28 @@ namespace OrderCloud.Catalyst
 				items.AddRange(result.Items);
 				if (totalPages == 0)
 					totalPages = result.Meta.TotalPages;
-				var lastID = (string) idProperty.GetValue(result.Items.Last());
-				filter.FilterExpression = $">{lastID}";
+				var lastID = (string)idProperty.GetValue(result.Items.Last());
+				filter = new KeyValuePair<string, object>("ID", $">{lastID}");
+			} while (i <= totalPages);
+			return items;
+		}
+
+		public static async Task<List<T>> ListAllByFilterWithFacetsAsync<T>(Func<KeyValuePair<string, object>, Task<ListPage<T>>> listFunc)
+		{
+			var items = new List<T>();
+			var totalPages = 0;
+			var i = 1;
+			var idProperty = typeof(T).GetProperty("ID");
+			var filter = new KeyValuePair<string, object>("ID", null); // null filter will return all results
+			do
+			{
+				i++;
+				var result = await listFunc(filter);
+				items.AddRange(result.Items);
+				if (totalPages == 0)
+					totalPages = result.Meta.TotalPages;
+				var lastID = (string)idProperty.GetValue(result.Items.Last());
+				filter = new KeyValuePair<string, object>("ID", $">{lastID}");
 			} while (i <= totalPages);
 			return items;
 		}

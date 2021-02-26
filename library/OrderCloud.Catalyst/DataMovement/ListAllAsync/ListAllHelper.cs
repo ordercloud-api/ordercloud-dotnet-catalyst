@@ -37,7 +37,7 @@ namespace OrderCloud.Catalyst
 		{
 			var page1 = await listFunc(1, IGNORED_FILTER);
 			var id = typeof(T).GetProperty("ID");
-			if (id == null || page1.Meta.TotalCount < PAGE_THRESHOLD_FOR_PAGING_TECHNIQUE)
+			if (id == null || page1.Meta.TotalPages < PAGE_THRESHOLD_FOR_PAGING_TECHNIQUE)
 			{
 				// If you're listing by page, you don't need to add additional filters.
 				return await ListAllWithFacetsByPage(page1, page => listFunc(page, IGNORED_FILTER));

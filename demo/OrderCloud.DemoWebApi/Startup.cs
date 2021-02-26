@@ -45,8 +45,8 @@ namespace OrderCloud.TestWebApi
 				.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig() {
 					ApiUrl = _settings.OrderCloudSettings.ApiUrl,
 					AuthUrl = _settings.OrderCloudSettings.ApiUrl,
-					ClientId = _settings.OrderCloudSettings.ClientID,
-					ClientSecret = _settings.OrderCloudSettings.ClientSecret,
+					ClientId = _settings.OrderCloudSettings.MiddlewareClientID,
+					ClientSecret = _settings.OrderCloudSettings.MiddlewareClientSecret,
 					Roles = new[] { ApiRole.FullAccess }
 				}));
 		}

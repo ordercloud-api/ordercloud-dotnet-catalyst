@@ -35,7 +35,7 @@ namespace OrderCloud.Catalyst
 			return items;
 		}
 
-		public static async Task<List<T>> ListAllByFilterWithFacetsAsync<T>(Func<KeyValuePair<string, object>, Task<ListPage<T>>> listFunc)
+		public static async Task<List<T>> ListAllByFilterWithFacetsAsync<T>(Func<KeyValuePair<string, object>, Task<ListPageWithFacets<T>>> listFunc)
 		{
 			var items = new List<T>();
 			var totalPages = 0;

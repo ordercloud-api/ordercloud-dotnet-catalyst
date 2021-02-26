@@ -49,7 +49,9 @@ namespace OrderCloud.DemoWebApi.Controllers
 		// The IListArgs model describes list arguments that let api users query data expressively with query params. 
 		public async Task<List<Order>> ListAllOrders()
 		{
-			var orders = await _oc.Orders.ListAllAsync(OrderDirection.Incoming, filters: "ID=!SEB_TEST*");
+			var orders = await _oc.Orders.ListAllAsync(OrderDirection.Incoming, 
+				filters: "ID=!SEB_TEST*"
+				);
 			return orders;
 		}
 	}

@@ -5,113 +5,120 @@ using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 
 namespace OrderCloud.Catalyst
 {
-	/// <summary>
-	/// Helper class for retrieving all items for a specific resource.
-	/// </summary>
 	internal static class ListAllHelper
 	{
-		public const int NUM_PARALLEL_REQUESTS = 16;
+		// Only relevant to the conncurrent paging technique
+		private const int MAX_NUM_PARALLEL_REQUESTS = 16;
+		// For record sizes above 30 pages, use last ID filter paging. Below 30 pages, use the page parameter concurently. 
+		private const int PAGE_THRESHOLD_FOR_PAGING_TECHNIQUE = 30;
+		// Will be ignored by the SDK and have no effect on the request because Value is null;
+		private static KeyValuePair<string, object> IGNORED_FILTER => new KeyValuePair<string, object>("ID", null);
 
-		public static async Task<List<T>> ListAllByFilterAsync<T>(Func<KeyValuePair<string, object>, Task<ListPage<T>>> listFunc)
+		public static async Task<List<T>> ListAllAsync<T>(Func<int, KeyValuePair<string, object>, Task<ListPage<T>>> listFunc)
 		{
-			var items = new List<T>();
-			var totalPages = 0;
-			var i = 1;
-			var idProperty = typeof(T).GetProperty("ID");
-			var filter = new KeyValuePair<string, object>("ID", null); // null filter will return all results
-			do
+			var page1 = await listFunc(1, IGNORED_FILTER);
+			var id = typeof(T).GetProperty("ID");
+			if (id == null || page1.Meta.TotalPages < PAGE_THRESHOLD_FOR_PAGING_TECHNIQUE)
 			{
-				i++;
-				var result = await listFunc(filter);
-				items.AddRange(result.Items);
-				if (totalPages == 0)
-					totalPages = result.Meta.TotalPages;
-				if (result.Items.Count == 0)
-					return items;
-				var lastID = (string)idProperty.GetValue(result.Items.Last());
-				filter = new KeyValuePair<string, object>("ID", $">{lastID}");
-			} while (i <= totalPages);
-			return items;
+				// If you're listing by page, you don't need to add additional filters.
+				return await ListAllByPage(page1, page => listFunc(page, IGNORED_FILTER));
+			}
+			// If you're listing by filtering, you always request page 1.
+			return await ListAllByFilterAsync(page1, id, filter => listFunc(1, filter));
 		}
 
-		public static async Task<List<T>> ListAllByFilterWithFacetsAsync<T>(Func<KeyValuePair<string, object>, Task<ListPageWithFacets<T>>> listFunc)
+		public static async Task<List<T>> ListAllWithFacetsAsync<T>(Func<int, KeyValuePair<string, object>, Task<ListPageWithFacets<T>>> listFunc)
 		{
-			var items = new List<T>();
-			var totalPages = 0;
-			var i = 1;
-			var idProperty = typeof(T).GetProperty("ID");
-			var filter = new KeyValuePair<string, object>("ID", null); // null filter will return all results
-			do
+			var page1 = await listFunc(1, IGNORED_FILTER);
+			var id = typeof(T).GetProperty("ID");
+			if (id == null || page1.Meta.TotalCount < PAGE_THRESHOLD_FOR_PAGING_TECHNIQUE)
 			{
-				i++;
-				var result = await listFunc(filter);
-				items.AddRange(result.Items);
-				if (totalPages == 0)
-					totalPages = result.Meta.TotalPages;
-				if (result.Items.Count == 0)
-					return items;
-				var lastID = (string)idProperty.GetValue(result.Items.Last());
-				filter = new KeyValuePair<string, object>("ID", $">{lastID}");
-			} while (i <= totalPages);
-			return items;
+				// If you're listing by page, you don't need to add additional filters.
+				return await ListAllWithFacetsByPage(page1, page => listFunc(page, IGNORED_FILTER));
+			}
+			// If you're listing by filtering, you always request page 1.
+			return await ListAllWithFacetsByFilterAsync(page1, id, filter => listFunc(1, filter));
 		}
 
-		/// <summary>
-		/// Retrieve all pages and items with facets for a specific resource.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="listFunc">Delegate representing the function call being attempted. The resulting list will be the type specified in this parameter</param>
-		/// <returns>Task<List<T>>. Determined by the listFunc passed in</returns>
-		public static async Task<List<T>> ListAllByPageWithFacets<T>(Func<int, Task<ListPageWithFacets<T>>> listFunc)
+		private static async Task<List<T>> ListAllByFilterAsync<T>(ListPage<T> page1, PropertyInfo id, Func<KeyValuePair<string, object>, Task<ListPage<T>>> listFunc)
 		{
-			var pageTasks = new List<Task<ListPageWithFacets<T>>>();
-			var totalPages = 0;
-			var i = 1;
-			do
+			var data = page1.Items as List<T>;
+			var page = 2;
+			while (page <= page1.Meta.TotalPages)
 			{
-				pageTasks.Add(listFunc(i++));
-				var running = pageTasks.Where(t => !t.IsCompleted && !t.IsFaulted).ToList();
-				if (!running.Any()) { continue; }
-				if (totalPages == 0 || running.Count >= NUM_PARALLEL_REQUESTS) // throttle parallel tasks
-					totalPages = (await await Task.WhenAny(running)).Meta.TotalPages;  //Set total number of pages based on returned Meta.
-			} while (i <= totalPages);
-			var data = (
-				from finalResult in await Task.WhenAll(pageTasks) //When all pageTasks are complete, save items in data variable.
-				from item in finalResult.Items
-				select item).ToList();
+				var lastID = id.GetValue(data.Last()) as string;
+				var filter = new KeyValuePair<string, object>("ID", $">{lastID}");
+				var response = await listFunc(filter);
+				data.AddRange(response.Items);
+				page++;
+			}
 			return data;
 		}
 
-		/// <summary>
-		/// Retrieve all pages and items for a specific resource.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="listFunc">Delegate representing the function call being attempted. The resulting list will be the type specified in this parameter</param>
-		/// <returns>Task<List<T>>. Determined by the listFunc passed in</returns>
-		public static async Task<List<T>> ListAllByPage<T>(Func<int, Task<ListPage<T>>> listFunc)
+		private static async Task<List<T>> ListAllByPage<T>(ListPage<T> page1, Func<int, Task<ListPage<T>>> listFunc)
 		{
 			var pageTasks = new List<Task<ListPage<T>>>();
-			var totalPages = 0;
-			var i = 1;
-			do
+			var totalPages = page1.Meta.TotalPages;
+			var page = 2;
+			while (page <= totalPages)
 			{
-				pageTasks.Add(listFunc(i++));
+				pageTasks.Add(listFunc(page++));
 				var running = pageTasks.Where(t => !t.IsCompleted && !t.IsFaulted).ToList();
 				if (!running.Any()) { continue; }
-				if (totalPages == 0 || running.Count >= NUM_PARALLEL_REQUESTS) // throttle parallel tasks
+				if (totalPages == 0 || running.Count >= MAX_NUM_PARALLEL_REQUESTS) // throttle parallel tasks
 					totalPages = (await await Task.WhenAny(running)).Meta.TotalPages;  //Set total number of pages based on returned Meta.
-			} while (i <= totalPages);
+			};
 			var data = (
 				from finalResult in await Task.WhenAll(pageTasks) //When all pageTasks are complete, save items in data variable.
 				from item in finalResult.Items
 				select item).ToList();
+			data.AddRange(page1.Items);
 			return data;
 		}
+
+		private static async Task<List<T>> ListAllWithFacetsByFilterAsync<T>(ListPageWithFacets<T> page1, PropertyInfo id, Func<KeyValuePair<string, object>, Task<ListPageWithFacets<T>>> listFunc)
+		{
+			var data = page1.Items as List<T>;
+			var filter = IGNORED_FILTER;
+			var page = 2;
+			while (page <= page1.Meta.TotalPages)
+			{
+				var response = await listFunc(filter);
+				data.AddRange(response.Items);
+				var lastID = id.GetValue(response.Items.Last()) as string;
+				filter = new KeyValuePair<string, object>("ID", $">{lastID}");
+				page++;
+			}
+			return data;
+		}
+
+		private static async Task<List<T>> ListAllWithFacetsByPage<T>(ListPageWithFacets<T> page1, Func<int, Task<ListPageWithFacets<T>>> listFunc)
+		{
+			var pageTasks = new List<Task<ListPageWithFacets<T>>>();
+			var totalPages = page1.Meta.TotalPages;
+			var page = 2;
+			while (page <= totalPages)
+			{
+				pageTasks.Add(listFunc(page++));
+				var running = pageTasks.Where(t => !t.IsCompleted && !t.IsFaulted).ToList();
+				if (!running.Any()) { continue; }
+				if (totalPages == 0 || running.Count >= MAX_NUM_PARALLEL_REQUESTS) // throttle parallel tasks
+					totalPages = (await await Task.WhenAny(running)).Meta.TotalPages;  //Set total number of pages based on returned Meta.
+			};
+			var data = (
+				from finalResult in await Task.WhenAll(pageTasks) //When all pageTasks are complete, save items in data variable.
+				from item in finalResult.Items
+				select item).ToList();
+			data.AddRange(page1.Items);
+			return data;
+		}
+
 
 		// See https://github.com/tmenier/Flurl/blob/ce480aa1aa8ce1f2ff4ebce9f1d6eaf30b7d6d8c/src/Flurl.Http/Configuration/DefaultUrlEncodedSerializer.cs
 		public static string AndFilter(this object filters, KeyValuePair<string, object> filter)

@@ -1,4 +1,5 @@
-﻿using Flurl.Util;
+﻿using Flurl;
+using Flurl.Util;
 using OrderCloud.SDK;
 using Polly;
 using System;
@@ -16,8 +17,6 @@ namespace OrderCloud.Catalyst
 	{
 		public const int NUM_PARALLEL_REQUESTS = 16;
 
-
-
 		public static async Task<List<T>> ListAllByFilterAsync<T>(Func<KeyValuePair<string, object>, Task<ListPage<T>>> listFunc)
 		{
 			var items = new List<T>();
@@ -32,6 +31,8 @@ namespace OrderCloud.Catalyst
 				items.AddRange(result.Items);
 				if (totalPages == 0)
 					totalPages = result.Meta.TotalPages;
+				if (result.Items.Count == 0)
+					return items;
 				var lastID = (string)idProperty.GetValue(result.Items.Last());
 				filter = new KeyValuePair<string, object>("ID", $">{lastID}");
 			} while (i <= totalPages);
@@ -52,12 +53,13 @@ namespace OrderCloud.Catalyst
 				items.AddRange(result.Items);
 				if (totalPages == 0)
 					totalPages = result.Meta.TotalPages;
+				if (result.Items.Count == 0)
+					return items;
 				var lastID = (string)idProperty.GetValue(result.Items.Last());
 				filter = new KeyValuePair<string, object>("ID", $">{lastID}");
 			} while (i <= totalPages);
 			return items;
 		}
-
 
 		/// <summary>
 		/// Retrieve all pages and items with facets for a specific resource.
@@ -111,11 +113,20 @@ namespace OrderCloud.Catalyst
 			return data;
 		}
 
-		public static List<KeyValuePair<string, object>> AndFilter(this object filters, KeyValuePair<string, object> filter)
+		// See https://github.com/tmenier/Flurl/blob/ce480aa1aa8ce1f2ff4ebce9f1d6eaf30b7d6d8c/src/Flurl.Http/Configuration/DefaultUrlEncodedSerializer.cs
+		public static string AndFilter(this object filters, KeyValuePair<string, object> filter)
 		{
-			var filterList = filters?.ToKeyValuePairs()?.ToList() ?? new List<KeyValuePair<string, object>>();
+			var filterList = filters?.ToKeyValuePairs().ToList() ?? new List<KeyValuePair<string, object>>();
 			filterList.Add(filter);
-			return filterList;
+			var qp = new QueryParamCollection();
+			foreach (var kv in filterList)
+			{
+				if (kv.Value != null)
+				{
+					qp.Add(kv.Key, kv.Value);
+				}
+			}
+			return qp.ToString(true);
 		}
 	}
 }

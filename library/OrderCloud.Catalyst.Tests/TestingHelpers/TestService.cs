@@ -31,7 +31,7 @@ namespace OrderCloud.Catalyst.Tests.TestingHelpers
 
 			var _settings = new AppSettings();
 			var json = JsonConvert.SerializeObject(payload);
-			var keyBytes = Encoding.UTF8.GetBytes(hashKey ?? _settings.WebhookHashKey);
+			var keyBytes = Encoding.UTF8.GetBytes(hashKey ?? _settings.OrderCloudSettings.WebhookHashKey);
 			var dataBytes = Encoding.UTF8.GetBytes(json);
 			var hash = new HMACSHA256(keyBytes).ComputeHash(dataBytes);
 			var base64 = Convert.ToBase64String(hash);

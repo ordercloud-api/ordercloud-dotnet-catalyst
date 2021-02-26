@@ -1,4 +1,5 @@
-﻿using OrderCloud.SDK;
+﻿using Flurl.Util;
+using OrderCloud.SDK;
 using Polly;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace OrderCloud.Catalyst
 	internal static class ListAllHelper
 	{
 		public const int NUM_PARALLEL_REQUESTS = 16;
+
+
 
 		public static async Task<List<T>> ListAllByFilterAsync<T>(Func<KeyValuePair<string, object>, Task<ListPage<T>>> listFunc)
 		{
@@ -107,6 +110,12 @@ namespace OrderCloud.Catalyst
 				select item).ToList();
 			return data;
 		}
-	}
 
+		public static List<KeyValuePair<string, object>> AndFilter(this object filters, KeyValuePair<string, object> filter)
+		{
+			var filterList = filters?.ToKeyValuePairs()?.ToList() ?? new List<KeyValuePair<string, object>>();
+			filterList.Add(filter);
+			return filterList;
+		}
+	}
 }

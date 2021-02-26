@@ -13,13 +13,6 @@ namespace OrderCloud.Catalyst
 		public const int MAX_PAGE_SIZE = 100;
 		public const string SORT = "ID";
 
-		private static List<KeyValuePair<string, object>> AndFilter(this object filters, KeyValuePair<string, object> filter)
-		{
-			var filterList = filters?.ToKeyValuePairs()?.ToList() ?? new List<KeyValuePair<string, object>>();
-			filterList.Add(filter);
-			return filterList;
-		}
-
 		public static async Task<List<Address>> ListAllAsync(this IAddressesResource resource, string buyerID, string search = null, string searchOn = null, object filters = null, string accessToken = null)
 		{
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
@@ -51,6 +44,14 @@ namespace OrderCloud.Catalyst
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
 			{
 				return resource.ListAsync<T>(search, searchOn, SORT, 1, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+		}
+
+		public static async Task<List<UserGroupAssignment>> ListAllUserAssignmentsAsync(this IAdminUserGroupsResource resource, string userGroupID = null, string userID = null,  string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListUserAssignmentsAsync(userGroupID, userID, page, MAX_PAGE_SIZE, accessToken);
 			});
 		}
 
@@ -105,6 +106,14 @@ namespace OrderCloud.Catalyst
 			});
 		}
 
+		public static async Task<List<ApiClientAssignment>> ListAllAssignmentsAsync(this IApiClientsResource resource, string apiClientID = null, string buyerID = null, string supplierID = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListAssignmentsAsync(apiClientID, buyerID, supplierID, page, MAX_PAGE_SIZE, accessToken);
+			});
+		}
+
 		public static async Task<List<ApprovalRule>> ListAllAsync(this IApprovalRulesResource resource, string buyerID, string search = null, string searchOn = null, object filters = null, string accessToken = null)
 		{
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
@@ -156,6 +165,22 @@ namespace OrderCloud.Catalyst
 			});
 		}
 
+		public static async Task<List<CatalogAssignment>> ListAllAssignmentsAsync(this ICatalogsResource resource, string catalogID = null, string buyerID = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListAssignmentsAsync(catalogID, buyerID, page, MAX_PAGE_SIZE, accessToken);
+			});
+		}
+
+		public static async Task<List<ProductCatalogAssignment>> ListAllProductAssignmentsAsync(this ICatalogsResource resource, string catalogID = null, string buyerID = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListProductAssignmentsAsync(catalogID, buyerID, page, MAX_PAGE_SIZE, accessToken);
+			});
+		}
+
 		public static async Task<List<Category>> ListAllAsync(this ICategoriesResource resource, string catalogID, string depth = "1", string search = null, string searchOn = null, object filters = null, string accessToken = null)
 		{
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
@@ -170,6 +195,22 @@ namespace OrderCloud.Catalyst
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
 			{
 				return resource.ListAsync<T>(catalogID, depth, search, searchOn, SORT, 1, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+		}
+
+		public static async Task<List<CategoryAssignment>> ListAllAssignmentsAsync(this ICategoriesResource resource, string catalogID, string categoryID = null, string buyerID = null, string userID = null, string userGroupID = null, PartyType? level = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListAssignmentsAsync(catalogID, categoryID, buyerID, userID, userGroupID, level, page, MAX_PAGE_SIZE, accessToken);
+			});
+		}
+
+		public static async Task<List<CategoryProductAssignment>> ListAllProductAssignmentsAsync(this ICategoriesResource resource, string catalogID, string categoryID = null, string productID = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListProductAssignmentsAsync(catalogID, categoryID, productID, page, MAX_PAGE_SIZE, accessToken);
 			});
 		}
 
@@ -190,6 +231,14 @@ namespace OrderCloud.Catalyst
 			});
 		}
 
+		public static async Task<List<CostCenterAssignment>> ListAllAssignmentsAsync(this ICostCentersResource resource, string buyerID, string costCenterID = null, string userID = null, string userGroupID = null, PartyType? level = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListAssignmentsAsync(buyerID, costCenterID, userID, userGroupID, level, page, MAX_PAGE_SIZE, accessToken);
+			});
+		}
+
 		public static async Task<List<CreditCard>> ListAllAsync(this ICreditCardsResource resource, string buyerID, string search = null, string searchOn = null, object filters = null, string accessToken = null)
 		{
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
@@ -204,6 +253,14 @@ namespace OrderCloud.Catalyst
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
 			{
 				return resource.ListAsync<T>(buyerID, search, searchOn, SORT, 1, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+		}
+
+		public static async Task<List<CreditCardAssignment>> ListAllAssignmentsAsync(this ICreditCardsResource resource, string buyerID, string creditCardID = null, string userID = null, string userGroupID = null, PartyType? level = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListAssignmentsAsync(buyerID, creditCardID, userID, userGroupID, level, page, MAX_PAGE_SIZE, accessToken);
 			});
 		}
 
@@ -505,6 +562,22 @@ namespace OrderCloud.Catalyst
 			});
 		}
 
+		public static async Task<List<MessageSenderAssignment>> ListAllAssignmentsAsync(this IMessageSendersResource resource, string buyerID = null, string messageSenderID = null, string userID = null, string userGroupID = null, PartyType? level = null, string supplierID = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListAssignmentsAsync(buyerID, messageSenderID, userID, userGroupID, level, page, MAX_PAGE_SIZE, supplierID, accessToken);
+			});
+		}
+
+		public static async Task<List<MessageCCListenerAssignment>> ListAllCCListenerAssignmentsAsync(this IMessageSendersResource resource, string search = null, string searchOn = null, string sortBy = null, object filters = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListCCListenerAssignmentsAsync(search, searchOn, sortBy, page, MAX_PAGE_SIZE, filters, accessToken);
+			});
+		}
+
 		public static async Task<List<OpenIdConnect>> ListAllAsync(this IOpenIdConnectsResource resource, string search = null, string searchOn = null, object filters = null, string accessToken = null)
 		{
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
@@ -717,6 +790,14 @@ namespace OrderCloud.Catalyst
 			});
 		}
 
+		public static async Task<List<ProductAssignment>> ListAllAssignmentsAsync(this IProductsResource resource, string productID = null, string priceScheduleID = null, string buyerID = null, string userID = null, string userGroupID = null, PartyType? level = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListAssignmentsAsync(productID, priceScheduleID, buyerID, userID, userGroupID, level, page, MAX_PAGE_SIZE, accessToken);
+			});
+		}
+
 		public static async Task<List<Promotion>> ListAllAsync(this IPromotionsResource resource, string search = null, string searchOn = null, object filters = null, string accessToken = null)
 		{
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
@@ -734,11 +815,27 @@ namespace OrderCloud.Catalyst
 			});
 		}
 
+		public static async Task<List<PromotionAssignment>> ListAllAssignmentsAsync(this IPromotionsResource resource, string buyerID = null, string promotionID = null, string userID = null, string userGroupID = null, PartyType? level = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListAssignmentsAsync(buyerID, promotionID, userID, userGroupID, level, page, MAX_PAGE_SIZE, accessToken);
+			});
+		}
+
 		public static async Task<List<SecurityProfile>> ListAllAsync(this ISecurityProfilesResource resource, string search = null, string searchOn = null, object filters = null, string accessToken = null)
 		{
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
 			{
 				return resource.ListAsync(search, searchOn, SORT, 1, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+		}
+
+		public static async Task<List<SecurityProfileAssignment>> ListAllAssignmentsAsync(this ISecurityProfilesResource resource, string buyerID = null, string supplierID = null, string securityProfileID = null, string userID = null, string userGroupID = null, CommerceRole? commerceRole = null, PartyType? level = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListAssignmentsAsync(buyerID, supplierID, securityProfileID, userID, userGroupID, commerceRole, level, page, MAX_PAGE_SIZE, accessToken);
 			});
 		}
 
@@ -810,6 +907,14 @@ namespace OrderCloud.Catalyst
 			});
 		}
 
+		public static async Task<List<SpecProductAssignment>> ListAllProductAssignmentsAsync(this ISpecsResource resource, string search = null, string searchOn = null, string sortBy = null, object filters = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListProductAssignmentsAsync(search, searchOn, sortBy, page, MAX_PAGE_SIZE, accessToken);
+			});
+		}
+
 		public static async Task<List<SpendingAccount>> ListAllAsync(this ISpendingAccountsResource resource, string buyerID, string search = null, string searchOn = null, object filters = null, string accessToken = null)
 		{
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
@@ -824,6 +929,14 @@ namespace OrderCloud.Catalyst
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
 			{
 				return resource.ListAsync<T>(buyerID, search, searchOn, SORT, 1, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+		}
+
+		public static async Task<List<SpendingAccountAssignment>> ListAllAssignmentsAsync(this ISpendingAccountsResource resource, string buyerID, string spendingAccountID = null, string userID = null, string userGroupID = null, PartyType? level = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListAssignmentsAsync(buyerID, spendingAccountID, userID, userGroupID, level, page, MAX_PAGE_SIZE, accessToken);
 			});
 		}
 
@@ -878,6 +991,14 @@ namespace OrderCloud.Catalyst
 			});
 		}
 
+		public static async Task<List<UserGroupAssignment>> ListAllUserAssignmentsAsync(this ISupplierUserGroupsResource resource, string supplierID, string userGroupID = null, string userID = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListUserAssignmentsAsync(supplierID, userGroupID, userID, page, MAX_PAGE_SIZE, accessToken);
+			});
+		}
+
 		public static async Task<List<User>> ListAllAsync(this ISupplierUsersResource resource, string supplierID, string userGroupID = null, string search = null, string searchOn = null, object filters = null, string accessToken = null)
 		{
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
@@ -909,6 +1030,14 @@ namespace OrderCloud.Catalyst
 			return await ListAllHelper.ListAllByFilterAsync((filter) =>
 			{
 				return resource.ListAsync<T>(buyerID, search, searchOn, SORT, 1, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+		}
+
+		public static async Task<List<UserGroupAssignment>> ListAllUserAssignmentsAsync(this IUserGroupsResource resource, string buyerID, string userGroupID = null, string userID = null, string accessToken = null)
+		{
+			return await ListAllHelper.ListAllByPage((page) =>
+			{
+				return resource.ListUserAssignmentsAsync(buyerID, userGroupID, userID, page, MAX_PAGE_SIZE, accessToken);
 			});
 		}
 

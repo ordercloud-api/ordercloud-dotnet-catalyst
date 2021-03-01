@@ -24,7 +24,7 @@ namespace OrderCloud.DemoWebApi.Tests
 			var payload = fixture.Create<WebhookPayloads.Addresses.Save>();
 			payload.ConfigData = new { Foo = "blah" };
 
-			dynamic resp = await SendWebhookReq(payload).ReceiveJson(); //SendWebhookReq(payload).ReceiveJson();
+			dynamic resp = await SendWebhookReq(payload).ReceiveJson();
 
 			Assert.AreEqual(resp.Action, "HandleAddressSave");
 			Assert.AreEqual(resp.City, payload.Request.Body.City);
@@ -37,7 +37,7 @@ namespace OrderCloud.DemoWebApi.Tests
 			Fixture fixture = new Fixture();
 			var payload = fixture.Create<WebhookPayloads.Addresses.Save>();
 
-			var resp = await SendWebhookReq(payload, "dfadasfd");  //SendWebhookReq(payload, "dfadasfd");
+			var resp = await SendWebhookReq(payload, "dfadasfd");
 			resp.ShouldHaveStatusCode(401);
 		}
 

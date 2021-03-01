@@ -1,33 +1,32 @@
-﻿# ListAllAsync Function
+﻿# ListAll Extension Methods
 
 ## Purpose
 
-The List function provides a way to retirieve all elements of a specific type from OrderCloud. Since data is returned paginated in OrderCloud, this function allows calling out for multiple pages of data without any more implementation or looping logic.
+List endpoints in Ordercloud are paginated with a maximum of 100 records per request. ListAll methods defined in Catalyst will return a list of all records. 
 
-## Parameters
+## Details
 
-The List and ListWithFacets function require the same parameter.
+For every List function in the [OrderCloud SDK](https://github.com/ordercloud-api/ordercloud-dotnet-sdk/blob/master/src/OrderCloud.SDK/Generated/Resources.cs), Catalyst defines a ListAll [extension method](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/extension-methods). ListAll methods iteratively call the underlying paginated API in order to get all records. 
+The return type is a simple List<T> as opposed to a ListPage<T>. Function inputs also differ between ListAll and the normal List functions. Paging, Sorting, and Searching are not supported.
+However, all other inputs should remain unchanged, including [filters](https://ordercloud.io/features/advanced-querying#filtering).
 
--listFunc: This parameter is the function you intend to get data from. Within your function call, you are able to set a few different parameters to decide how many items you want to retrieve. Those parameters are listed below. Also noting these properties are deptermined by the OrderCloud SDK depending on the resource.
-
-- page: page sigifies what page is currently being retrieved. This will dynamically update as the function continues to loop through.
-- pageSize: this determines how many records you want to return with each page.
-- filter: optional parameter to filter results based on a specific property.
 
 ## Examples
 
 ```c#
-// retrieves all related price schedules for the intial id. Notice the function signature that passes in page to the 'PriceSchedules.ListAsync' method. That is the parameter that updates until all pages are retrieved. The other parameters are optional
-List<PriceSchedule> relatedPriceSchedules = await ListAllAsync.List((page) => _oc.PriceSchedules.ListAsync(search: initial.ID, page: page, pageSize: 100));
+// get all products visible to the user
+var products = _oc.Me.ListAllProductsAsync();
 
-//To get all products with facets.
-List<Product> allProducts = await ListAllAsync.ListWithFacets(page => _oc.Products.ListAsync(page: page, pageSize: 100, accessToken: token));
+// function-specific inputs are the same as ListAsync().
+var orderID = "xxxxxxxx";
+var lineItems = _oc.LineItems.ListAllAsync(OrderDirection.Incomming, orderID);
+Console.Log(lineItems.Count)
 
-//A little longer example to show how ListAllAsync allows for any OrderCloud call, regardless of the parameters needed.
-List<HSLineItem> existingLineItems = await ListAllAsync.List((page) => _oc.LineItems.ListAsync<HSLineItem>(OrderDirection.Outgoing, orderID, page: page, pageSize: 100, filters: $"Product.ID={lineItem.ProductID}", accessToken: verifiedUser.AccessToken));
-
+// optionally, apply filters
+var expensiveLineItems = _oc.LineItems.ListAllAsync(OrderDirection.Incomming, orderID, filters: "LineTotal=>100");
 ```
 
 ## Best Practices
 
-While OrderCloud handles these List calls pretty quick, it's still reccomended to only use this when needed. Along with that, if it's ever possible to save previous ListAll responses or sparingly call out, it's reccomended to do so to reduce chatter and raise available bandwidth.
+These are not methods to throw around lightly! If there are many records, they can be very "expensive" both in time and memory. Avoid using them if you can. 
+Be aware of roughly how many records you expect. Over 3000, these methods are less recomended. For larger data sets and for applications where speed is not critical like a nightly sync, we recomend a batch approach where you repeatedly list one page of data, apply it somewhere, and then allow it to be garbage collected.  

@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst
 {
+	/// <summary>
+	/// Helps you get all records in one function call despite Ordercloud pagination.
+	/// </summary>	
 	internal static class ListAllHelper
 	{
 		// Only relevant to the conncurrent paging technique
@@ -20,6 +23,12 @@ namespace OrderCloud.Catalyst
 		// Will be ignored by the SDK and have no effect on the request because Value is null;
 		private static KeyValuePair<string, object> IGNORED_FILTER => new KeyValuePair<string, object>("ID", null);
 
+		/// <summary>
+		/// Get all records of specific type from Ordercloud by requesting all list pages and combining the results.
+		/// </summary>
+		/// <typeparam name="T">The type of record to list</typeparam>
+		/// <param name="listFunc">The list function to call repeatedly. Should have inputs of page and filter amd return a Task<ListPage<T>>>. Recomend sorting by ID and settings pageSize to 100.</param>
+		/// <returns></returns>
 		public static async Task<List<T>> ListAllAsync<T>(Func<int, KeyValuePair<string, object>, Task<ListPage<T>>> listFunc)
 		{
 			var page1 = await listFunc(1, IGNORED_FILTER);
@@ -33,6 +42,12 @@ namespace OrderCloud.Catalyst
 			return await ListAllByFilterAsync(page1, id, filter => listFunc(1, filter));
 		}
 
+		/// <summary>
+		/// Get all records of specific type from Ordercloud by requesting all list pages and combining the results.
+		/// </summary>
+		/// <typeparam name="T">The type of record to list</typeparam>
+		/// <param name="listFunc">The list function to call repeatedly. Should have inputs of page and filter amd return a Task<ListPage<T>>>. Recomend sorting by ID and settings pageSize to 100.</param>
+		/// <returns></returns>
 		public static async Task<List<T>> ListAllWithFacetsAsync<T>(Func<int, KeyValuePair<string, object>, Task<ListPageWithFacets<T>>> listFunc)
 		{
 			var page1 = await listFunc(1, IGNORED_FILTER);
@@ -121,6 +136,12 @@ namespace OrderCloud.Catalyst
 
 
 		// See https://github.com/tmenier/Flurl/blob/ce480aa1aa8ce1f2ff4ebce9f1d6eaf30b7d6d8c/src/Flurl.Http/Configuration/DefaultUrlEncodedSerializer.cs
+		/// <summary>
+		/// Add a new filter to an existing set of filters. All must evaluate to true.
+		/// </summary>
+		/// <param name="filters">An existing set of filters.</param>
+		/// <param name="listFunc">A new filter that must also evaluate to true.</param>
+		/// <returns></returns>
 		public static string AndFilter(this object filters, KeyValuePair<string, object> filter)
 		{
 			var filterList = filters?.ToKeyValuePairs().ToList() ?? new List<KeyValuePair<string, object>>();

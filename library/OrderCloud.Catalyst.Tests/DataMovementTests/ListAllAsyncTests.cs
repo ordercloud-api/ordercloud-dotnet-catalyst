@@ -35,25 +35,23 @@ namespace OrderCloud.Catalyst.Tests
 			allSuppliers.Count.Should().Be(listSupplierResponse.Result.Items.Count);
 		}
 
-
 		[Test, AutoNSubstituteData]
-		public async Task ListAll_MultiplePages_Working(Task<ListPage<Shipment>> listShipmentResponse)
+		public async Task ListAll_MultiplePages_Working(ListPage<Shipment> listShipmentResponse)
 		{
 			//Setup Shipment Response using AutoFixture
 			ListPage<Shipment> mockListMultiPageShipment = _fixture
 					.Build<ListPage<Shipment>>()
 					.With(x => x.Meta, new ListPageMeta() { TotalPages = 5 })
-					.With(x => x.Items, _fixture.CreateMany<Shipment>(500).ToList())
+					.With(x => x.Items, _fixture.CreateMany<Shipment>(100).ToList())
 					.Create();
 
-			listShipmentResponse.Result.Meta.TotalPages = 5;
-			((List<Shipment>)listShipmentResponse.Result.Items).AddRange(mockListMultiPageShipment.Items);
+			listShipmentResponse.Meta.TotalPages = 5;
+			((List<Shipment>)listShipmentResponse.Items).AddRange(mockListMultiPageShipment.Items);
 
 			mockOrderCloudClient.Shipments.ListAsync<Shipment>().ReturnsForAnyArgs(listShipmentResponse, listShipmentResponse, listShipmentResponse, listShipmentResponse);
 
-
 			var allSuppliers = await mockOrderCloudClient.Shipments.ListAllAsync<Shipment>();
-			listShipmentResponse.Result.Meta.Page.Should().BeGreaterThan(1); //expect multiple pages with multiple shipment responses.
+			listShipmentResponse.Meta.Page.Should().BeGreaterThan(1); //expect multiple pages with multiple shipment responses.
 			allSuppliers.Count.Should().BeGreaterThan(100);
 		}
 

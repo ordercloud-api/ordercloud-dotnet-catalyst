@@ -86,6 +86,7 @@ namespace OrderCloud.Catalyst
 				var cid = new ClaimsIdentity("OcUser");
 				cid.AddClaim(new Claim("accesstoken", token));
 				cid.AddClaim(new Claim("userrecordjson", JsonConvert.SerializeObject(user)));
+				cid.AddClaims(user.AvailableRoles.Select(r => new Claim(ClaimTypes.Role, r)));
 
 				var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcUser");
 				return AuthenticateResult.Success(ticket);
@@ -101,12 +102,12 @@ namespace OrderCloud.Catalyst
 			var jwt = new JwtOrderCloud(token);
 			throw new InsufficientRolesException(new InsufficientRolesError()
 			{
-				SufficientRoles = GetUserAuthAttribute().Roles.Split(","),
+				SufficientRoles = GetRouteAuthAttribute().Roles.Split(","),
 				AssignedRoles = jwt.Roles,
 			});
 		}
 
-		private OrderCloudUserAuthAttribute GetUserAuthAttribute()
+		private OrderCloudUserAuthAttribute GetRouteAuthAttribute()
 		{
 			var controllerName = Request.RouteValues["controller"].ToString();
 			var actionName = Request.RouteValues["action"].ToString();

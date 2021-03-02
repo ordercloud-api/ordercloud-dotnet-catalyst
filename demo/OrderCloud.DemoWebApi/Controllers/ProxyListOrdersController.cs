@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderCloud.Catalyst;
 using OrderCloud.SDK;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrderCloud.DemoWebApi.Controllers
@@ -24,8 +25,9 @@ namespace OrderCloud.DemoWebApi.Controllers
 		// The IListArgs model describes list arguments that let api users query data expressively with query params. 
 		public async Task<ListPage<Order>> ListOrdersForBillingAddress(IListArgs args)
 		{
-			if (Context.User.xp.FranchiseRole != "Owner") { 
-				throw new UnAuthorizedException(); 
+			if (Context.User.xp.FranchiseRole != "Owner")
+			{
+				throw new UnAuthorizedException();
 			}
 			var locationID = Context.User.xp.BillingAddressID;
 			var billingAddressFilter = new ListFilter() { PropertyName = "BillingAddress.ID", FilterExpression = locationID };
@@ -33,13 +35,23 @@ namespace OrderCloud.DemoWebApi.Controllers
 			args.Filters.Add(billingAddressFilter);
 			// Request orders from Ordercloud from the admin endpoint with elevated access.
 			var orders = await _oc.Orders.ListAsync(OrderDirection.Incoming,
-			// Apply all the list arguments to the request
+				// Apply all the list arguments to the request
 				page: args.Page,
 				pageSize: args.PageSize,
 				sortBy: string.Join(',', args.SortBy),
 				search: args.Search,
 				searchOn: args.SearchOn,
 				filters: args.ToFilterString());
+			return orders;
+		}
+
+		[HttpGet("orders/all")]
+		// The IListArgs model describes list arguments that let api users query data expressively with query params. 
+		public async Task<List<Order>> ListAllOrders()
+		{
+			var orders = await _oc.Orders.ListAllAsync(OrderDirection.Incoming, 
+				filters: "ID=!SEB_TEST*"
+				);
 			return orders;
 		}
 	}

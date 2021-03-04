@@ -78,7 +78,7 @@ Use Redis or LazyCache. Or, define your own implementation of ISimpleCache.
     private ISimpleCache _cache;
 
     [HttpGet("thing")]
-    public THing GetThing(string thingID) {
+    public Thing GetThing(string thingID) {
         var key = $"thing-{thingID}";
         var timeToLive = TimeSpan.FromMinutes(10);
         var thing = await _cache.GetOrAddAsync(key, timeToLive, () database.GetThing(thingID));

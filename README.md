@@ -10,7 +10,8 @@ Extensions and helpers for building ASP.NET Core 3.1 API apps and WebJobs, typic
 Use Ordercloud's Authentication scheme in your own API's. 
 
 ```c#
-[HttpGet, Route("hello"), OrderCloudUserAuth]
+[HttpGet("hello")]   
+[OrderCloudUserAuth]
 public string Hello([FromBody] Thing thing) {
     return $"Hello {UserContext.FirstName} {UserContext.LastName}";  
 }
@@ -24,7 +25,7 @@ public string Hello([FromBody] Thing thing) {
 Securely recieve push notifications of events from the Ordercloud Platform. 
 
 ```c#
-[Route("webhook")]
+[HttpPost("webhook")]
 [OrderCloudWebhookAuth]
 public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConfigData> payload) {
     ...
@@ -71,8 +72,26 @@ public async Task<ListPage<Order>> ListOrders(IListArgs args)
 
 ### Caching 
 
+Use Redis or LazyCache. Or, define your own implementation of ISimpleCache. 
 
-Use Redis or LazyCache out of the box. Or, define your own implementation of ISimpleCache. 
+```c#
+    private ISimpleCache _cache;
+
+    [HttpGet("thing")]
+    public THing GetThing(string thingID) {
+        var key = $"thing-{thingID}";
+        var timeToLive = TimeSpan.FromMinutes(10);
+        var thing = await _cache.GetOrAddAsync(key, timeToLive, () database.GetThing(thingID));
+        return thing;
+    }
+
+    [HttpPut("thing")]
+    public Thing EditThing(string thingID) {
+        var key = $"thing-{thingID}";
+        await _cache.RemoveAsync(thingID);
+        return await database.EditThing(thingID);
+    }
+```
 
 [More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/DataMovement/Caching)
 

@@ -5,15 +5,16 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace OrderCloud.Catalyst
 {
 	[EnableCors("integrationcors")]
+	//[Produces("application/json")]
 	public class BaseController : Controller
 	{
-		public VerifiedUserContext Context;
+		public VerifiedUserContext UserContext;
 
 		public BaseController() { }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
 		{
-			Context = new VerifiedUserContext(User);
+			UserContext = new VerifiedUserContext(User);
 			base.OnActionExecuting(context);
 		}
 	}

@@ -25,11 +25,11 @@ namespace OrderCloud.DemoWebApi.Controllers
 		// The IListArgs model describes list arguments that let api users query data expressively with query params. 
 		public async Task<ListPage<Order>> ListOrdersForBillingAddress(IListArgs args)
 		{
-			if (Context.User.xp.FranchiseRole != "Owner")
+			if (UserContext.xp.FranchiseRole != "Owner")
 			{
 				throw new UnAuthorizedException();
 			}
-			var locationID = Context.User.xp.BillingAddressID;
+			var locationID = UserContext.xp.BillingAddressID;
 			var billingAddressFilter = new ListFilter() { PropertyName = "BillingAddress.ID", FilterExpression = locationID };
 			// Add a filter on top of any user-defined filters. Only return orders where Order.BillingAddress.ID equals the user's.   
 			args.Filters.Add(billingAddressFilter);

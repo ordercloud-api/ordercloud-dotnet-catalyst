@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.DemoWebApi.Tests.IntegrationTests
+namespace OrderCloud.DemoWebApi.Tests
 {
 	[TestFixture]
 	public class GeneralErrorTests

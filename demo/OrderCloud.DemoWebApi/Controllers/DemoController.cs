@@ -16,11 +16,14 @@ namespace SampleApp.WebApi.Controllers
 		[HttpGet("admin"), OrderCloudUserAuth(ApiRole.OrderAdmin)]
 		public object Admin() => "hello admin!";
 
-		[HttpGet("either"), OrderCloudUserAuth(ApiRole.Shopper, ApiRole.OrderAdmin)]
+		[HttpGet("either"), OrderCloudUserAuth("Shopper", "OrderAdmin")]
 		public object Either() => "hello either!";
 
+		[HttpGet("custom"), OrderCloudUserAuth("CustomRole")]
+		public object CustomRole() => "hello custom!";
+
 		[HttpGet("username"), OrderCloudUserAuth]
-		public object Username() => $"hello {Context.User.Username}!";
+		public object Username() => $"hello {UserContext.Username}!";
 
 		[HttpGet("anybody"), OrderCloudUserAuth]
 		public object Anybody() => "hello anybody!";
@@ -37,9 +40,12 @@ namespace SampleApp.WebApi.Controllers
 		[HttpPost("modelvalidation")]
 		public ExampleModel ModelValidation(ExampleModel model) => model;
 
-        [HttpGet("listargs")]
-        public IListArgs DeserializeListArgs(ListArgs<ExampleModel> args) => args;
-    }
+		[HttpGet("listargs")]
+		public IListArgs DeserializeListArgs(ListArgs<ExampleModel> args) => args;
+
+		[HttpGet("listargspageonly")]
+		public ListArgsPageOnly DeserializeListArgsPageOnly(ListArgsPageOnly args) => args;
+	}
 
 
 

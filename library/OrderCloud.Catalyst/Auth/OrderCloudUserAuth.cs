@@ -21,8 +21,21 @@ namespace OrderCloud.Catalyst
 	/// </summary>
 	public class OrderCloudUserAuthAttribute : AuthorizeAttribute
 	{
+		public OrderCloudUserAuthAttribute()
+		{
+			AuthenticationSchemes = "OrderCloudUser";
+		}
+
 		/// <param name="roles">Optional list of roles. If provided, user must have just one of them, otherwise authorization fails.</param>
 		public OrderCloudUserAuthAttribute(params ApiRole[] roles)
+		{
+			AuthenticationSchemes = "OrderCloudUser";
+			if (roles.Any())
+				Roles = string.Join(",", roles);
+		}
+
+		/// <param name="roles">Optional list of roles. If provided, user must have just one of them, otherwise authorization fails.</param>
+		public OrderCloudUserAuthAttribute(params string[] roles)
 		{
 			AuthenticationSchemes = "OrderCloudUser";
 			if (roles.Any())
@@ -32,63 +45,69 @@ namespace OrderCloud.Catalyst
 
 	public class OrderCloudUserAuthHandler<TSettings> : AuthenticationHandler<OrderCloudUserAuthOptions>
 	{
-		private readonly IOrderCloudClient _ocClient;
+		private readonly IOrderCloudClient _oc;
 		private readonly ISimpleCache _cache;
 
 		public OrderCloudUserAuthHandler(
-			IOptionsMonitor<OrderCloudUserAuthOptions> options, 
-			ILoggerFactory logger, 
-			UrlEncoder encoder, 
-			ISystemClock clock, 
+			IOptionsMonitor<OrderCloudUserAuthOptions> options,
+			ILoggerFactory logger,
+			UrlEncoder encoder,
+			ISystemClock clock,
 			ISimpleCache cache,
 			IOrderCloudClient ocClient)
 			: base(options, logger, encoder, clock)
 		{
-			_ocClient = ocClient;
+			_oc = ocClient;
 			_cache = cache;
+		}
+
+		private async Task<ClaimsPrincipal> VerifyToken(string token)
+		{
+			if (string.IsNullOrEmpty(token))
+				throw new UnAuthorizedException();
+
+			var jwt = new JwtOrderCloud(token);
+			if (jwt.ClientID == null)
+				throw new UnAuthorizedException();
+
+			// we've validated the token as much as we can on this end, go make sure it's ok on OC	
+			var allowFetchUserRetry = false;
+			var user = await _cache.GetOrAddAsync(token, TimeSpan.FromMinutes(5), () =>
+			{
+				try
+				{
+					return _oc.Me.GetAsync(token);
+				}
+				catch (FlurlHttpException ex) when ((int?)ex.Call.Response?.StatusCode < 500)
+				{
+					return null;
+				}
+				catch (Exception)
+				{
+					allowFetchUserRetry = true;
+					return null;
+				}
+			});
+
+			if (allowFetchUserRetry)
+				await _cache.RemoveAsync(token); // not their fault, don't make them wait 5 min
+
+			if (user == null || !user.Active)
+				throw new UnAuthorizedException();
+			var cid = new ClaimsIdentity("OcUser");
+			cid.AddClaim(new Claim("accesstoken", token));
+			cid.AddClaim(new Claim("userrecordjson", JsonConvert.SerializeObject(user)));
+			cid.AddClaims(user.AvailableRoles.Select(r => new Claim(ClaimTypes.Role, r)));
+
+			return new ClaimsPrincipal(cid);
 		}
 
 		protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
 			try {
 				var token = GetTokenFromAuthHeader();
+				var user = await VerifyToken(token);
 
-				if (string.IsNullOrEmpty(token))
-					throw new UnAuthorizedException();
-
-				var jwt = new JwtOrderCloud(token);
-				if (jwt.ClientID == null)
-					throw new UnAuthorizedException();
-
-				// we've validated the token as much as we can on this end, go make sure it's ok on OC	
-				var allowFetchUserRetry = false;
-				var user = await _cache.GetOrAddAsync(token, TimeSpan.FromMinutes(5), () =>
-				{
-					try
-					{
-						return _ocClient.Me.GetAsync(token);
-					}
-					catch (FlurlHttpException ex) when ((int?)ex.Call.Response?.StatusCode < 500)
-					{
-						return null;
-					}
-					catch (Exception)
-					{
-						allowFetchUserRetry = true;
-						return null;
-					}
-				});
-
-				if (allowFetchUserRetry)
-					_cache.RemoveAsync(token); // not their fault, don't make them wait 5 min
-
-				if (user == null || !user.Active)
-					throw new UnAuthorizedException();
-				var cid = new ClaimsIdentity("OcUser");
-				cid.AddClaim(new Claim("accesstoken", token));
-				cid.AddClaim(new Claim("userrecordjson", JsonConvert.SerializeObject(user)));
-				cid.AddClaims(user.AvailableRoles.Select(r => new Claim(ClaimTypes.Role, r)));
-
-				var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcUser");
+				var ticket = new AuthenticationTicket(user, "OcUser");
 				return AuthenticateResult.Success(ticket);
 			}
 			catch (Exception ex) {

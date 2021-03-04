@@ -75,22 +75,22 @@ public async Task<ListPage<Order>> ListOrders(IListArgs args)
 Use Redis or LazyCache. Or, define your own implementation of ISimpleCache. 
 
 ```c#
-    private ISimpleCache _cache;
+private ISimpleCache _cache;
 
-    [HttpGet("thing")]
-    public Thing GetThing(string thingID) {
-        var key = $"thing-{thingID}";
-        var timeToLive = TimeSpan.FromMinutes(10);
-        var thing = await _cache.GetOrAddAsync(key, timeToLive, () database.GetThing(thingID));
-        return thing;
-    }
+[HttpGet("thing")]
+public Thing GetThing(string thingID) {
+    var key = $"thing-{thingID}";
+    var timeToLive = TimeSpan.FromMinutes(10);
+    var thing = await _cache.GetOrAddAsync(key, timeToLive, () database.GetThing(thingID));
+    return thing;
+}
 
-    [HttpPut("thing")]
-    public Thing EditThing(string thingID) {
-        var key = $"thing-{thingID}";
-        await _cache.RemoveAsync(thingID);
-        return await database.EditThing(thingID);
-    }
+[HttpPut("thing")]
+public Thing EditThing(string thingID) {
+    var key = $"thing-{thingID}";
+    await _cache.RemoveAsync(thingID);
+    return await database.EditThing(thingID);
+}
 ```
 
 [More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/DataMovement/Caching)
@@ -114,16 +114,16 @@ var carOwners = await Throttler.RunAsync(cars, minPause, maxConcurency, car => a
 Handle API errors, including unexpected ones, with a standard JSON response structure. Define your own errors. 
 
 ```c#
-    public class SupplierOnlyException : CatalystBaseException
-	{
-        public SupplierOnlyException() : base("SupplierOnly", 403, "Only Supplier users may perform this action.") { }
-    }
+public class SupplierOnlyException : CatalystBaseException
+{
+    public SupplierOnlyException() : base("SupplierOnly", 403, "Only Supplier users may perform this action.") { }
+}
 
-    ....
+....
 
-	if (UserContext.UserType != "Supplier") {
-		throw new SupplierOnlyException();
-	}
+if (UserContext.UserType != "Supplier") {
+    throw new SupplierOnlyException();
+}
 ```
 
 [More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Errors)
@@ -136,32 +136,32 @@ Remove some of the boilerplate code of starting up a new API project
 
 ```c#
 public class Program
-	{
-		public static void Main(string[] args)
-		{
-		    CatalystWebHostBuilder.CreateWebHostBuilder<Startup, AppSettings>(args).Build().Run();
-		}
-	}
+{
+    public static void Main(string[] args)
+    {
+        CatalystWebHostBuilder.CreateWebHostBuilder<Startup, AppSettings>(args).Build().Run();
+    }
+}
 
-	public class Startup
-	{
-		private readonly AppSettings _settings;
+public class Startup
+{
+    private readonly AppSettings _settings;
 
-		public Startup(AppSettings settings) {
-			_settings = settings;
-		}
+    public Startup(AppSettings settings) {
+        _settings = settings;
+    }
 
-		public virtual void ConfigureServices(IServiceCollection services) {
-			services
-				.ConfigureServices()
-                .AddSingleton<ISimpleCache, LazyCacheService>()
-				.AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
-		}
+    public virtual void ConfigureServices(IServiceCollection services) {
+        services
+            .ConfigureServices()
+            .AddSingleton<ISimpleCache, LazyCacheService>()
+            .AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
+    }
 
-		public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-			CatalystApplicationBuilder.CreateApplicationBuilder(app, env);
-		}
-	}
+    public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+        CatalystApplicationBuilder.CreateApplicationBuilder(app, env);
+    }
+}
 ```
 
 [More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Startup)

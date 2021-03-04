@@ -12,7 +12,7 @@ namespace OrderCloud.Catalyst
 {
     public static class GlobalExceptionHandler 
     {
-        public static IApplicationBuilder UseGlobalExceptionHandler(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseCatalystExceptionHandler(this IApplicationBuilder builder)
         {
             builder.Use(async (context, next) =>
             {

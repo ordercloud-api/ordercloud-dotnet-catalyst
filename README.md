@@ -4,63 +4,24 @@
 
 Extensions and helpers for building ASP.NET Core 3.1 API apps and WebJobs, typically hosted in Azure App Services, that integrate with the OrderCloud.io e-commerce platform.
 
-## OrderCloud User Authentication
+### User Authentication
 
-When a user authenticates and acquires an access token from OrderCloud.io, typically in a front-end web or mobile app, that token can be used in your custom endpoints to verify the user's identity and roles. Here are the steps involved:
 
-### 1. Register OrderCloud user authentication in your [`Startup`](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/startup) class. You must include one or more OrderCloud.io client IDs identifying your app.
-
-```c#
-public virtual void ConfigureServices(IServiceCollection services) {
-    services.AddAuthentication()
-        .AddOrderCloudUser(opts => opts.AddValidClientIDs("my-client-id"));
-
-    ...
-}
-```
-
-#### 2. Mark any of your controllers or action  methods with `[OrderCloudUserAuth]`.
-
-Optionally, You may provide one or more required roles in this attribute, any one of which the user must be assigned in order for authorization to succeed.
+Use Ordercloud's Authentication scheme in your own API's. 
 
 ```c#
-[HttpGet]
-[OrderCloudUserAuth(ApiRole.Shopper, ApiRole.OrderReader, ApiRole.OrderAdmin)]
-public Thing Get(string id) {
-    ...
-}
-
-[HttpPut]
-[OrderCloudUserAuth(ApiRole.OrderAdmin)]
-public void Edit([FromBody] Thing thing) {
-    ...
+[HttpGet, Route("hello"), OrderCloudUserAuth]
+public string Hello([FromBody] Thing thing) {
+    return $"Hello {UserContext.FirstName} {UserContext.LastName}";  
 }
 ```
 
-#### 3. In your front-end app, anywhere you call one of your custom endpoints, pass the OrderCloud.io access token in a request header.
+[More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Auth/UserAuth)
 
-```
-Authorization: Bearer my-ordercloud-token
-```
+### Webhook Authentication 
 
-## OrderCloud Webhook Authentication
 
-One of the most common ways to integrate with OrderCloud.io is via webhooks, where your custom endpoints are called directly by OrderCloud, rather than a user app, when some event occurs within the platform. When you configure a webhook, you provide a secret key that is used by OrderCloud to create a hash of the request body and send it in the `X-oc-hash` header. Your custom endpoint can then check this hash to ensure the authenticity of the call. Here are the steps involved:
-
-#### 1. Register OrderCloud webhook authentication in your [`Startup`](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/startup) class.
-
-You must include your secret key here.
-
-```c#
-public virtual void ConfigureServices(IServiceCollection services) {
-    services.AddAuthentication()
-        .AddOrderCloudWebhooks(opts => opts.HashKey = "my-secret-key");
-
-    ...
-}
-```
-
-#### 2. Mark any of your controllers or action  methods with `[OrderCloudWebhookAuth]`.
+Securely recieve push notifications of events from the Ordercloud Platform. 
 
 ```c#
 [Route("webhook")]
@@ -70,73 +31,124 @@ public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConf
 }
 ```
 
-Webhook payload types (such as `WebhookPayloads.Addresses.Save` above) are defined in the [OrderCloud.io .NET SDK](https://github.com/ordercloud-api/ordercloud-dotnet-sdk).
+[More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Auth/WebhookAuth)
 
-## Dependency injection helpers
+### Listing All Pages
 
-If you're using [dependency injection](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection), `OrderCloud.Catalyst` provides a few extension methods you might find useful.
 
-`IWebHostBuilder.UseAppSettings<T>` allows you to inject a custom app settings object, populated from any [configuration source](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration), into any service, or even your `Startup` class. This should be called in your `Program` class where you configure the `WebHost`:
-
+If OrderCloud's limit of 100 records per page is a pain point. 
 
 ```c#
-WebHost.CreateDefaultBuilder(args)
-    .UseAppSettings<AppSettings>() // call before UseStartup to allow injecting AppSettings into Startup
-    .UseStartup<Startup>()
-    .Build();
+var client = new OrderCloudClient(...);
+var orders = client.Orders.ListAllAsync();
 ```
 
-Note that this is very similar to the [Options pattern](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options) in how it maps configuration settings to your `AppSettings` class, except it bypasses the `IOptions<T>` indirection and allows you to inject `AppSettings` directly.
+[More Details](./library/OrderCloud.Catalyst/DataMovement/ListAllAsync)
 
-`IServiceCollection.AddServicesByConvention` is a DI helper that allows you to register many services in a given assembly and (optionally) namespace by naming convention. Call this in your [Startup](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/startup) class:
+### Proxying Platform List Calls
+
+
+Receive list requests to your API with user defined filters, search, paging, and sorting.
 
 ```c#
-protected virtual void RegisterServices(IServiceCollection services) {
-    services.AddServicesByConvention(typeof(IMyService).Assembly, typeof(IMyService).Namespace);
-    ...
+[HttpGet("orders"), OrderCloudUserAuth(ApiRole.Shopper)]
+public async Task<ListPage<Order>> ListOrders(IListArgs args)
+{
+    // Read or modify args here
+
+    var orders = await _oc.Orders.ListAsync(OrderDirection.Incoming,
+        page: args.Page,
+        pageSize: args.PageSize,
+        sortBy: string.Join(',', args.SortBy),
+        search: args.Search,
+        searchOn: args.SearchOn,
+        filters: args.ToFilterString());
+    return orders;
 }
 ```
 
-This call will scan the assembly/namespace, and for every interface `IServiceName` with an implementation `ServiceName`, the following is called implicitly:
+[More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Models/ListOptions)
 
-```c#
-services.AddTransient<IServiceName, ServiceName>();
+### Caching 
+
+
+Use Redis or LazyCache out of the box. Or, define your own implementation of ISimpleCache. 
+
+[More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/DataMovement/Caching)
+
+### Throttler 
+
+
+A perfomance helper for multiple async function calls.
+
+```c# 
+var maxConcurency = 20;
+var minPause = 100 // ms
+var carOwners = await Throttler.RunAsync(cars, minPause, maxConcurency, car => apiClient.GetCarOwner(car.ID);
 ```
 
-## Getting Started - App Settings
+[More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/DataMovement/Throttler)
 
-If you are using Azure, we recomend using [Azure App Configuration](https://docs.microsoft.com/en-us/azure/azure-app-configuration/overview) to store app settings. You can store settings for an environment in one place and apply them across API and Function projects, both hosted and while debugging locally.
-
-To get started, follow these steps. 
-- [Create a new Azure App Configuration resource](https://docs.microsoft.com/en-us/azure/azure-app-configuration/quickstart-dotnet-core-app).
-- Add your settings through the azure portal, making sure the keys match the name of your fields in AppSettings.cs. Field nesting is represented with a colon :. So the key for `settings.OrderCloudSettings.ClientSecret` would be `OrderCloudSettings:ClientSecret`.
-- Copy the connection string from your azure resource.
-- Add an environment variable with key "APP_CONFIG_CONNECTION" and value of the connection string.
-    - For **local** development - In Visual Studio right click the WebApi project and go to Properties -> Debug -> Environment Variables.
-    - For **hosted** apps - In Azure navigate to your app service. Go to the correct deployment slot, and go to Settings -> Configuration -> New application setting
-
-Repeat this process for each of your environments (e.g. Test, Stage, Prod).
+### Error Handling  
 
 
-## ISimpleCache 
-Caching can be a great way to improve the performance of data retrieval. For example, under the hood `[OrderCloudUserAuth]` caches a verified user's context for 5 minutes, removing the performance cost of duplicate verifications. 
+Handle API errors, including unexpected ones, with a standard JSON response structure. Define your own errors. 
 
-However, we don't want to dictate what cache technology your app uses. For flexibilty, Catalyst provides an interface [ISimpleCache](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/master/library/OrderCloud.Catalyst/DataMovement/ISimpleCache.cs). You can register your own implementation in [Startup](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/blob/master/demo/OrderCloud.DemoWebApi/Startup.cs) and the Catalyst library will use it.   
+```c#
+    public class SupplierOnlyException : CatalystBaseException
+	{
+        public SupplierOnlyException() : base("SupplierOnly", 403, "Only Supplier users may perform this action.") { }
+    }
 
-We've also provided example implementations for a couple cache technologies that we like. 
-- [LazyCache](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/blob/master/demo/OrderCloud.DemoWebApi/Services/LazyCacheService.cs), which has the advange of requiring no set up.
-- [Redis](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/blob/master/demo/OrderCloud.DemoWebApi/Services/RedisService.cs), which is more complex but stays consistent if you scale your server to multiple instances. 
+    ....
 
-The ISimpleCache interface is ... simple. If you don't see a method you were hoping for, please open an issue. 
+	if (UserContext.UserType != "Supplier") {
+		throw new SupplierOnlyException();
+	}
+```
 
-## Listing All Pages
-If OrderCloud's limit of 100 records per page is a pain point see [here](./library/OrderCloud.Catalyst/DataMovement/ListAllAsync).
+[More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Errors)
 
 
-## Proxying Ordercloud
-Sometimes Ordercloud's permission model may not be able to handle your use case. As a work around, consider requesting ordercloud with elevated permissions in the secure context of your own proxy api and writing server-side code to enforce your permission rules. This pattern can help in many situations. For example, coverting the currency of product prices or letting franchise owners see their employee's orders. Here is [example code](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/blob/master/demo/OrderCloud.DemoWebApi/Controllers/ProxyListOrdersController.cs) powered by the Catalyst library for how to proxy an Ordercloud list call. List calls are more complex than other operation because of list arguments like search and filters. See [Advanced Querying](https://ordercloud.io/features/advanced-querying) for a refresher on list arguments in Ordercloud.    
+### API StartUp
 
-## Testing helpers
+
+Remove some of the boilerplate code of starting up a new API project 
+
+```c#
+public class Program
+	{
+		public static void Main(string[] args)
+		{
+		    CatalystWebHostBuilder.CreateWebHostBuilder<Startup, AppSettings>(args).Build().Run();
+		}
+	}
+
+	public class Startup
+	{
+		private readonly AppSettings _settings;
+
+		public Startup(AppSettings settings) {
+			_settings = settings;
+		}
+
+		public virtual void ConfigureServices(IServiceCollection services) {
+			services
+				.ConfigureServices()
+                .AddSingleton<ISimpleCache, LazyCacheService>()
+				.AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
+		}
+
+		public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+			CatalystApplicationBuilder.CreateApplicationBuilder(app, env);
+		}
+	}
+```
+
+[More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Startup)
+
+### Testing helpers
+
 
 If you are writing an integration test that hits an endpoint marked with `[OrderCloudUserAuth]`, you'll need to pass a properly formatted JWT token in the Authorization header, otherwise the call will fail. Fake tokens are a bit tedious to create, so `OrderCloud.Catalyst` provides a helper: 
 
@@ -146,6 +158,7 @@ httpClient.DefaultRequestHeaders.Authorization =
     new AuthenticationHeaderValue("Bearer", token);
 ```
 
-## What else?
+### What else?
 
-`OrderCloud.Catalyst` is a continuous work in progress based entirely on developer feedback. If you're building solutions for OrderCloud.io using ASP.NET Core and find a particular task difficult or tedious, we welcome you to [suggest a feature](https://github.com/ordercloud-api/ordercloud-dotnet-sdk-extensions/issues/new) for inclusion in this library. 
+
+`OrderCloud.Catalyst` is a continuous work in progress based entirely on developer feedback. If you're building solutions for OrderCloud.io using ASP.NET Core and find a particular task difficult or tedious, we welcome you to [suggest a feature](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/issues/new) for inclusion in this library. 

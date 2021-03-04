@@ -31,6 +31,11 @@ namespace OrderCloud.Catalyst
 		}
 
 		// TODO - figure out how to remove the dependency on TSettings
+		/// <summary>
+		/// Chain to IServiceCollection (typically in Startup.ConfigureServices) to enable authenticating by passing a valid
+		/// OrderCloud access token in the Authorization header. Add [OrderCloudUserAuth] attribute to specific controllers or actions
+		/// where this should be enforced. Typical use case is custom endpoints for front-end user apps.
+		/// </summary>
 		public static IServiceCollection AddOrderCloudUserAuth<TSettings>(this IServiceCollection services)
 		{
 			services.AddAuthentication()
@@ -38,6 +43,9 @@ namespace OrderCloud.Catalyst
 			return services;
 		}
 
+		/// <summary>
+		/// Chain to IServiceCollection (typically in Startup.ConfigureServices) to enable validation of incoming webhooks.
+		/// </summary>
 		public static IServiceCollection AddOrderCloudWebhookAuth(this IServiceCollection services, Action<OrderCloudWebhookAuthOptions> configureOptions)
 		{
 			services.AddAuthentication()

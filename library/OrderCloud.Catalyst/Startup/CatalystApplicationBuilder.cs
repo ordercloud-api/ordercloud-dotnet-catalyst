@@ -16,7 +16,7 @@ namespace OrderCloud.Catalyst
 				app.UseDeveloperExceptionPage();
 			}
 
-			app.UseGlobalExceptionHandler();
+			app.UseCatalystExceptionHandler();
 			app.UseHttpsRedirection();
 			app.UseCors("integrationcors");
 			app.UseMvc();

@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
+using System;
 
 namespace OrderCloud.Catalyst
 {
 	public static class CatalystConfigureWebApiServices
 	{
-		public static IServiceCollection ConfigureServices<TSettings>(this IServiceCollection services, OrderCloudWebhookAuthOptions webhookConfig = null)
-			where TSettings : class, new()
+		public static IServiceCollection ConfigureServices(this IServiceCollection services)
 		{
 			services.AddControllers()
 			.ConfigureApiBehaviorOptions(o =>
@@ -27,12 +27,23 @@ namespace OrderCloud.Catalyst
 			services.AddCors(o => o.AddPolicy("integrationcors",
 				builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }));
 
-			services
-				.AddAuthentication()
-				.AddScheme<OrderCloudUserAuthOptions, OrderCloudUserAuthHandler<TSettings>>("OrderCloudUser", null)
-				.AddScheme<OrderCloudWebhookAuthOptions, OrderCloudWebhookAuthHandler>("OrderCloudWebhook", null, opts => opts.HashKey = webhookConfig.HashKey);
-
 			return services;
 		}
+
+		// TODO - figure out how to remove the dependency on TSettings
+		public static IServiceCollection AddOrderCloudUserAuth<TSettings>(this IServiceCollection services)
+		{
+			services.AddAuthentication()
+				.AddScheme<OrderCloudUserAuthOptions, OrderCloudUserAuthHandler<TSettings>>("OrderCloudUser", null);
+			return services;
+		}
+
+		public static IServiceCollection AddOrderCloudWebhookAuth(this IServiceCollection services, Action<OrderCloudWebhookAuthOptions> configureOptions)
+		{
+			services.AddAuthentication()
+				.AddScheme<OrderCloudWebhookAuthOptions, OrderCloudWebhookAuthHandler>("OrderCloudWebhook", null, configureOptions);
+			return services;
+		}
+
 	}
 }

@@ -40,7 +40,9 @@ namespace OrderCloud.TestWebApi
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public virtual void ConfigureServices(IServiceCollection services) {
 			services
-				.ConfigureServices<AppSettings>(new OrderCloudWebhookAuthOptions() { HashKey = _settings.OrderCloudSettings.WebhookHashKey })
+				.ConfigureServices()
+				.AddOrderCloudUserAuth<AppSettings>()
+				.AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
 				.AddSingleton<ISimpleCache, LazyCacheService>() // Replace LazyCacheService with RedisService if you have multiple server instances.
 				.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig() {
 					ApiUrl = _settings.OrderCloudSettings.ApiUrl,

@@ -48,6 +48,32 @@ namespace OrderCloud.DemoWebApi.Tests
 		}
 
 		[Test]
+		public async Task should_succeed_with_custom_role()
+		{
+			var token = FakeOrderCloudToken.Create("some_client_id");
+			var request = TestFramework.Client
+				.WithOAuthBearerToken(token)
+				.Request("demo/custom");
+
+			TestStartup.OC.Me.GetAsync(token).Returns(new MeUser { Username = "joe", ID = "", Active = true, AvailableRoles = new[] { "CustomRole" } });
+
+			var result = await request.GetStringAsync();
+
+			result.Should().Be("hello custom!");
+		}
+
+		[Test]
+		public async Task should_error_without_custom_role()
+		{
+			var result = await TestFramework.Client
+				.WithFakeOrderCloudToken("mYcLiEnTiD") // check should be case insensitive
+				.Request("demo/custom")
+				.GetAsync();
+
+			result.ShouldHaveStatusCode(403);
+		}
+
+		[Test]
 		public async Task can_get_username_from_verified_user()
 		{
 			var result = await TestFramework.Client

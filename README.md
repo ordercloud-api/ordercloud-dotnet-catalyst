@@ -101,6 +101,8 @@ public Thing EditThing(string thingID) {
 A perfomance helper for multiple async function calls.
 
 ```c# 
+var cars = new List<Car>();
+
 var maxConcurency = 20;
 var minPause = 100 // ms
 var carOwners = await Throttler.RunAsync(cars, minPause, maxConcurency, car => apiClient.GetCarOwner(car.ID);

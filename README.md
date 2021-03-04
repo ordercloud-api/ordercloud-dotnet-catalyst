@@ -10,9 +10,8 @@ Extensions and helpers for building ASP.NET Core 3.1 API apps and WebJobs, typic
 Use Ordercloud's Authentication scheme in your own API's. 
 
 ```c#
-[HttpGet("hello")]   
-[OrderCloudUserAuth]
-public string Hello([FromBody] Thing thing) {
+[HttpGet("hello"), OrderCloudUserAuth]
+public string SayHello() {
     return $"Hello {UserContext.FirstName} {UserContext.LastName}";  
 }
 ```
@@ -25,8 +24,7 @@ public string Hello([FromBody] Thing thing) {
 Securely recieve push notifications of events from the Ordercloud Platform. 
 
 ```c#
-[HttpPost("webhook")]
-[OrderCloudWebhookAuth]
+[HttpPost("webhook"), OrderCloudWebhookAuth]
 public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConfigData> payload) {
     ...
 }
@@ -40,8 +38,7 @@ public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConf
 If OrderCloud's limit of 100 records per page is a pain point. 
 
 ```c#
-var client = new OrderCloudClient(...);
-var orders = client.Orders.ListAllAsync();
+var orders = new OrderCloudClient(...).Orders.ListAllAsync();
 ```
 
 [More Details](./library/OrderCloud.Catalyst/DataMovement/ListAllAsync)
@@ -56,7 +53,6 @@ Receive list requests to your API with user defined filters, search, paging, and
 public async Task<ListPage<Order>> ListOrders(IListArgs args)
 {
     // Read or modify args here
-
     var orders = await _oc.Orders.ListAsync(OrderDirection.Incoming,
         page: args.Page,
         pageSize: args.PageSize,

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.15.0" />
+    <PackageReference Include="AutoFixture.AutoNSubstitute" Version="4.15.0" />
     <PackageReference Include="AutoFixture.NUnit3" Version="4.15.0" />
     <PackageReference Include="FluentAssertions" Version="6.0.0-alpha0002" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.12" />
@@ -18,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrderCloud.DemoWebApi\OrderCloud.DemoWebApi.csproj" />
+    <ProjectReference Include="..\OrderCloud.Catalyst.TestApi\OrderCloud.Catalyst.TestApi.csproj" />
   </ItemGroup>
 
 </Project>

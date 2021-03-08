@@ -5,13 +5,13 @@ VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8B971560-E70A-427B-98EF-A65E7C1B67B0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Catalyst.TestApi", "demo\OrderCloud.DemoWebApi\OrderCloud.Catalyst.TestApi.csproj", "{4EC1404C-7DDD-488E-9977-FEA3B44A6E22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Catalyst.TestApi", "tests\OrderCloud.Catalyst.TestApi\OrderCloud.Catalyst.TestApi.csproj", "{4EC1404C-7DDD-488E-9977-FEA3B44A6E22}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "library", "library", "{04D2632E-8BB1-449B-9E2F-751295F5C2EF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Catalyst", "library\OrderCloud.Catalyst\OrderCloud.Catalyst.csproj", "{DD1D1B0F-7582-4EC7-86C9-3869398F3F2A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Catalyst.Tests", "library\OrderCloud.Catalyst.Tests\OrderCloud.Catalyst.Tests.csproj", "{BE648C2F-33BD-4C6E-AD1E-87FE9DCBB7CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Catalyst.Tests", "tests\OrderCloud.Catalyst.Tests\OrderCloud.Catalyst.Tests.csproj", "{BE648C2F-33BD-4C6E-AD1E-87FE9DCBB7CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

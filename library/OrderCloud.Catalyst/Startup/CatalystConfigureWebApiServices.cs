@@ -38,7 +38,9 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public static IServiceCollection AddOrderCloudUserAuth<TSettings>(this IServiceCollection services)
 		{
-			services.AddAuthentication()
+			services
+				.AddSingleton<ISimpleCache, LazyCacheService>() // Can override by registering own implmentation
+				.AddAuthentication()
 				.AddScheme<OrderCloudUserAuthOptions, OrderCloudUserAuthHandler<TSettings>>("OrderCloudUser", null);
 			return services;
 		}

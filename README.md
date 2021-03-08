@@ -2,7 +2,7 @@
 
 [![OrderCloud.Catalyst](https://img.shields.io/nuget/v/OrderCloud.AzureApp.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.AzureApp/)
 
-Extensions and helpers for building ASP.NET Core 3.1 API apps and WebJobs that integrate with the OrderCloud e-commerce platform.
+Extensions and helpers for building ASP.NET Core 3.1 API apps and WebJobs that integrate with the OrderCloud e-commerce platform. Below is a list of features and how to use them. See [examples](https://github.com/ordercloud-api/dotnet-catalyst-examples) for step-by-step guides on solving commerce problems. 
 
 ### User Authentication
 

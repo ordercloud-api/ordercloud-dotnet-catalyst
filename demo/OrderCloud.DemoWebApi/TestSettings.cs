@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OrderCloud.DemoWebApi
+namespace OrderCloud.Catalyst.TestApi
 {
-	public class AppSettings
+	public class TestSettings
 	{
 		public OrderCloudSettings OrderCloudSettings { get; set; } = new OrderCloudSettings();
 		public EnvironmentSettings EnvironmentSettings { get; set; } = new EnvironmentSettings();

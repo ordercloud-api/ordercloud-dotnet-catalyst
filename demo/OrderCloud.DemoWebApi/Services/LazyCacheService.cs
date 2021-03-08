@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LazyCache;
 
-namespace OrderCloud.DemoWebApi.Services
+namespace OrderCloud.Catalyst.TestApi
 {
 	// Lazy Cache (https://github.com/alastairtree/LazyCache) is a local in-memory cache. 
 	// It requires no setup, but is likely not appropriate for a server with multiple instances. 

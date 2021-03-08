@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OrderCloud.DemoWebApi.Controllers
+namespace OrderCloud.Catalyst.TestApi
 {
 	[Route("env")]
 	public class EnvController : BaseController
 	{
-		private readonly AppSettings _settings;
-		public EnvController(AppSettings settings)
+		private readonly TestSettings _settings;
+		public EnvController(TestSettings settings)
 		{
 			_settings = settings;
 		}

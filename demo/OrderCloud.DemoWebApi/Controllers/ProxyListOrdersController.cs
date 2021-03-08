@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OrderCloud.DemoWebApi.Controllers
+namespace OrderCloud.Catalyst.TestApi
 {
 	// This code snippet shows how to proxy an Ordercloud list route. 
 	// Imagine a franchise business with multiple locations. Owners and Employees at a location both place orders. Only Owners should see all orders for their location.
@@ -50,8 +50,8 @@ namespace OrderCloud.DemoWebApi.Controllers
 		// The IListArgs model describes list arguments that let api users query data expressively with query params. 
 		public async Task<List<Order>> ListAllOrders()
 		{
-			var orders = await _oc.Orders.ListAllAsync(OrderDirection.Incoming,
-				filters: "ID=!SEB_TEST*"
+			var orders = await _oc.Orders.ListAllAsync(OrderDirection.Incoming
+				
 				);
 			return orders;
 		}

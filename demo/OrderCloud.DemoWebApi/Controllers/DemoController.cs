@@ -5,13 +5,15 @@ using OrderCloud.Catalyst;
 using OrderCloud.SDK;
 using RequiredAttribute = System.ComponentModel.DataAnnotations.RequiredAttribute;
 
-namespace SampleApp.WebApi.Controllers
+namespace OrderCloud.Catalyst.TestApi
 {
 	[Route("demo")]
 	public class DemoController : BaseController
 	{
 		[HttpGet("shop"), OrderCloudUserAuth(ApiRole.Shopper)]
-		public object Shop() => "hello shopper!";
+		public object Shop() {
+			return "hello shopper!";
+		}
 
 		[HttpGet("admin"), OrderCloudUserAuth(ApiRole.OrderAdmin)]
 		public object Admin() => "hello admin!";

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using OrderCloud.Catalyst;
 using StackExchange.Redis;
 
-namespace OrderCloud.DemoWebApi.Services
+namespace OrderCloud.Catalyst.TestApi
 {
 	// Redis (https://redis.io/) is a distributed in-memory database used for many things, including caching.  
 	// You can host a Redis DB in Azure https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-dotnet-core-quickstart. 
@@ -18,9 +16,9 @@ namespace OrderCloud.DemoWebApi.Services
 	{
 		// Building the IDatabase property has performance overhead, so only one instance of this class should exist in your project. 
 		private readonly IDatabase _db;
-		private readonly AppSettings _settings;
+		private readonly TestSettings _settings;
 
-		public RedisService(AppSettings settings)
+		public RedisService(TestSettings settings)
 		{
 			_settings = settings;
 			var redisConfig = ConfigurationOptions.Parse(_settings.RedisSettings.ConnectionString);

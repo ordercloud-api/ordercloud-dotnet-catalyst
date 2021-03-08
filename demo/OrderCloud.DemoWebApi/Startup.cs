@@ -4,13 +4,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrderCloud.SDK;
-using NSubstitute;
-using OrderCloud.DemoWebApi;
 using System.Threading.Tasks;
 using System;
-using OrderCloud.DemoWebApi.Services;
+using NSubstitute;
+using Microsoft.OpenApi.Models;
 
-namespace OrderCloud.TestWebApi
+namespace OrderCloud.Catalyst.TestApi
 {
 	public class Program
 	{
@@ -21,7 +20,7 @@ namespace OrderCloud.TestWebApi
 			var connectionString = Environment.GetEnvironmentVariable("APP_CONFIG_CONNECTION");
 
 			CatalystWebHostBuilder
-				.CreateWebHostBuilder<Startup, AppSettings>(args, connectionString)
+				.CreateWebHostBuilder<Startup, TestSettings>(args, connectionString)
 				// If you do not wish to use Azure App Configuration, replace the line above and bind AppSettings as you choose.
 				//.CreateWebHostBuilder<Startup>(args)
 				.Build()
@@ -31,9 +30,9 @@ namespace OrderCloud.TestWebApi
 
 	public class Startup
 	{
-		private readonly AppSettings _settings;
+		private readonly TestSettings _settings;
 
-		public Startup(AppSettings settings) {
+		public Startup(TestSettings settings) {
 			_settings = settings;
 		}
 
@@ -41,7 +40,7 @@ namespace OrderCloud.TestWebApi
 		public virtual void ConfigureServices(IServiceCollection services) {
 			services
 				.ConfigureServices()
-				.AddOrderCloudUserAuth<AppSettings>()
+				.AddOrderCloudUserAuth<TestSettings>()
 				.AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
 				.AddSingleton<ISimpleCache, LazyCacheService>() // Replace LazyCacheService with RedisService if you have multiple server instances.
 				.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig() {
@@ -49,33 +48,39 @@ namespace OrderCloud.TestWebApi
 					AuthUrl = _settings.OrderCloudSettings.ApiUrl,
 					ClientId = _settings.OrderCloudSettings.MiddlewareClientID,
 					ClientSecret = _settings.OrderCloudSettings.MiddlewareClientSecret,
-					Roles = new[] { ApiRole.FullAccess }
-				}));
+				}))
+				.AddSwaggerGen(c =>
+				 {
+					 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cataylst Test API", Version = "v1" });
+				 });
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-			CatalystApplicationBuilder.CreateApplicationBuilder(app, env);
+			CatalystApplicationBuilder.CreateApplicationBuilder(app, env)
+				.UseSwagger()
+				.UseSwaggerUI(c =>
+				{
+					c.SwaggerEndpoint($"/swagger/v1/swagger.json", $"Catalyst Test API v1");
+					c.RoutePrefix = string.Empty;
+				});
 		}
 	}
 
-	// This would make more sense in the OrderCloud.DemoWebApi.Tests Project. 
-	// But moving it there break all the tests and its unclear why.
 	public class TestStartup : Startup
 	{
-		public static IOrderCloudClient OC;
-
-		public TestStartup() : base(new AppSettings()) { }
+		public static IOrderCloudClient oc;
+		public TestStartup() : base(new TestSettings()) { }
 
 		public override void ConfigureServices(IServiceCollection services)
 		{
-			// Inject services as normal
+			// first do real service registrations
 			base.ConfigureServices(services);
 
 			// then replace some of them with fakes
-			OC = Substitute.For<IOrderCloudClient>();
-			OC.Me.GetAsync(Arg.Any<string>()).Returns(new MeUser { Username = "joe", ID = "", Active = true, AvailableRoles = new[] { "Shopper" } });
-			services.AddSingleton(OC);
+			oc = Substitute.For<IOrderCloudClient>();
+			oc.Me.GetAsync(Arg.Any<string>()).Returns(new MeUser { Username = "joe", Active = true, AvailableRoles = new[] { "Shopper" } });
+			services.AddSingleton(oc);
 		}
 	}
 }

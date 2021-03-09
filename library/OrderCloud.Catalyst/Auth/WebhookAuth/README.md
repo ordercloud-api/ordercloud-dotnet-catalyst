@@ -21,5 +21,7 @@ public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConf
     ...
 }
 ```
+## Best Practices
+For security reasons it is important to keep your webhook hash key confidential and never store the raw value in your codebase or anywhere else where developers outside your organization may access it. Make sure you store this key somewhere secure and pass it into your application as a constant. A good solution for this is to store your hash key in an Azure App Configuration.
 
 Webhook payload types (such as `WebhookPayloads.Addresses.Save` above) are defined in the [OrderCloud.io .NET SDK](https://github.com/ordercloud-api/ordercloud-dotnet-sdk).

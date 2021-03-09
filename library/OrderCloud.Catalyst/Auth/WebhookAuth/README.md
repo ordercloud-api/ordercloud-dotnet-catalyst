@@ -5,7 +5,7 @@ The Webhook authentication attribute ensures that the webhook request came from 
 
 ## How it works
 When you create a webhook in OrderCloud you are required to enter a "HashKey" (or "Secret"). 
-When OrderCloud receives a request and then sends a subsequent webhook it includes this hashed string in a header named "X-oc-hash". When you instantiate your Webhook Authentication in your application you will need to pass in your HashKey so it can be used to compare to what is received in the "X-oc-hash" header in webhook requests. If the strings match then the request is authenticated and allowed to proceed. If they do not (or the header is not present) the request will be rejected.
+Then OrderCloud will use this secret key to create a hash of the request body and send it in the X-oc-hash header. When you instantiate your Webhook Authentication in your application you will need to pass in this HashKey so it can be used as a comparison to what is received in the "X-oc-hash" header in webhook requests. If the values match then the request is authenticated and allowed to proceed. If they do not (or the header is not present) the request will be rejected.
 
 ## Example 
 ```c#
@@ -40,4 +40,4 @@ When OrderCloud receives a request and then sends a subsequent webhook it includ
 ```
 
 ## Best Practices
-Your webhook hash key should not be stored anywhere where developers outside your organization may access it. Make sure you store this key somewhere secure and pass it into your application as a constant. A good solution for this is to store your hash key with an Azure App Configuration.
+For security reasons it is important to keep your webhook hash key confidential and never store the raw value in your codebase or anywehre else where developers outside your organization may access it. Make sure you store this key somewhere secure and pass it into your application as a constant. A good solution for this is to store your hash key with an Azure App Configuration.

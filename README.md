@@ -35,7 +35,7 @@ public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConf
 If OrderCloud's limit of 100 records per page is a pain point. 
 
 ```c#
-var orders = new OrderCloudClient(...).Orders.ListAllAsync();
+var orders = new OrderCloudClient(...).Suppliers.ListAllAsync();
 ```
 
 [More Details](./library/OrderCloud.Catalyst/DataMovement/ListAllAsync)

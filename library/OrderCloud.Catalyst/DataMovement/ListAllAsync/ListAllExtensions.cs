@@ -11,13 +11,12 @@ namespace OrderCloud.Catalyst
 	public static class ListAllExtensions
 	{
 		private const int MAX_PAGE_SIZE = 100;
-		private const string SORT = "ID";
 
 		public static async Task<List<Address>> ListAllAsync(this IAddressesResource resource, string buyerID, object filters = null, string accessToken = null)
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(buyerID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(buyerID, null, null, ListAllHelper.GetSort<Address>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -26,7 +25,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(buyerID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(buyerID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -34,7 +33,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<Address>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -43,7 +42,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -59,7 +58,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<UserGroup>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -68,7 +67,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -76,7 +75,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<User>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -85,7 +84,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -93,7 +92,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<ApiClient>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -102,7 +101,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -118,7 +117,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(buyerID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(buyerID, null, null, ListAllHelper.GetSort<ApprovalRule>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -127,7 +126,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(buyerID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(buyerID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -135,7 +134,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<Buyer>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -144,7 +143,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -152,7 +151,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<Catalog>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -161,7 +160,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -185,7 +184,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(catalogID, depth, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(catalogID, depth, null, null, ListAllHelper.GetSort<Category>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -194,7 +193,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(catalogID, depth, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(catalogID, depth, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -218,7 +217,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(buyerID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(buyerID, null, null, ListAllHelper.GetSort<CostCenter>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -227,7 +226,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(buyerID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(buyerID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -243,7 +242,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(buyerID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(buyerID, null, null, ListAllHelper.GetSort<CreditCard>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -252,7 +251,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(buyerID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(buyerID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -268,7 +267,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<ImpersonationConfig>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -276,7 +275,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<Incrementor>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -286,7 +285,7 @@ namespace OrderCloud.Catalyst
 
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<IntegrationEvent>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -294,7 +293,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(direction, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(direction, orderID, null, null, ListAllHelper.GetSort<LineItem>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -303,7 +302,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(direction, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(direction, orderID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -311,7 +310,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListCostCentersAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListCostCentersAsync(null, null, ListAllHelper.GetSort<CostCenter>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -320,7 +319,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListCostCentersAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListCostCentersAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -328,7 +327,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListUserGroupsAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListUserGroupsAsync(null, null, ListAllHelper.GetSort<UserGroup>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -337,7 +336,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListUserGroupsAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListUserGroupsAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -345,7 +344,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAddressesAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAddressesAsync(null, null, ListAllHelper.GetSort<BuyerAddress>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -354,7 +353,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAddressesAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAddressesAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -362,7 +361,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListCreditCardsAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListCreditCardsAsync(null, null, ListAllHelper.GetSort<BuyerCreditCard>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -371,7 +370,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListCreditCardsAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListCreditCardsAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -379,7 +378,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListCategoriesAsync(depth, catalogID, productID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListCategoriesAsync(depth, catalogID, productID, null, null, ListAllHelper.GetSort<Category>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -388,7 +387,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListCategoriesAsync<T>(depth, catalogID, productID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListCategoriesAsync<T>(depth, catalogID, productID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -396,7 +395,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllWithFacetsAsync((page, filter) =>
 			{
-				return resource.ListProductsAsync(catalogID, categoryID, depth, null, null, searchType, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListProductsAsync(catalogID, categoryID, depth, null, null, searchType, ListAllHelper.GetSort<BuyerProduct>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -405,7 +404,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllWithFacetsAsync((page, filter) =>
 			{
-				return resource.ListProductsAsync<T>(catalogID, categoryID, depth, null, null, searchType, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListProductsAsync<T>(catalogID, categoryID, depth, null, null, searchType, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -413,7 +412,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListSpecsAsync(productID, catalogID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListSpecsAsync(productID, catalogID, null, null, ListAllHelper.GetSort<Spec>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -422,7 +421,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListSpecsAsync<T>(productID, catalogID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListSpecsAsync<T>(productID, catalogID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -430,7 +429,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListOrdersAsync(from, to, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListOrdersAsync(from, to, null, null, ListAllHelper.GetSort<Order>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -439,7 +438,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListOrdersAsync<T>(from, to, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListOrdersAsync<T>(from, to, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -447,7 +446,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListApprovableOrdersAsync(from, to, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListApprovableOrdersAsync(from, to, null, null, ListAllHelper.GetSort<Order>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -456,7 +455,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListApprovableOrdersAsync<T>(from, to, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListApprovableOrdersAsync<T>(from, to, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -464,7 +463,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListPromotionsAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListPromotionsAsync(null, null, ListAllHelper.GetSort<Promotion>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -473,7 +472,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListPromotionsAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListPromotionsAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -481,7 +480,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListSpendingAccountsAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListSpendingAccountsAsync(null, null, ListAllHelper.GetSort<SpendingAccount>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -490,7 +489,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListSpendingAccountsAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListSpendingAccountsAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -498,7 +497,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListShipmentsAsync(orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListShipmentsAsync(orderID, null, null, ListAllHelper.GetSort<Shipment>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -507,7 +506,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListShipmentsAsync<T>(orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListShipmentsAsync<T>(orderID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -515,7 +514,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListShipmentItemsAsync(shipmentID, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListShipmentItemsAsync(shipmentID, orderID, null, null, ListAllHelper.GetSort<ShipmentItem>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -524,7 +523,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListShipmentItemsAsync<T>(shipmentID, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListShipmentItemsAsync<T>(shipmentID, orderID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -532,7 +531,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListCatalogsAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListCatalogsAsync(null, null, ListAllHelper.GetSort<Catalog>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -541,7 +540,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListCatalogsAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListCatalogsAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -549,7 +548,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<MessageSender>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -558,7 +557,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -574,7 +573,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListCCListenerAssignmentsAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters, accessToken);
+				return resource.ListCCListenerAssignmentsAsync(null, null, ListAllHelper.GetSort<MessageCCListenerAssignment>(), page, MAX_PAGE_SIZE, filters, accessToken);
 			});
 		}
 
@@ -582,7 +581,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<OpenIdConnect>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -590,7 +589,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(direction, buyerID, supplierID, from, to, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(direction, buyerID, supplierID, from, to, null, null, ListAllHelper.GetSort<Order>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -599,7 +598,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(direction, buyerID, supplierID, from, to, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(direction, buyerID, supplierID, from, to, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -607,7 +606,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListApprovalsAsync(direction, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListApprovalsAsync(direction, orderID, null, null, ListAllHelper.GetSort<OrderApproval>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -616,7 +615,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListApprovalsAsync<T>(direction, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListApprovalsAsync<T>(direction, orderID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -624,7 +623,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListEligibleApproversAsync(direction, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListEligibleApproversAsync(direction, orderID, null, null, ListAllHelper.GetSort<User>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -633,7 +632,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListEligibleApproversAsync<T>(direction, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListEligibleApproversAsync<T>(direction, orderID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -641,7 +640,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListShipmentsAsync(direction, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListShipmentsAsync(direction, orderID, null, null, ListAllHelper.GetSort<Shipment>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -650,7 +649,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListShipmentsAsync<T>(direction, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListShipmentsAsync<T>(direction, orderID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -658,7 +657,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListPromotionsAsync(direction, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListPromotionsAsync(direction, orderID, null, null, ListAllHelper.GetSort<OrderPromotion>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -667,7 +666,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListPromotionsAsync<T>(direction, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListPromotionsAsync<T>(direction, orderID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -675,7 +674,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(direction, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(direction, orderID, null, null, ListAllHelper.GetSort<Payment>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -684,7 +683,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(direction, orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(direction, orderID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -692,7 +691,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<PriceSchedule>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -701,7 +700,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -709,7 +708,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<ProductFacet>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -718,7 +717,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -726,7 +725,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllWithFacetsAsync((page, filter) =>
 			{
-				return resource.ListAsync(catalogID, categoryID, supplierID, null, null, searchType, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(catalogID, categoryID, supplierID, null, null, searchType, ListAllHelper.GetSort<Product>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -735,7 +734,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllWithFacetsAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(catalogID, categoryID, supplierID, null, null, searchType, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(catalogID, categoryID, supplierID, null, null, searchType, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -743,7 +742,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListVariantsAsync(productID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListVariantsAsync(productID, null, null, ListAllHelper.GetSort<Variant>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -752,7 +751,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListVariantsAsync<T>(productID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListVariantsAsync<T>(productID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -760,7 +759,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListSpecsAsync(productID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListSpecsAsync(productID, null, null, ListAllHelper.GetSort<Spec>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -769,7 +768,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListSpecsAsync<T>(productID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListSpecsAsync<T>(productID, null, null, ListAllHelper.GetSort<Spec>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -777,7 +776,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListSuppliersAsync(productID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListSuppliersAsync(productID, null, null, ListAllHelper.GetSort<Supplier>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -786,7 +785,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListSuppliersAsync<T>(productID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListSuppliersAsync<T>(productID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -802,7 +801,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<Promotion>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -811,7 +810,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -827,7 +826,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<SecurityProfile>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -843,7 +842,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(orderID, null, null, ListAllHelper.GetSort<Shipment>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -852,7 +851,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(orderID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(orderID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -860,7 +859,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListItemsAsync(shipmentID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListItemsAsync(shipmentID, null, null, ListAllHelper.GetSort<ShipmentItem>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -869,7 +868,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListItemsAsync<T>(shipmentID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListItemsAsync<T>(shipmentID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -877,7 +876,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<Spec>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -886,7 +885,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -894,7 +893,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListOptionsAsync(specID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListOptionsAsync(specID, null, null, ListAllHelper.GetSort<SpecOption>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -903,7 +902,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListOptionsAsync<T>(specID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListOptionsAsync<T>(specID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -911,7 +910,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListProductAssignmentsAsync(null, null, SORT, page, MAX_PAGE_SIZE, accessToken);
+				return resource.ListProductAssignmentsAsync(null, null, ListAllHelper.GetSort<SpecProductAssignment>(), page, MAX_PAGE_SIZE, accessToken);
 			});
 		}
 
@@ -919,7 +918,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(buyerID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(buyerID, null, null, ListAllHelper.GetSort<SpendingAccount>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -928,7 +927,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(buyerID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(buyerID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -944,7 +943,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(supplierID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(supplierID, null, null, ListAllHelper.GetSort<Address>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -953,7 +952,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(supplierID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(supplierID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -961,7 +960,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<Supplier>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -970,7 +969,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -978,7 +977,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(supplierID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(supplierID, null, null, ListAllHelper.GetSort<UserGroup>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -987,7 +986,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(supplierID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(supplierID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -1003,7 +1002,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(supplierID, userGroupID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(supplierID, userGroupID, null, null, ListAllHelper.GetSort<User>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -1012,7 +1011,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(supplierID, userGroupID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(supplierID, userGroupID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -1020,7 +1019,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(buyerID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(buyerID, null, null, ListAllHelper.GetSort<UserGroup>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -1029,7 +1028,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(buyerID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(buyerID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -1045,7 +1044,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(buyerID, userGroupID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(buyerID, userGroupID, null, null, ListAllHelper.GetSort<User>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -1054,7 +1053,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(buyerID, userGroupID, null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(buyerID, userGroupID, null, null, ListAllHelper.GetSort<T>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -1062,7 +1061,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<Webhook>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 
@@ -1070,7 +1069,7 @@ namespace OrderCloud.Catalyst
 		{
 			return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(null, null, SORT, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(null, null, ListAllHelper.GetSort<XpIndex>(), page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
 		}
 	}

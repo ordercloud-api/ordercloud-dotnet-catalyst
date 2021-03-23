@@ -1,4 +1,4 @@
-﻿using Flurl;
+using Flurl;
 using Flurl.Util;
 using OrderCloud.SDK;
 using Polly;
@@ -156,5 +156,11 @@ namespace OrderCloud.Catalyst
 			}
 			return qp.ToString(true);
 		}
+
+		public static string GetSort<T>()
+        {
+			var id = typeof(T).GetProperty("ID");
+			return id == null ? null : "ID";
+        }
 	}
 }

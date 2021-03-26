@@ -21,6 +21,8 @@ namespace OrderCloud.Catalyst
 	/// </summary>
 	public class OrderCloudUserAuthAttribute : AuthorizeAttribute
 	{
+		public string[] OrderCloudRoles => Roles.Split(",");
+
 		public OrderCloudUserAuthAttribute()
 		{
 			AuthenticationSchemes = "OrderCloudUser";
@@ -121,7 +123,7 @@ namespace OrderCloud.Catalyst
 			var jwt = new JwtOrderCloud(token);
 			throw new InsufficientRolesException(new InsufficientRolesError()
 			{
-				SufficientRoles = GetRouteAuthAttribute().Roles.Split(","),
+				SufficientRoles = GetRouteAuthAttribute().OrderCloudRoles,
 				AssignedRoles = jwt.Roles,
 			});
 		}

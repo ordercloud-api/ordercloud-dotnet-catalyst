@@ -1,5 +1,6 @@
 ﻿using Flurl.Http;
 using NUnit.Framework;
+using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,6 +23,16 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			var result = await TestFramework.Client.Request("demo/internalerror").GetAsync();
 			result.ShouldBeApiError("InternalServerError", 500, "Unknown error has occured.");
+		}
+
+		[TestCase("something")]
+		public async Task catalsyst_exception_should_have_message(string message)
+		{
+			var ex1 = new CatalystBaseException(new ApiError() { Message = message });
+			var ex2 = new CatalystBaseException("code", message);
+
+			Assert.AreEqual(message, ex1.Message);
+			Assert.AreEqual(message, ex2.Message);
 		}
 	}
 }

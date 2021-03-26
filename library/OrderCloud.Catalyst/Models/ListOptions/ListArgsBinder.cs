@@ -55,7 +55,7 @@ namespace OrderCloud.Catalyst
                         listArgs.SearchOn = value.ToString();
                         break;
                     default:
-                        listArgs.Filters.Add(ListFilter.Parse(key, value));
+                        listArgs.Filters.Add(new ListFilter(key, value));
                         break;
                 }
             }

@@ -16,5 +16,19 @@ namespace OrderCloud.Catalyst.TestApi
 				Foo = payload.ConfigData.Foo
 			};
 		}
+
+		[HttpPost("webhook/response-testing/{allowed}"), OrderCloudWebhookAuth]
+		public PreWebhookResponse WebhookRepsonseTesting([FromRoute] bool allowed, [FromBody] object payload = null)
+		{
+			if (allowed == true)
+			{
+				return PreWebhookResponse.Proceed();
+			}
+			if (payload == null)
+			{
+				return PreWebhookResponse.Block();
+			}
+			return PreWebhookResponse.Block(payload);
+		}
 	}
 }

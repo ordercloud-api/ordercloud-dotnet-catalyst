@@ -57,7 +57,7 @@ namespace OrderCloud.Catalyst.TestApi
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-			CatalystApplicationBuilder.CreateApplicationBuilder(app, env)
+			CatalystApplicationBuilder.DefaultCatalystAppBuilder(app, env)
 				.UseSwagger()
 				.UseSwaggerUI(c =>
 				{

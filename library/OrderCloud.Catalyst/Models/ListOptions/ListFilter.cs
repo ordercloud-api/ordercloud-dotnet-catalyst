@@ -15,24 +15,44 @@ namespace OrderCloud.Catalyst
         public bool HasWildcard => WildcardPositions.Any();
     }
 
+    /// <summary>
+    /// A filter applied to an Ordercloud list request. Represents one key/value query parameter in the raw http request. 
+    /// </summary>
     public class ListFilter
     {
+        /// <summary>
+        /// The name of the property to filter on. The key of the query parameter.
+        /// </summary>
         public string PropertyName { get; set; }
+        /// <summary>
+        /// A raw expression of the filter logic. The value of the query parameter.
+        /// </summary>
         public string FilterExpression { get; set; }
 
         /// <summary>
-        /// If multiple, OR them together
+        /// A parsed expression of the filter logic. Broken into a list by separating on logical OR ( "|" ).
         /// </summary>
         public IList<ListFilterValue> FilterValues { get; set; } = new List<ListFilterValue>();
 
-        public static ListFilter Parse(string name, string expression)
+        internal ListFilter() { }
+
+        /// <param name="propertyName">The name of the property to filter on. The key of the query parameter.</param>
+		/// <param name="filterExpression">A raw expression of the filter logic. The value of the query parameter.</param>
+        public ListFilter(string propertyName, string filterExpression)
         {
-            var result = new ListFilter { PropertyName = name, FilterExpression = expression };
+            PropertyName = propertyName;
+            FilterExpression = filterExpression;
+            FilterValues = ParseFilterExpression(filterExpression);
+        }
+
+        public static IList<ListFilterValue> ParseFilterExpression(string filterExpression)
+		{
+            var values = new List<ListFilterValue>();
             var value = new ListFilterValue();
             var escape = false;
             var negate = false;
 
-            foreach (var c in expression)
+            foreach (var c in filterExpression)
             {
                 if (escape)
                 {
@@ -75,8 +95,8 @@ namespace OrderCloud.Catalyst
                 }
                 else if (c == '|')
                 {
-                    result.FilterValues.Add(value);
-					value = new ListFilterValue();
+                    values.Add(value);
+                    value = new ListFilterValue();
                     escape = false;
                     negate = false;
                 }
@@ -85,8 +105,8 @@ namespace OrderCloud.Catalyst
                     value.Term += c.ToString();
                 }
             }
-            result.FilterValues.Add(value);
-            return result;
+            values.Add(value);
+            return values; 
         }
     }
 }

@@ -19,7 +19,7 @@ public string SayHello() {
 
 ### Webhook Authentication 
 
-Securely recieve push notifications of events from the Ordercloud platform. [More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Auth/WebhookAuth)
+Securely receive push notifications of events from the Ordercloud platform. [More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Auth/WebhookAuth)
 
 ```c#
 [HttpPost("webhook"), OrderCloudWebhookAuth]

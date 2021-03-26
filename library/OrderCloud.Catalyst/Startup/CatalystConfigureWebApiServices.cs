@@ -54,6 +54,5 @@ namespace OrderCloud.Catalyst
 				.AddScheme<OrderCloudWebhookAuthOptions, OrderCloudWebhookAuthHandler>("OrderCloudWebhook", null, configureOptions);
 			return services;
 		}
-
 	}
 }

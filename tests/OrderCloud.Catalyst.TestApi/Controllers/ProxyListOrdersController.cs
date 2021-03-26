@@ -31,7 +31,7 @@ namespace OrderCloud.Catalyst.TestApi
 				throw new UnAuthorizedException();
 			}
 			var locationID = UserContext.xp.BillingAddressID;
-			var billingAddressFilter = new ListFilter() { PropertyName = "BillingAddress.ID", FilterExpression = locationID };
+			var billingAddressFilter = new ListFilter("BillingAddress.ID", locationID);
 			// Add a filter on top of any user-defined filters. Only return orders where Order.BillingAddress.ID equals the user's.   
 			args.Filters.Add(billingAddressFilter);
 			// Request orders from Ordercloud from the admin endpoint with elevated access.

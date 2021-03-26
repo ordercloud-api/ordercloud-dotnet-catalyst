@@ -8,7 +8,7 @@ namespace OrderCloud.Catalyst
 		public ApiError ApiError { get; }
 		public int HttpStatus { get; set; }
 
-		public CatalystBaseException(string errorCode, string message, object data = null)
+		public CatalystBaseException(string errorCode, string message, object data = null) : base(message)
 		{
 			HttpStatus = 400;
 			ApiError = new ApiError
@@ -19,7 +19,7 @@ namespace OrderCloud.Catalyst
 			};
 		}
 
-		public CatalystBaseException(string errorCode, int httpStatus, string message, object data = null)
+		public CatalystBaseException(string errorCode, int httpStatus, string message, object data = null) : base(message)
 		{
 			HttpStatus = httpStatus;
 			ApiError = new ApiError
@@ -30,7 +30,7 @@ namespace OrderCloud.Catalyst
 			};
 		}
 
-		public CatalystBaseException(ApiError apiError)
+		public CatalystBaseException(ApiError apiError) : base(apiError.Message)
 		{
 			HttpStatus = 400;
 			ApiError = new ApiError

@@ -9,7 +9,7 @@ namespace OrderCloud.Catalyst
 {
 	public static class CatalystApplicationBuilder
 	{
-		public static IApplicationBuilder CreateApplicationBuilder(this IApplicationBuilder app, IWebHostEnvironment env)
+		public static IApplicationBuilder DefaultCatalystAppBuilder(this IApplicationBuilder app, IWebHostEnvironment env)
 		{
 			if (env.IsDevelopment())
 			{

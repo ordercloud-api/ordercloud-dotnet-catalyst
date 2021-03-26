@@ -48,7 +48,9 @@ Receive list requests to your API with user defined filters, search, paging, and
 [HttpGet("orders"), OrderCloudUserAuth(ApiRole.Shopper)]
 public async Task<ListPage<Order>> ListOrders(IListArgs args)
 {
-    // Read or modify args here
+    args.Filters.Add(new ListFilter("FromCompanyID", UserContext.Buyer.ID))
+    args.Filters.Add(new ListFilter("LineItemCount", ">5"))
+
     var orders = await _oc.Orders.ListAsync(OrderDirection.Incoming,
         page: args.Page,
         pageSize: args.PageSize,
@@ -150,7 +152,7 @@ public class Startup
     }
 
     public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-        CatalystApplicationBuilder.CreateApplicationBuilder(app, env);
+        CatalystApplicationBuilder.DefaultCatalystAppBuilder(app, env);
     }
 }
 ```

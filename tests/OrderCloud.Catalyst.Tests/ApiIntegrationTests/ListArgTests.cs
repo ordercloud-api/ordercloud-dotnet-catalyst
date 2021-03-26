@@ -20,6 +20,18 @@ namespace OrderCloud.Catalyst.Tests
 			return await TestFramework.Client.Request($"demo/listargs?{query}").GetAsync();
 		}
 
+		[TestCase("value", ListFilterOperator.Equal)]
+		[TestCase("=value", ListFilterOperator.Equal)]
+		[TestCase(">value", ListFilterOperator.GreaterThan)]
+		[TestCase(">=value", ListFilterOperator.GreaterThanOrEqual)]
+		[TestCase("!value", ListFilterOperator.NotEqual)]
+		public void list_filter_should_calculate_operator_correctly(string expression, ListFilterOperator expectedOperator)
+		{
+			var filter = new ListFilter("property", expression);
+			Assert.AreEqual(expectedOperator, filter.FilterValues[0].Operator);
+			Assert.AreEqual("value", filter.FilterValues[0].Term);
+		}
+
 		[TestCase("", 1)] // default page is 1
 		[TestCase("pageSize=2&anything=random", 1)]
 		[TestCase("page=1", 1)]

@@ -23,7 +23,7 @@ namespace OrderCloud.Catalyst.Tests
 			var payload = fixture.Create<WebhookPayloads.Addresses.Save>();
 			payload.ConfigData = new { Foo = "blah" };
 
-			dynamic resp = await SendWebhookReq(payload).ReceiveJson();
+			dynamic resp = await SendWebhookReq("webhook/saveaddress", payload).ReceiveJson();
 
 			Assert.AreEqual(resp.Action, "HandleAddressSave");
 			Assert.AreEqual(resp.City, payload.Request.Body.City);
@@ -36,11 +36,29 @@ namespace OrderCloud.Catalyst.Tests
 			Fixture fixture = new Fixture();
 			var payload = fixture.Create<WebhookPayloads.Addresses.Save>();
 
-			var resp = await SendWebhookReq(payload, "dfadasfd");
+			var resp = await SendWebhookReq("webhook/saveaddress", payload, "dfadasfd");
 			Assert.AreEqual(401, resp.StatusCode);
 		}
 
-		private async Task<IFlurlResponse> SendWebhookReq(object payload, string hashKey = null)
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task prewebhook_is_blocked_or_not(bool proceed)
+		{
+			var resp = await SendWebhookReq($"webhook/response-testing/{proceed}", null);
+			var json = await resp.GetJsonAsync<PreWebhookResponse>();
+			Assert.AreEqual(false, json.proceed);
+			Assert.AreEqual(null, json.body);
+		}
+
+		[TestCase("something")]
+		public async Task prewebhook_returns_body(object body)
+		{
+			var resp = await SendWebhookReq($"webhook/response-testing/false", body);
+			var json = await resp.GetJsonAsync<PreWebhookResponse>();
+			Assert.AreEqual(body, json.body);
+		}
+
+		private async Task<IFlurlResponse> SendWebhookReq(string route, object payload, string hashKey = null)
 		{
 			var _settings = new TestSettings();
 			var json = JsonConvert.SerializeObject(payload);
@@ -50,7 +68,7 @@ namespace OrderCloud.Catalyst.Tests
 			var base64 = Convert.ToBase64String(hash);
 
 			return await TestFramework.Client
-				.Request("webhook/saveaddress")
+				.Request(route)
 				.WithHeader("X-oc-hash", base64)
 				.PostJsonAsync(payload);
 		}

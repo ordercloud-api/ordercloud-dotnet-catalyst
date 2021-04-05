@@ -44,6 +44,26 @@ namespace OrderCloud.Catalyst.Tests
 			allSuppliers.Count.Should().Be(500);
 		}
 
+		[TestCase("OrderCheckoutIntegrationEventID=*")]
+		[TestCase("something=*else")]
+		[TestCase("something=el*se")]
+		[TestCase("something=else*")]
+		[TestCase("something=!else")]
+		[TestCase("something=>else")]
+		[TestCase("something=<else")]
+		public async Task AND_filter_should_not_change_user_supplied_filters(string userFilters)
+		{
+			var result = userFilters.AndFilter(("ID", null));
+			Assert.AreEqual(userFilters, result);
+		}
+
+		public async Task AND_filter_should_not_change_user_supplied_filters_2()
+		{
+			var existingFilter = new { OrderCheckoutIntegrationEventID = "*" };
+			var result = existingFilter.AndFilter(("ID", null));
+			Assert.AreEqual("OrderCheckoutIntegrationEventID=*", result);
+		}
+
 
 		[Test, AutoNSubstituteData]
 		public async Task ListWithFacets_Working(Task<ListPageWithFacets<Product>> response)

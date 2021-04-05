@@ -30,7 +30,6 @@ namespace OrderCloud.Catalyst
 			return services;
 		}
 
-		// TODO - figure out how to remove the dependency on TSettings
 		/// <summary>
 		/// Chain to IServiceCollection (typically in Startup.ConfigureServices) to enable authenticating by passing a valid
 		/// OrderCloud access token in the Authorization header. Add [OrderCloudUserAuth] attribute to specific controllers or actions

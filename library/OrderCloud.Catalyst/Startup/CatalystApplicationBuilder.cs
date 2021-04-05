@@ -20,15 +20,10 @@ namespace OrderCloud.Catalyst
 
 			app.UseCatalystExceptionHandler();
 			app.UseHttpsRedirection();
-
-
 			app.UseRouting();
 			app.UseCors("integrationcors");
 			app.UseAuthorization();
 			app.UseEndpoints(endpoints => endpoints.MapControllers());
-
-
-
 			app.UseMvc();
 
 			return app;

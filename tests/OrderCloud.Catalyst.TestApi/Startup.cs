@@ -40,7 +40,7 @@ namespace OrderCloud.Catalyst.TestApi
 		public virtual void ConfigureServices(IServiceCollection services) {
 			services
 				.ConfigureServices()
-				.AddOrderCloudUserAuth<TestSettings>()
+				.AddOrderCloudUserAuth()
 				.AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
 				.AddSingleton<ISimpleCache, LazyCacheService>() // Replace LazyCacheService with RedisService if you have multiple server instances.
 				.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig() {

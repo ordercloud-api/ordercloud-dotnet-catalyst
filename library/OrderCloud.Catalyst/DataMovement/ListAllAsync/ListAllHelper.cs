@@ -154,7 +154,7 @@ namespace OrderCloud.Catalyst
 					qp.Add(kv.Key, kv.Value);
 				}
 			}
-			return qp.ToString(true);
+			return string.Join("&", qp.Select(x => $"{x.Name}={x.Value}"));
 		}
 
 		public static string GetSort<T>()

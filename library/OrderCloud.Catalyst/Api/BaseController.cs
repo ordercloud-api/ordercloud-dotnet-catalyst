@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace OrderCloud.Catalyst
 {
 	[EnableCors("integrationcors")]
-	//[Produces("application/json")]
+	[Produces("application/json")]
 	public class BaseController : Controller
 	{
 		public VerifiedUserContext UserContext;

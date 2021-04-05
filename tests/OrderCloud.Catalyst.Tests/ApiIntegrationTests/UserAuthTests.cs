@@ -23,7 +23,7 @@ namespace OrderCloud.Catalyst.Tests
 				.Request("demo/anon")
 				.GetStringAsync();
 
-			result.Should().Be("hello anon!");
+			result.Should().Be("\"hello anon!\"");
 		}
 
 		[Test]
@@ -44,7 +44,7 @@ namespace OrderCloud.Catalyst.Tests
 				.Request("demo/shop")
 				.GetStringAsync();
 
-			result.Should().Be("hello shopper!");
+			result.Should().Be("\"hello shopper!\"");
 		}
 
 		[Test]
@@ -59,7 +59,7 @@ namespace OrderCloud.Catalyst.Tests
 
 			var result = await request.GetStringAsync();
 
-			result.Should().Be("hello custom!");
+			result.Should().Be("\"hello custom!\"");
 		}
 
 		[Test]
@@ -81,7 +81,7 @@ namespace OrderCloud.Catalyst.Tests
 				.Request("demo/username")
 				.GetStringAsync();
 
-			result.Should().Be("hello joe!");
+			result.Should().Be("\"hello joe!\"");
 		}
 
 		[Test]

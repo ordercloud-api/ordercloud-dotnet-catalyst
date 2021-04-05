@@ -24,7 +24,6 @@ namespace OrderCloud.Catalyst
 			app.UseCors("integrationcors");
 			app.UseAuthorization();
 			app.UseEndpoints(endpoints => endpoints.MapControllers());
-			app.UseMvc();
 
 			return app;
 		}

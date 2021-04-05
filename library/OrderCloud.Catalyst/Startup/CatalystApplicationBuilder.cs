@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
@@ -18,8 +20,17 @@ namespace OrderCloud.Catalyst
 
 			app.UseCatalystExceptionHandler();
 			app.UseHttpsRedirection();
+
+
+			app.UseRouting();
 			app.UseCors("integrationcors");
+			app.UseAuthorization();
+			app.UseEndpoints(endpoints => endpoints.MapControllers());
+
+
+
 			app.UseMvc();
+
 			return app;
 		}
 	}

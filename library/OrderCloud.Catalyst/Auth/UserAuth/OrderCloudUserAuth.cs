@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Flurl.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -45,7 +47,7 @@ namespace OrderCloud.Catalyst
 		}
 	}
 
-	public class OrderCloudUserAuthHandler<TSettings> : AuthenticationHandler<OrderCloudUserAuthOptions>
+	public class OrderCloudUserAuthHandler : AuthenticationHandler<OrderCloudUserAuthOptions>
 	{
 		private readonly IOrderCloudClient _oc;
 		private readonly ISimpleCache _cache;
@@ -119,25 +121,17 @@ namespace OrderCloud.Catalyst
 
 		protected override Task HandleForbiddenAsync(AuthenticationProperties properties)
 		{
+			var endpoint = Context.GetEndpoint();
+			var authorizeAttributes = endpoint?.Metadata.GetOrderedMetadata<OrderCloudUserAuthAttribute>() ?? Array.Empty<OrderCloudUserAuthAttribute>();
 			var token = GetTokenFromAuthHeader();
 			var jwt = new JwtOrderCloud(token);
 			throw new InsufficientRolesException(new InsufficientRolesError()
 			{
-				SufficientRoles = GetRouteAuthAttribute().OrderCloudRoles,
+				SufficientRoles = authorizeAttributes.SelectMany(a => a.OrderCloudRoles).ToList(),
 				AssignedRoles = jwt.Roles,
 			});
 		}
 
-		private OrderCloudUserAuthAttribute GetRouteAuthAttribute()
-		{
-			var controllerName = Request.RouteValues["controller"].ToString();
-			var actionName = Request.RouteValues["action"].ToString();
-			var assembly = Assembly.GetAssembly(typeof(TSettings));
-			var controlType = assembly.GetTypes().First(t => t.Name == $"{controllerName}Controller");
-			return controlType
-				.GetMethod(actionName)
-				.GetCustomAttribute(typeof(OrderCloudUserAuthAttribute)) as OrderCloudUserAuthAttribute;
-		}
 
 		private string GetTokenFromAuthHeader() {
 			if (!Request.Headers.TryGetValue("Authorization", out var header))

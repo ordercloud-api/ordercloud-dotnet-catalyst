@@ -11,32 +11,23 @@ namespace OrderCloud.Catalyst
 {
     public class VerifiedUserContext
     {
-        private ClaimsPrincipal Principal { get; set; }
-        private JwtOrderCloud ParsedToken { get; set; }
+        public ClaimsPrincipal ClaimsPrincipal { get; }
+        private JwtOrderCloud ParsedToken { get; }
         private MeUser User { get; set; }
+        public string AccessToken { get; }
 
-		public VerifiedUserContext(ClaimsPrincipal principal)
+        public VerifiedUserContext(ClaimsPrincipal principal)
 		{
-			Principal = principal;
-			if (Principal.Claims.Any())
+            ClaimsPrincipal = principal;
+			if (ClaimsPrincipal.Claims.Any())
 			{
-                ParsedToken = new JwtOrderCloud(this.AccessToken);
+                AccessToken = GetPrincipalClaim("accesstoken");
+                ParsedToken = new JwtOrderCloud(AccessToken);
                 var userJson = GetPrincipalClaim("userrecordjson");
                 User = JsonConvert.DeserializeObject<MeUser>(userJson);
 			}
 		}
 
-        private string GetPrincipalClaim(string key)
-        {
-			var claim = Principal.Claims.FirstOrDefault(c => c.Type == key)?.Value;
-            if (claim == null) 
-            { 
-                throw new CatalystBaseException("MissingAuthClaim", $"Claim with name \"{key}\" is missing from user context"); 
-            }
-            return claim;
-        }
-
-        public string AccessToken => GetPrincipalClaim("accesstoken");
         public IReadOnlyList<string> AvailableRoles => User.AvailableRoles;
         public dynamic xp => User.xp;
         public bool Active => User.Active;
@@ -65,5 +56,15 @@ namespace OrderCloud.Catalyst
         public DateTime TokenExpiresUTC => ParsedToken.ExpiresUTC;
         public DateTime TokenIssuedAtUTC => ParsedToken.IssuedAtUTC;
         public DateTime TokenNotValidBeforeUTC => ParsedToken.NotValidBeforeUTC;
+
+        private string GetPrincipalClaim(string key)
+        {
+            var claim = ClaimsPrincipal.Claims.FirstOrDefault(c => c.Type == key)?.Value;
+            if (claim == null)
+            {
+                throw new CatalystBaseException("MissingAuthClaim", $"Claim with name \"{key}\" is missing from user context");
+            }
+            return claim;
+        }
     }
 }

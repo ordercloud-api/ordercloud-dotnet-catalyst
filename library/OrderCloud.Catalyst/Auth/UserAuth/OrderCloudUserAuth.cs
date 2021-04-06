@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Reflection;
-using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Flurl.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -23,7 +17,7 @@ namespace OrderCloud.Catalyst
 	/// </summary>
 	public class OrderCloudUserAuthAttribute : AuthorizeAttribute
 	{
-		public string[] OrderCloudRoles => Roles.Split(",");
+		public List<string> OrderCloudRoles => Roles?.Split(",").ToList() ?? new List<string> { };
 
 		public OrderCloudUserAuthAttribute()
 		{
@@ -49,102 +43,35 @@ namespace OrderCloud.Catalyst
 
 	public class OrderCloudUserAuthHandler : AuthenticationHandler<OrderCloudUserAuthOptions>
 	{
-		private readonly IOrderCloudClient _oc;
-		private readonly ISimpleCache _cache;
+		private static IUserContextProvider _userProvider;
 
 		public OrderCloudUserAuthHandler(
 			IOptionsMonitor<OrderCloudUserAuthOptions> options,
 			ILoggerFactory logger,
 			UrlEncoder encoder,
 			ISystemClock clock,
-			ISimpleCache cache,
-			IOrderCloudClient ocClient)
+			IUserContextProvider userProvider
+			)
 			: base(options, logger, encoder, clock)
 		{
-			_oc = ocClient;
-			_cache = cache;
-		}
-
-		private async Task<ClaimsPrincipal> VerifyToken(string token)
-		{
-			if (string.IsNullOrEmpty(token))
-				throw new UnAuthorizedException();
-
-			var jwt = new JwtOrderCloud(token);
-			if (jwt.ClientID == null)
-				throw new UnAuthorizedException();
-
-			// we've validated the token as much as we can on this end, go make sure it's ok on OC	
-			var allowFetchUserRetry = false;
-			var user = await _cache.GetOrAddAsync(token, TimeSpan.FromMinutes(5), () =>
-			{
-				try
-				{
-					return _oc.Me.GetAsync(token);
-				}
-				catch (FlurlHttpException ex) when ((int?)ex.Call.Response?.StatusCode < 500)
-				{
-					return null;
-				}
-				catch (Exception)
-				{
-					allowFetchUserRetry = true;
-					return null;
-				}
-			});
-
-			if (allowFetchUserRetry)
-				await _cache.RemoveAsync(token); // not their fault, don't make them wait 5 min
-
-			if (user == null || !user.Active)
-				throw new UnAuthorizedException();
-			var cid = new ClaimsIdentity("OcUser");
-			cid.AddClaim(new Claim("accesstoken", token));
-			cid.AddClaim(new Claim("userrecordjson", JsonConvert.SerializeObject(user)));
-			cid.AddClaims(user.AvailableRoles.Select(r => new Claim(ClaimTypes.Role, r)));
-
-			return new ClaimsPrincipal(cid);
+			_userProvider = userProvider;
 		}
 
 		protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
 			try {
-				var token = GetTokenFromAuthHeader();
-				var user = await VerifyToken(token);
+				var requiredRoles = Context.GetRequiredOrderCloudRoles();
+				var user = await _userProvider.VerifyAsync(Request, requiredRoles);
 
-				var ticket = new AuthenticationTicket(user, "OcUser");
+				var ticket = new AuthenticationTicket(user.ClaimsPrincipal, "OcUser");
 				return AuthenticateResult.Success(ticket);
+			}
+			catch (CatalystBaseException ex) when (ex.HttpStatus == 403)
+			{
+				throw ex;
 			}
 			catch (Exception ex) {
 				throw new UnAuthorizedException();
 			}
-		}
-
-		protected override Task HandleForbiddenAsync(AuthenticationProperties properties)
-		{
-			var endpoint = Context.GetEndpoint();
-			var authorizeAttributes = endpoint?.Metadata.GetOrderedMetadata<OrderCloudUserAuthAttribute>() ?? Array.Empty<OrderCloudUserAuthAttribute>();
-			var token = GetTokenFromAuthHeader();
-			var jwt = new JwtOrderCloud(token);
-			throw new InsufficientRolesException(new InsufficientRolesError()
-			{
-				SufficientRoles = authorizeAttributes.SelectMany(a => a.OrderCloudRoles).ToList(),
-				AssignedRoles = jwt.Roles,
-			});
-		}
-
-
-		private string GetTokenFromAuthHeader() {
-			if (!Request.Headers.TryGetValue("Authorization", out var header))
-				return null;
-
-			var parts = header.FirstOrDefault()?.Split(new[] { ' ' }, 2);
-			if (parts?.Length != 2)
-				return null;
-
-			if (parts[0] != "Bearer")
-				return null;
-
-			return parts[1].Trim();
 		}
 	}
 

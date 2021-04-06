@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrderCloud.Catalyst;
 using OrderCloud.SDK;
@@ -10,6 +13,13 @@ namespace OrderCloud.Catalyst.TestApi
 	[Route("demo")]
 	public class DemoController : BaseController
 	{
+		private static IUserContextProvider _provider;
+
+		public DemoController(IUserContextProvider provider)
+		{
+			_provider = provider;
+		}
+
 		[HttpGet("shop"), OrderCloudUserAuth(ApiRole.Shopper)]
 		public object Shop() {
 			return "hello shopper!";
@@ -33,6 +43,17 @@ namespace OrderCloud.Catalyst.TestApi
 		[HttpGet("anon")]
 		public object Anon() => "hello anon!";
 
+		[HttpPost("token/{token}")]
+		public async Task<SimplifiedUser> Token(string token)
+		{
+			var user = await _provider.VerifyAsync(token);
+			return new SimplifiedUser() { 
+				AvailableRoles = user.AvailableRoles.ToList(),
+				Username = user.Username, 
+				TokenClientID = user.TokenClientID 
+			};
+		}
+
 		[HttpGet("notfound")]
 		public object ThingNotFound() => throw new NotFoundException();
 
@@ -49,7 +70,13 @@ namespace OrderCloud.Catalyst.TestApi
 		public ListArgsPageOnly DeserializeListArgsPageOnly(ListArgsPageOnly args) => args;
 	}
 
+	public class SimplifiedUser
+	{
+		public List<string> AvailableRoles { get; set; }
+		public string Username { get; set; }
+		public string TokenClientID { get; set; }
 
+	}
 
 
 	public class ExampleModel

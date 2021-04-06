@@ -124,6 +124,21 @@ namespace OrderCloud.Catalyst.Tests
 			}	
 		}
 
+		[Test]
+		public async Task can_get_verified_user_context_from_token()
+		{
+			var token = FakeOrderCloudToken.Create("sOmEcLiEnTiD");
+
+			var result = await TestFramework.Client
+				.Request($"demo/token/{token}")
+				.PostAsync()
+				.ReceiveJson<SimplifiedUser>();
+
+			result.TokenClientID.Should().Be("sOmEcLiEnTiD");
+			result.AvailableRoles[0].Should().Be("Shopper");
+			result.Username.Should().Be("joe");
+		}
+
 		//[Test]
 		//public async Task can_disambiguate_webhook() {
 		//	var payload = new {

@@ -17,7 +17,7 @@ namespace OrderCloud.Catalyst
 	/// </summary>
 	public class OrderCloudUserAuthAttribute : AuthorizeAttribute
 	{
-		public List<string> OrderCloudRoles => Roles?.Split(",").ToList() ?? new List<string> { };
+		public List<string> OrderCloudRoles => Roles?.Split(",")?.ToList() ?? new List<string> { };
 
 		public OrderCloudUserAuthAttribute()
 		{

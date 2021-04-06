@@ -78,7 +78,6 @@ namespace OrderCloud.Catalyst.TestApi
 
 	}
 
-
 	public class ExampleModel
 	{
 		[Required]

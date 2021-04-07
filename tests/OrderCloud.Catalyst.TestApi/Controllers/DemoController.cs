@@ -13,11 +13,11 @@ namespace OrderCloud.Catalyst.TestApi
 	[Route("demo")]
 	public class DemoController : BaseController
 	{
-		private static IUserContextProvider _provider;
+		private static VerifiedUserContext _userContext;
 
-		public DemoController(IUserContextProvider provider)
+		public DemoController(VerifiedUserContext userContext)
 		{
-			_provider = provider;
+			_userContext = userContext;
 		}
 
 		[HttpGet("shop"), OrderCloudUserAuth(ApiRole.Shopper)]
@@ -35,7 +35,7 @@ namespace OrderCloud.Catalyst.TestApi
 		public object CustomRole() => "hello custom!";
 
 		[HttpGet("username"), OrderCloudUserAuth]
-		public object Username() => $"hello {UserContext.Username}!";
+		public object Username() => $"hello {_userContext.Token.Username}!";
 
 		[HttpGet("anybody"), OrderCloudUserAuth]
 		public object Anybody() => "hello anybody!";
@@ -44,13 +44,13 @@ namespace OrderCloud.Catalyst.TestApi
 		public object Anon() => "hello anon!";
 
 		[HttpPost("token/{token}")]
-		public async Task<SimplifiedUser> Token(string token)
+		public async Task<SimplifiedUser> SetUserContext(string token)
 		{
-			var user = await _provider.VerifyAsync(token);
+			await _userContext.SetAsync(token);
 			return new SimplifiedUser() { 
-				AvailableRoles = user.AvailableRoles.ToList(),
-				Username = user.Username, 
-				TokenClientID = user.TokenClientID 
+				AvailableRoles = _userContext.Token.AvailableRoles.ToList(),
+				Username = _userContext.Token.Username, 
+				TokenClientID = _userContext.Token.ClientID 
 			};
 		}
 

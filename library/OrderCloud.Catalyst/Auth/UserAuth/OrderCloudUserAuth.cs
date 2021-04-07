@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -43,26 +44,28 @@ namespace OrderCloud.Catalyst
 
 	public class OrderCloudUserAuthHandler : AuthenticationHandler<OrderCloudUserAuthOptions>
 	{
-		private static IUserContextProvider _userProvider;
+		private static VerifiedUserContext _userContext;
 
 		public OrderCloudUserAuthHandler(
 			IOptionsMonitor<OrderCloudUserAuthOptions> options,
 			ILoggerFactory logger,
 			UrlEncoder encoder,
 			ISystemClock clock,
-			IUserContextProvider userProvider
+			VerifiedUserContext userContext
 			)
 			: base(options, logger, encoder, clock)
 		{
-			_userProvider = userProvider;
+			_userContext = userContext;
 		}
 
 		protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
 			try {
 				var requiredRoles = Context.GetRequiredOrderCloudRoles();
-				var user = await _userProvider.VerifyAsync(Request, requiredRoles);
+				await _userContext.SetAsync(Request, requiredRoles);
+				var cid = new ClaimsIdentity("OcUser");
+				cid.AddClaims(_userContext.Token.AvailableRoles.Select(r => new Claim(ClaimTypes.Role, r)));
 
-				var ticket = new AuthenticationTicket(user.ClaimsPrincipal, "OcUser");
+				var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcUser");
 				return AuthenticateResult.Success(ticket);
 			}
 			catch (CatalystBaseException ex) when (ex.HttpStatus == 403)

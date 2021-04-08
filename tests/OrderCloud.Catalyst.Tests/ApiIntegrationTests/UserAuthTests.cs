@@ -85,6 +85,38 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
+		public async Task should_succeed_with_order_admin()
+		{
+			var token = FakeOrderCloudToken.Create("some_new_client_id");
+			var request = TestFramework.Client
+				.WithOAuthBearerToken(token)
+				.Request("demo/admin");
+
+			TestStartup.oc.Me.GetAsync(token).Returns(new MeUser
+			{
+				Username = "joe",
+				ID = "",
+				Active = true,
+				AvailableRoles = new[] {
+				"MeAdmin",
+				"MeXpAdmin",
+				"ProductAdmin",
+				"PriceScheduleAdmin",
+				"SupplierReader",
+				"OrderAdmin",
+				"SupplierAdmin",
+				"SupplierUserAdmin",
+				"MPMeSupplierUserAdmin",
+				"MPSupplierUserGroupAdmin"
+				}
+			});
+
+			var result = await request.GetStringAsync();
+
+			result.Should().Be("\"hello admin!\"");
+		}
+
+		[Test]
 		public async Task user_authorization_is_cached()
 		{
 			var token = FakeOrderCloudToken.Create("a_fake_client_id");

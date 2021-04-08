@@ -1,7 +1,7 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 
-namespace OrderCloud.Catalyst.Startup
+namespace OrderCloud.Catalyst
 {
     public static class FunctionHostBuilderExtensions
     {

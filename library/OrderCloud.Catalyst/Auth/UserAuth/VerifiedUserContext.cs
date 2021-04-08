@@ -11,16 +11,16 @@ namespace OrderCloud.Catalyst
 {	
 	public class VerifiedUserContext
 	{	
-		public JwtOrderCloud Token => token ?? throw new NoUserContextException();
+		public JwtOrderCloud Token => this.token ?? throw new NoUserContextException();
 		public IOrderCloudClient OcClient
 		{
 			get
 			{
-				if (ocClient == null)
+				if (this.ocClient == null)
 				{
-					ocClient = JWT.BuildOrderCloudClient(Token);
+					this.ocClient = JWT.BuildOrderCloudClient(Token);
 				}
-				return ocClient;
+				return this.ocClient;
 			}
 		}
 

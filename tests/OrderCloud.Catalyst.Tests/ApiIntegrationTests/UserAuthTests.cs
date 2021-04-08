@@ -84,6 +84,26 @@ namespace OrderCloud.Catalyst.Tests
 			result.Should().Be("\"hello joe!\"");
 		}
 
+		[TestCase("Auth.InvalidUsernameOrPassword", 401, "Invalid username or password")]
+		[TestCase("InvalidToken", 401, "Access token is invalid or expired.")]
+		public async Task ordercloud_error_should_be_forwarded(string errorCode, int statusCode, string message)
+		{
+			var token = FakeOrderCloudToken.Create("some_new_client_id23");
+			var request = TestFramework.Client
+				.WithOAuthBearerToken(token)
+				.Request("demo/shop");
+			var error = OrderCloudExceptionFactory.Create((HttpStatusCode)statusCode, "", new ApiError[] { new ApiError() { 
+				Message = message,
+				ErrorCode = errorCode,
+			}});
+
+			TestStartup.oc.Me.GetAsync(token).Returns<MeUser>(x => { throw error; });
+
+			var result = await request.GetAsync();
+
+			result.ShouldBeApiError(errorCode, statusCode, message);
+		}
+
 		[Test]
 		public async Task should_succeed_with_order_admin()
 		{
@@ -98,16 +118,16 @@ namespace OrderCloud.Catalyst.Tests
 				ID = "",
 				Active = true,
 				AvailableRoles = new[] {
-				"MeAdmin",
-				"MeXpAdmin",
-				"ProductAdmin",
-				"PriceScheduleAdmin",
-				"SupplierReader",
-				"OrderAdmin",
-				"SupplierAdmin",
-				"SupplierUserAdmin",
-				"MPMeSupplierUserAdmin",
-				"MPSupplierUserGroupAdmin"
+					"MeAdmin",
+					"MeXpAdmin",
+					"ProductAdmin",
+					"PriceScheduleAdmin",
+					"SupplierReader",
+					"OrderAdmin",
+					"SupplierAdmin",
+					"SupplierUserAdmin",
+					"MPMeSupplierUserAdmin",
+					"MPSupplierUserGroupAdmin"
 				}
 			});
 

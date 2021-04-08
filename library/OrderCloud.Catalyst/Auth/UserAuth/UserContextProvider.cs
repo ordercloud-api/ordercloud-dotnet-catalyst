@@ -51,11 +51,15 @@ namespace OrderCloud.Catalyst
                 {
                     return _oc.Me.GetAsync(token);
                 }
+                catch (OrderCloudException ex) 
+                {
+                    throw ex;
+			    }
                 catch (FlurlHttpException ex) when ((int?)ex.Call.Response?.StatusCode < 500)
                 {
                     return null;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     allowFetchUserRetry = true;
                     return null;

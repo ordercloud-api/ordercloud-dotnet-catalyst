@@ -1,23 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Flurl.Http;
 using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
 using OrderCloud.Catalyst.Auth.UserAuth;
 using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst
 {	
 	public class VerifiedUserContext
-	{
-		public ParsedOrderCloudToken Token { get; private set; } = null;
+	{	
+		public JwtOrderCloud Token => token ?? throw new NoUserContextException();
+		public IOrderCloudClient OcClient
+		{
+			get
+			{
+				if (ocClient == null)
+				{
+					ocClient = JWT.BuildOrderCloudClient(Token);
+				}
+				return ocClient;
+			}
+		}
 
+		private JwtOrderCloud token;
+		private IOrderCloudClient ocClient;
 		private readonly ISimpleCache _cache;
 		private readonly IOrderCloudClient _oc;
 
@@ -38,7 +46,7 @@ namespace OrderCloud.Catalyst
 			if (string.IsNullOrEmpty(token))
 				throw new UnAuthorizedException();
 
-			var parsedToken = new ParsedOrderCloudToken(token);
+			var parsedToken = new JwtOrderCloud(token);
 
 			if (parsedToken.ClientID == null || parsedToken.NotValidBeforeUTC < DateTime.UtcNow || parsedToken.ExpiresUTC > DateTime.UtcNow)
 				throw new UnAuthorizedException();
@@ -85,7 +93,7 @@ namespace OrderCloud.Catalyst
 					AssignedRoles = parsedToken.AvailableRoles.ToList()
 				});
 			}
-			Token = parsedToken;
+			this.token = parsedToken;
 		}
 	}
 }

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace OrderCloud.Catalyst.Auth.UserAuth
 {
-	public class ParsedOrderCloudToken : JwtSecurityToken
+	public class JwtOrderCloud : JwtSecurityToken
 	{
 		public string AccessToken { get; private set; }
 		public string BuyerID => CommerceRole == CommerceRole.Buyer ? CompanyID : null;
@@ -28,7 +28,10 @@ namespace OrderCloud.Catalyst.Auth.UserAuth
 		public DateTime NotValidBeforeUTC => UnixToDateTime(GetPayloadClaim("nbf"));
 		public string KeyID => GetHeader("kid");
 
-		public ParsedOrderCloudToken(string token) : base(token) { }
+		public JwtOrderCloud(string token) : base(token) 
+		{
+
+		}
 
 		private string GetPayloadClaim(string key)
 		{

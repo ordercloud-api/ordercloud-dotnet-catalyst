@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using OrderCloud.Catalyst.Auth.UserAuth;
 using OrderCloud.SDK;
 using System;
 using System.Security.Cryptography;
@@ -34,6 +35,30 @@ namespace OrderCloud.Catalyst
 				ValidateAudience = false
 			});
 			return result.IsValid;
+		}
+
+		public static IOrderCloudClient BuildOrderCloudClient(string token)
+		{
+			return BuildOrderCloudClient(new JwtOrderCloud(token));
+		}
+
+		public static IOrderCloudClient BuildOrderCloudClient(JwtOrderCloud jwt)
+		{
+			var client = new OrderCloudClient(new OrderCloudClientConfig()
+			{
+				ApiUrl = jwt.ApiUrl,
+				AuthUrl = jwt.AuthUrl,
+				ClientId = jwt.ClientID,
+				Roles = new[] { ApiRole.FullAccess }
+			})
+			{
+				TokenResponse = new TokenResponse()
+				{
+					AccessToken = jwt.AccessToken,
+					ExpiresUtc = jwt.ExpiresUTC
+				}
+			};
+			return client;	
 		}
 
 		private static byte[] FromBase64Url(string base64Url)

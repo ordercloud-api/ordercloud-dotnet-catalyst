@@ -72,6 +72,10 @@ namespace OrderCloud.Catalyst
 			{
 				throw ex;
 			}
+			catch (OrderCloudException ex)
+			{
+				throw ex;
+			}
 			catch (Exception ex) {
 				throw new UnAuthorizedException();
 			}

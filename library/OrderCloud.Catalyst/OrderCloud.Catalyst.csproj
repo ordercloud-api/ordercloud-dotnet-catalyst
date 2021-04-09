@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
 	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	  <Version>1.0.5</Version>
+	  <Version>1.0.6</Version>
 	  <PackageId>ordercloud-dotnet-catalyst</PackageId>
 	  <Title>OrderCloud SDK Extensions for Azure App Services</Title>
 	  <Authors>Oliver Heywood</Authors>
@@ -30,6 +30,7 @@
 	  <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.2" />
 	  <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.1.2" />
 	  <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.12" />
+	  <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
 	  <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="4.1.0" />
     <PackageReference Include="OrderCloud.SDK" Version="0.10.1" />
     <PackageReference Include="Polly" Version="7.2.1" />

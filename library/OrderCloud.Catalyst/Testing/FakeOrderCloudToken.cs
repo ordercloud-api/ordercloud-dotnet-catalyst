@@ -12,14 +12,17 @@ namespace OrderCloud.Catalyst
 {
     public static class FakeOrderCloudToken
     {
-	    public static string Create(string clientID) {
+	    public static string Create(string clientID, params string[] roles) {
+
 			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("blahblahblahblahblahblahblahblahblahblah"));
 		    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+			var claims = roles.Select(r => new Claim("role", r)).ToList();
+			claims.Add(new Claim("cid", clientID));
 
 		    var token = new JwtSecurityToken(
 			    issuer: "mydomain.com",
 			    audience: "mydomain.com",
-			    claims: new[] { new Claim("cid", clientID) },
+			    claims: claims,
 			    expires: DateTime.Now.AddMinutes(30),
 			    signingCredentials: creds);
 

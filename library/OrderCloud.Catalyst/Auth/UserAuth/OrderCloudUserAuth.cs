@@ -61,9 +61,9 @@ namespace OrderCloud.Catalyst
 		protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
 			try {
 				var requiredRoles = Context.GetRequiredOrderCloudRoles();
-				await _userContext.SetAsync(Request, requiredRoles);
+				await _userContext.VerifyAsync(Request, requiredRoles);
 				var cid = new ClaimsIdentity("OcUser");
-				cid.AddClaims(_userContext.Token.AvailableRoles.Select(r => new Claim(ClaimTypes.Role, r)));
+				cid.AddClaims(_userContext.AvailableRoles.Select(r => new Claim(ClaimTypes.Role, r)));
 
 				var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcUser");
 				return AuthenticateResult.Success(ticket);

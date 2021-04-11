@@ -33,8 +33,7 @@ namespace OrderCloud.Catalyst.TestApi
 		[HttpGet("custom"), OrderCloudUserAuth("CustomRole")]
 		public object CustomRole() => "hello custom!";
 
-		[HttpGet("username"), OrderCloudUserAuth]
-		public object Username() => $"hello {_userContext.Token.Username}!";
+
 
 		[HttpGet("anybody"), OrderCloudUserAuth]
 		public object Anybody() => "hello anybody!";
@@ -42,14 +41,25 @@ namespace OrderCloud.Catalyst.TestApi
 		[HttpGet("anon")]
 		public object Anon() => "hello anon!";
 
-		[HttpPost("token/{token}")]
+		[HttpGet("usercontext"), OrderCloudUserAuth]
+		public SimplifiedUser Username()
+		{
+			return new SimplifiedUser()
+			{
+				AvailableRoles = _userContext.AvailableRoles.ToList(),
+				Username = _userContext.Username,
+				TokenClientID = _userContext.TokenClientID
+			};
+		}
+
+		[HttpPost("usercontext/{token}")]
 		public async Task<SimplifiedUser> SetUserContext(string token)
 		{
-			await _userContext.SetAsync(token);
+			await _userContext.VerifyAsync(token);
 			return new SimplifiedUser() { 
-				AvailableRoles = _userContext.Token.AvailableRoles.ToList(),
-				Username = _userContext.Token.Username, 
-				TokenClientID = _userContext.Token.ClientID 
+				AvailableRoles = _userContext.AvailableRoles.ToList(),
+				Username = _userContext.Username, 
+				TokenClientID = _userContext.TokenClientID 
 			};
 		}
 

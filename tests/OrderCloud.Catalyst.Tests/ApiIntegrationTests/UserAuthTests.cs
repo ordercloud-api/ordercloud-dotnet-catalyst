@@ -7,6 +7,7 @@ using OrderCloud.Catalyst.TestApi;
 using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,8 +15,16 @@ using System.Threading.Tasks;
 namespace OrderCloud.Catalyst.Tests
 {
 	[TestFixture]
-	class UserAuthTests
+	public class UserAuthTests
 	{
+		[SetUp]
+		protected void SetUp()
+		{
+			var client = TestFramework.Client;
+			TestStartup.oc.ClearReceivedCalls();
+			TestStartup.oc.Me.GetAsync(Arg.Any<string>()).Returns(new MeUser { Username = "joe", Active = true, AvailableRoles = new[] { "Shopper" } });
+		}
+
 		[Test]
 		public async Task can_allow_anonymous()
 		{
@@ -40,7 +49,7 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task can_auth_with_oc_token()
 		{
 			var result = await TestFramework.Client
-				.WithFakeOrderCloudToken("mYcLiEnTiD") // check should be case insensitive
+				.WithFakeOrderCloudToken("mYcLiEnTiD", new List<string> { "Shopper" }) // clientID check should be case insensitive
 				.Request("demo/shop")
 				.GetStringAsync();
 
@@ -50,12 +59,9 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task should_succeed_with_custom_role()
 		{
-			var token = FakeOrderCloudToken.Create("some_client_id");
 			var request = TestFramework.Client
-				.WithOAuthBearerToken(token)
+				.WithFakeOrderCloudToken("mYcLiEnTiD", new List<string> { "CustomRole" })
 				.Request("demo/custom");
-
-			TestStartup.oc.Me.GetAsync(token).Returns(new MeUser { Username = "joe", ID = "", Active = true, AvailableRoles = new[] { "CustomRole" } });
 
 			var result = await request.GetStringAsync();
 
@@ -73,31 +79,49 @@ namespace OrderCloud.Catalyst.Tests
 			Assert.AreEqual(403, result.StatusCode);
 		}
 
-		[Test]
-		public async Task can_get_username_from_verified_user()
+		[TestCase("awvcxdd", "sgdfhfgh")]
+		public async Task can_get_user_context_from_auth(string userName, string clientID)
 		{
+			var jwt = new JwtOrderCloud() { Username = userName, ClientID = clientID, Roles = new List<string> { "Shopper" } };
 			var result = await TestFramework.Client
-				.WithFakeOrderCloudToken("mYcLiEnTiD") // check should be case insensitive
-				.Request("demo/username")
-				.GetStringAsync();
+				.WithFakeOrderCloudToken(jwt) // check should be case insensitive
+				.Request("demo/usercontext")
+				.GetJsonAsync<SimplifiedUser>();
 
-			result.Should().Be("\"hello joe!\"");
+			Assert.AreEqual(userName, result.Username);
+			Assert.AreEqual(clientID, result.TokenClientID);
+			Assert.AreEqual("Shopper", result.AvailableRoles[0]);
+
+		}
+
+		[TestCase("aqxcbiof", "yucnkqs")]
+		public async Task can_get_user_context_from_setting_it(string userName, string clientID)
+		{
+			var jwt = new JwtOrderCloud() { Username = userName, ClientID = clientID, Roles = new List<string> { "Shopper" } };
+
+			var result = await TestFramework.Client
+				.Request($"demo/usercontext/{jwt.CreateFake()}")
+				.PostAsync()
+				.ReceiveJson<SimplifiedUser>();
+
+			Assert.AreEqual(userName, result.Username);
+			Assert.AreEqual(clientID, result.TokenClientID);
+			Assert.AreEqual("Shopper", result.AvailableRoles[0]);
 		}
 
 		[TestCase("Auth.InvalidUsernameOrPassword", 401, "Invalid username or password")]
 		[TestCase("InvalidToken", 401, "Access token is invalid or expired.")]
 		public async Task ordercloud_error_should_be_forwarded(string errorCode, int statusCode, string message)
 		{
-			var token = FakeOrderCloudToken.Create("some_new_client_id2");
 			var request = TestFramework.Client
-				.WithOAuthBearerToken(token)
+				.WithFakeOrderCloudToken("mYcLiEnTiD", new List<string> { "Shopper" })
 				.Request("demo/shop");
 			var error = OrderCloudExceptionFactory.Create((HttpStatusCode)statusCode, "", new ApiError[] { new ApiError() { 
 				Message = message,
 				ErrorCode = errorCode,
 			}});
 
-			TestStartup.oc.Me.GetAsync(token).Returns<MeUser>(x => { throw error; });
+			TestStartup.oc.Me.GetAsync(Arg.Any<string>()).Returns<MeUser>(x => { throw error; });
 
 			var result = await request.GetAsync();
 
@@ -106,12 +130,11 @@ namespace OrderCloud.Catalyst.Tests
 
 		public async Task auth_should_succeed_based_on_token_not_roles()
 		{
-			var token = FakeOrderCloudToken.Create("some_new_client_id3", "OrderAdmin"); // token has the role
 			var request = TestFramework.Client
-				.WithOAuthBearerToken(token)
+				.WithFakeOrderCloudToken("mYcLiEnTiD", new List<string>() { "OrderAdmin" }) // token has the role
 				.Request("demo/admin");
 
-			TestStartup.oc.Me.GetAsync(token).Returns(new MeUser
+			TestStartup.oc.Me.GetAsync(Arg.Any<string>()).Returns(new MeUser
 			{
 				Username = "joe",
 				ID = "",
@@ -125,51 +148,18 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
-		public async Task should_succeed_with_order_admin()
-		{
-			var token = FakeOrderCloudToken.Create("some_new_client_id");
-			var request = TestFramework.Client
-				.WithOAuthBearerToken(token)
-				.Request("demo/admin");
-
-			TestStartup.oc.Me.GetAsync(token).Returns(new MeUser
-			{
-				Username = "joe",
-				ID = "",
-				Active = true,
-				AvailableRoles = new[] {
-					"MeAdmin",
-					"MeXpAdmin",
-					"ProductAdmin",
-					"PriceScheduleAdmin",
-					"SupplierReader",
-					"OrderAdmin",
-					"SupplierAdmin",
-					"SupplierUserAdmin",
-					"MPMeSupplierUserAdmin",
-					"MPSupplierUserGroupAdmin"
-				}
-			});
-
-			var result = await request.GetStringAsync();
-
-			result.Should().Be("\"hello admin!\"");
-		}
-
-		[Test]
 		public async Task user_authorization_is_cached()
 		{
-			var token = FakeOrderCloudToken.Create("a_fake_client_id");
 			var request = TestFramework.Client
-				.WithOAuthBearerToken(token)
+				.WithFakeOrderCloudToken("mYcLiEnTiD")
 				.Request("demo/shop");
-			TestStartup.oc.ClearReceivedCalls();
+
 			// Two back-to-back requests 
 			await request.GetAsync();
 			await request.GetAsync();
 
 			// But exactly one request to Ordercloud
-			TestStartup.oc.Received(1).Me.GetAsync(token);
+			await TestStartup.oc.Received(1).Me.GetAsync(Arg.Any<string>());
 		}
 
 		[TestCase("demo/shop", true)]
@@ -180,7 +170,7 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task can_authorize_by_role(string endpoint, bool success)
 		{
 			var request = TestFramework.Client
-					.WithFakeOrderCloudToken("myclientid")
+					.WithFakeOrderCloudToken("mYcLiEnTiD", new List<string> { "Shopper" })
 					.Request(endpoint);
 
 			if (success)
@@ -194,21 +184,6 @@ namespace OrderCloud.Catalyst.Tests
 				response.ShouldBeApiError("InsufficientRoles", 403, "User does not have role(s) required to perform this action.");
 				Assert.AreEqual("OrderAdmin", json.Data.SufficientRoles[0]);
 			}	
-		}
-
-		[Test]
-		public async Task can_get_verified_user_context_from_token()
-		{
-			var token = FakeOrderCloudToken.Create("sOmEcLiEnTiD");
-
-			var result = await TestFramework.Client
-				.Request($"demo/token/{token}")
-				.PostAsync()
-				.ReceiveJson<SimplifiedUser>();
-
-			result.TokenClientID.Should().Be("sOmEcLiEnTiD");
-			result.AvailableRoles[0].Should().Be("Shopper");
-			result.Username.Should().Be("joe");
 		}
 
 		//[Test]

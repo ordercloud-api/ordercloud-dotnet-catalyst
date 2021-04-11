@@ -1,28 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Flurl.Http;
 using Microsoft.AspNetCore.Http;
-using OrderCloud.Catalyst.Auth.UserAuth;
 using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst
 {	
 	public class VerifiedUserContext
 	{	
-		public JwtOrderCloud Token => this.token ?? throw new NoUserContextException();
 		public IOrderCloudClient OcClient
 		{
 			get
 			{
-				if (this.ocClient == null)
+				if (ocClient == null)
 				{
-					this.ocClient = JWT.BuildOrderCloudClient(Token);
+					ocClient = JWT.BuildOrderCloudClient(GetToken());
 				}
-				return this.ocClient;
+				return ocClient;
 			}
 		}
+		public string Username => GetToken().Username;
+		public bool IsAnonUser => GetToken().AnonOrderID != null;
+		public bool IsPortalIssuedToken => GetToken().CompanyInteropID != null;
+		public bool IsImpersonationToken => GetToken().ImpersonatingUserDatabaseID != null;
+		public ImmutableList<string> AvailableRoles => ImmutableList.ToImmutableList(GetToken().Roles);
+		public CommerceRole CommerceRole => GetCommerceRole(GetToken().UserType);
+		public string TokenApiUrl => GetToken().ApiUrl;
+		public string TokenAuthUrl => GetToken().AuthUrl;
+		public string TokenClientID => GetToken().ClientID;
+		public DateTime TokenExpiresUTC => GetToken().ExpiresUTC ?? throw new NoUserContextException();
+		public DateTime TokenNotValidBeforeUTC => GetToken().NotValidBeforeUTC ?? throw new NoUserContextException();
 
 		private JwtOrderCloud token;
 		private IOrderCloudClient ocClient;
@@ -35,20 +45,20 @@ namespace OrderCloud.Catalyst
 			_oc = oc;
 		}
 
-		public async Task SetAsync(HttpRequest request, List<string> requiredRoles = null)
+		public async Task VerifyAsync(HttpRequest request, List<string> requiredRoles = null)
 		{
 			var token = request.GetOrderCloudToken();
-			await SetAsync(token, requiredRoles);
+			await VerifyAsync(token, requiredRoles);
 		}
 
-		public async Task SetAsync(string token, List<string> requiredRoles = null)
+		public async Task VerifyAsync(string token, List<string> requiredRoles = null)
 		{
 			if (string.IsNullOrEmpty(token))
 				throw new UnAuthorizedException();
 
 			var parsedToken = new JwtOrderCloud(token);
 
-			if (parsedToken.ClientID == null || parsedToken.NotValidBeforeUTC < DateTime.UtcNow || parsedToken.ExpiresUTC > DateTime.UtcNow)
+			if (parsedToken.ClientID == null || parsedToken.NotValidBeforeUTC > DateTime.UtcNow || parsedToken.ExpiresUTC < DateTime.UtcNow)
 				throw new UnAuthorizedException();
 
 			// we've validated the token as much as we can on this end, go make sure it's ok on OC	
@@ -85,15 +95,32 @@ namespace OrderCloud.Catalyst
 			if (!isValid)
 				throw new UnAuthorizedException();
 
-			if (requiredRoles != null && requiredRoles.Count > 0 && !requiredRoles.Any(role => parsedToken.AvailableRoles.Contains(role)))
+			if (requiredRoles != null && requiredRoles.Count > 0 && !requiredRoles.Any(role => parsedToken.Roles.Contains(role)))
 			{
 				throw new InsufficientRolesException(new InsufficientRolesError()
 				{
 					SufficientRoles = requiredRoles,
-					AssignedRoles = parsedToken.AvailableRoles.ToList()
+					AssignedRoles = parsedToken.Roles.ToList()
 				});
 			}
 			this.token = parsedToken;
+		}
+		private JwtOrderCloud GetToken() => token ?? throw new NoUserContextException();
+
+		private static CommerceRole GetCommerceRole(string userType)
+		{
+			switch (userType?.ToLower())
+			{
+				case "buyer":
+					return CommerceRole.Buyer;
+				case "seller":
+				case "admin":
+					return CommerceRole.Seller;
+				case "supplier":
+					return CommerceRole.Supplier;
+				default:
+					throw new Exception("unknown user type: " + userType);
+			}
 		}
 	}
 }

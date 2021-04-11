@@ -1,6 +1,5 @@
 ﻿using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using OrderCloud.Catalyst.Auth.UserAuth;
 using OrderCloud.SDK;
 using System;
 using System.Security.Cryptography;
@@ -55,7 +54,7 @@ namespace OrderCloud.Catalyst
 				TokenResponse = new TokenResponse()
 				{
 					AccessToken = jwt.AccessToken,
-					ExpiresUtc = jwt.ExpiresUTC
+					ExpiresUtc = jwt.ExpiresUTC ?? throw new NoUserContextException()
 				}
 			};
 			return client;	

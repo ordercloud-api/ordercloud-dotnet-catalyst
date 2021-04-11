@@ -9,6 +9,9 @@ using System.Text;
 
 namespace OrderCloud.Catalyst.Tests
 {
+	// OrderCloudException from OrderCloud.SDK has no public constructor.
+	// See https://github.com/ordercloud-api/ordercloud-dotnet-sdk/issues/63
+	// This factory is a work-around
 	public class OrderCloudExceptionFactory
 	{
 		private static Type _ocExceptionType = typeof(OrderCloudException);

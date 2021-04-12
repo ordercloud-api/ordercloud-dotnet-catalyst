@@ -63,7 +63,7 @@ namespace OrderCloud.Catalyst
 
 			// we've validated the token as much as we can on this end, go make sure it's ok on OC	
 			var allowValidateTokenRetry = false;
-			var isValid = await _cache.GetOrAddAsync(token, TimeSpan.FromMinutes(5), async () =>
+			var isValid = await _cache.GetOrAddAsync(token, TimeSpan.FromDays(1), async () =>
 			{
 				try
 				{
@@ -79,11 +79,15 @@ namespace OrderCloud.Catalyst
 						return JWT.IsTokenCryptoValid(token, publicKey);
 					}
 				}
+				catch (OrderCloudException ex)
+				{
+					throw ex;
+				}
 				catch (FlurlHttpException ex) when (ex.Call.Response?.StatusCode < 500)
 				{
 					return false;
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
 					allowValidateTokenRetry = true;
 					return false;

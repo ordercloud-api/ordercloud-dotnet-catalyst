@@ -1,70 +1,130 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Flurl.Http;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
 using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst
-{
-    public class VerifiedUserContext
-    {
-        public ClaimsPrincipal ClaimsPrincipal { get; }
-        private JwtOrderCloud ParsedToken { get; }
-        private MeUser User { get; set; }
-        public string AccessToken { get; }
-
-        public VerifiedUserContext(ClaimsPrincipal principal)
+{	
+	public class VerifiedUserContext
+	{	
+		public IOrderCloudClient OcClient
 		{
-            ClaimsPrincipal = principal;
-			if (ClaimsPrincipal.Claims.Any())
+			get
 			{
-                AccessToken = GetPrincipalClaim("accesstoken");
-                ParsedToken = new JwtOrderCloud(AccessToken);
-                var userJson = GetPrincipalClaim("userrecordjson");
-                User = JsonConvert.DeserializeObject<MeUser>(userJson);
+				if (ocClient == null)
+				{
+					ocClient = GetToken().BuildClient();
+				}
+				return ocClient;
 			}
 		}
+		public string Username => GetToken().Username;
+		public bool IsAnonUser => GetToken().AnonOrderID != null;
+		public bool IsPortalIssuedToken => GetToken().CompanyInteropID != null;
+		public bool IsImpersonationToken => GetToken().ImpersonatingUserDatabaseID != null;
+		public ImmutableList<string> AvailableRoles => ImmutableList.ToImmutableList(GetToken().Roles);
+		public CommerceRole CommerceRole => GetCommerceRole(GetToken().UserType);
+		public string TokenApiUrl => GetToken().ApiUrl;
+		public string TokenAuthUrl => GetToken().AuthUrl;
+		public string TokenClientID => GetToken().ClientID;
+		public DateTime TokenExpiresUTC => GetToken().ExpiresUTC;
+		public DateTime TokenNotValidBeforeUTC => GetToken().NotValidBeforeUTC;
 
-        public IReadOnlyList<string> AvailableRoles => User.AvailableRoles;
-        public dynamic xp => User.xp;
-        public bool Active => User.Active;
-        public DateTimeOffset? TermsAccepted => User.TermsAccepted;
-        public string Phone => User.Phone;
-        public string Email => User.Email;
-        public DateTimeOffset? DateCreated => User.DateCreated;
-        public string LastName => User.LastName;
-        public string Password => User.Password;
-        public string Username => User.Username;
-        public string ID => User.ID;
-        public MeSeller Seller => User.Seller;
-        public MeSupplier Supplier => User.Supplier;
-        public MeBuyer Buyer => User.Buyer;
-        public string FirstName => User.FirstName;
-        public DateTimeOffset? PasswordLastSetDate => User.PasswordLastSetDate;
-		public string UserType => ParsedToken.UserType;
-        public string CompanyDatabaseID => ParsedToken.CompanyID;
-        public string SellerDatabaseID => ParsedToken.SellerID;
-        public string AnonOrderID => ParsedToken.AnonOrderID;
-        public bool IsAnon => ParsedToken.IsAnon;   
-        // From here down they are really features of the token, not the user.
-        public string TokenAuthUrl => ParsedToken.AuthUrl;
-        public string TokenApiUrl => ParsedToken.ApiUrl;
-        public string TokenClientID => ParsedToken.ClientID;
-        public DateTime TokenExpiresUTC => ParsedToken.ExpiresUTC;
-        public DateTime TokenIssuedAtUTC => ParsedToken.IssuedAtUTC;
-        public DateTime TokenNotValidBeforeUTC => ParsedToken.NotValidBeforeUTC;
+		private JwtOrderCloud token;
+		private IOrderCloudClient ocClient;
+		private readonly ISimpleCache _cache;
+		private readonly IOrderCloudClient _oc;
 
-        private string GetPrincipalClaim(string key)
-        {
-            var claim = ClaimsPrincipal.Claims.FirstOrDefault(c => c.Type == key)?.Value;
-            if (claim == null)
-            {
-                throw new CatalystBaseException("MissingAuthClaim", $"Claim with name \"{key}\" is missing from user context");
-            }
-            return claim;
-        }
-    }
+		public VerifiedUserContext(ISimpleCache cache, IOrderCloudClient oc)
+		{
+			_cache = cache;
+			_oc = oc;
+		}
+
+		public async Task VerifyAsync(HttpRequest request, List<string> requiredRoles = null)
+		{
+			var token = request.GetOrderCloudToken();
+			await VerifyAsync(token, requiredRoles);
+		}
+
+		public async Task VerifyAsync(string token, List<string> requiredRoles = null)
+		{
+			if (string.IsNullOrEmpty(token))
+				throw new UnAuthorizedException();
+
+			var parsedToken = new JwtOrderCloud(token);
+
+			if (parsedToken.ClientID == null || parsedToken.NotValidBeforeUTC > DateTime.UtcNow || parsedToken.ExpiresUTC < DateTime.UtcNow)
+				throw new UnAuthorizedException();
+
+			// we've validated the token as much as we can on this end, go make sure it's ok on OC	
+			var allowValidateTokenRetry = false;
+			var isValid = await _cache.GetOrAddAsync(token, TimeSpan.FromDays(1), async () =>
+			{
+				try
+				{
+					// some valid tokens - e.g. those from the portal - do not have a "kid"
+					if (parsedToken.KeyID == null)
+					{
+						var user = await _oc.Me.GetAsync(token);
+						return user != null && user.Active;
+					}
+					else
+					{
+						var publicKey = await _oc.Certs.GetPublicKeyAsync(parsedToken.KeyID);
+						return parsedToken.IsTokenCryptoValid(publicKey);
+					}
+				}
+				catch (OrderCloudException ex)
+				{
+					throw ex;
+				}
+				catch (FlurlHttpException ex) when (ex.Call.Response?.StatusCode < 500)
+				{
+					return false;
+				}
+				catch (Exception ex)
+				{
+					allowValidateTokenRetry = true;
+					return false;
+				}
+			});
+			if (allowValidateTokenRetry)
+				await _cache.RemoveAsync(token); // not their fault, don't make them wait 5 min      
+
+			if (!isValid)
+				throw new UnAuthorizedException();
+
+			if (requiredRoles != null && requiredRoles.Count > 0 && !requiredRoles.Any(role => parsedToken.Roles.Contains(role)))
+			{
+				throw new InsufficientRolesException(new InsufficientRolesError()
+				{
+					SufficientRoles = requiredRoles,
+					AssignedRoles = parsedToken.Roles.ToList()
+				});
+			}
+			this.token = parsedToken;
+		}
+		private JwtOrderCloud GetToken() => token ?? throw new NoUserContextException();
+
+		private static CommerceRole GetCommerceRole(string userType)
+		{
+			switch (userType?.ToLower())
+			{
+				case "buyer":
+					return CommerceRole.Buyer;
+				case "seller":
+				case "admin":
+					return CommerceRole.Seller;
+				case "supplier":
+					return CommerceRole.Supplier;
+				default:
+					throw new Exception("unknown user type: " + userType);
+			}
+		}
+	}
 }

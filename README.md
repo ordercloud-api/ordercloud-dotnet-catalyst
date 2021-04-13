@@ -13,7 +13,7 @@ Use Ordercloud's authentication scheme in your own APIs. [More Details](https://
 ```c#
 [HttpGet("hello"), OrderCloudUserAuth(ApiRole.Shopper)]
 public string SayHello() {
-    return $"Hello {UserContext.FirstName} {UserContext.LastName}";  
+    return $"Hello {_userContext.FirstName} {_userContext.LastName}";  
 }
 ```
 
@@ -44,7 +44,7 @@ Receive list requests to your API with user defined filters, search, paging, and
 [HttpGet("orders"), OrderCloudUserAuth(ApiRole.Shopper)]
 public async Task<ListPage<Order>> ListOrders(IListArgs args)
 {
-    args.Filters.Add(new ListFilter("FromCompanyID", UserContext.Buyer.ID))
+    args.Filters.Add(new ListFilter("FromCompanyID", _userContext.Buyer.ID))
     args.Filters.Add(new ListFilter("LineItemCount", ">5"))
 
     var orders = await _oc.Orders.ListAsync(OrderDirection.Incoming,
@@ -105,7 +105,7 @@ public class SupplierOnlyException : CatalystBaseException
 
 ....
 
-if (UserContext.UserType != "Supplier") {
+if (_userContext.UserType != "Supplier") {
     throw new SupplierOnlyException();
 }
 ```

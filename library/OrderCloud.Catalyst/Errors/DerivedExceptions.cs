@@ -39,7 +39,7 @@ namespace OrderCloud.Catalyst
 
     public class NoUserContextException : CatalystBaseException
     {
-        public NoUserContextException() : base("UserContextNotSet", 400, "You are attempting to access the user context, but no token has been verified. Add [OrderCloudUserAuth] to your controller or call VerifiedUserContext.SetAsync()") { }
+        public NoUserContextException() : base("UserContextNotSet", 400, "You are attempting to access the user context, but no token has been verified. Add [OrderCloudUserAuth] to your controller or call VerifiedUserContext.VerifyAsync()") { }
     }
 
     public class InsufficientRolesError

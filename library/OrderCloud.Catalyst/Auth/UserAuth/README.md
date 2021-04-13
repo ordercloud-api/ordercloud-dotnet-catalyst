@@ -10,12 +10,20 @@ public virtual void ConfigureServices(IServiceCollection services) {
 }
 ```
 
-##### 2. Mark any of your controllers or action  methods with `[OrderCloudUserAuth]`.
+##### 2. Mark any of your controllers or action  methods with `[OrderCloudUserAuth]`. Inject the `VerifiedUserContext`.
 
 Optionally, You may provide one or more required roles in this attribute, **any one of which** the user must be assigned in order for authorization to succeed.
 
 ```c#
 public class MyThingController : BaseController {}
+
+    private readonly VerifiedUserContext _userContext;
+
+    // Inject user context, which is scoped to a single request. Fields will only be defined if [OrderCloudUserAuth] is defined on the route.
+    public MyThingController(VerifiedUserContext userContext) 
+    {
+        _userContext = userContext;
+    }
 
     // Require one of mulitple roles to access an endpoint
     [HttpGet, Route("thing")] 
@@ -36,15 +44,17 @@ public class MyThingController : BaseController {}
     [HttpPut, Route("hello")]
     [OrderCloudUserAuth] // No roles are defined, so any valid Ordercloud Token gives access.
     public string Hello([FromBody] Thing thing) {
-        return $"Hello {UserContext.FirstName} {UserContext.LastName}";  // UserContext defined on the BaseContoller class and determined by the token.
+        return $"Hello {this._userContext.FirstName} {this._userContext.LastName}";  // UserContext defined on the BaseContoller class and determined by the token.
     }
 
     // Proxy the Ordercloud API, adding your own permission logic
     [HttpGet, Route("orders/mystore")]
     [OrderCloudUserAuth(ApiRole.Shopper)] 
     public ListPage<Order> ListOrdersFromMyStore(ListArgs args) {
+        // Get the details of the current user from OrderCloud.
+        var me = await this._userContext.OcClient.Me.Get();
         // Access a developer-defined extended property (xp) on the user called "StoreID".
-        var storeID = Context.User.xp.StoreID;
+        var storeID = me.xp.StoreID 
         // Create a filter. Only return orders where Order.BillingAddress.ID equals the user's storeID.   
         var billingAddressFilter = new ListFilter() { PropertyName = "BillingAddress.ID", FilterExpression = storeID };
         // Add the filter on top of any additional api user-defined filters. 

@@ -41,8 +41,9 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task can_auth_with_oc_token()
 		{
+			var token = JwtOrderCloud.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" }); // clientID check should be case insensitive
 			var result = await TestFramework.Client
-				.WithFakeOrderCloudToken("mYcLiEnTiD", new List<string> { "Shopper" }) // clientID check should be case insensitive
+				.WithOAuthBearerToken(token) 
 				.Request("demo/shop")
 				.GetStringAsync();
 
@@ -52,8 +53,9 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task should_succeed_with_custom_role()
 		{
+			var token = JwtOrderCloud.CreateFake("mYcLiEnTiD", new List<string> { "CustomRole" });
 			var request = TestFramework.Client
-				.WithFakeOrderCloudToken("mYcLiEnTiD", new List<string> { "CustomRole" })
+				.WithOAuthBearerToken(token)
 				.Request("demo/custom");
 
 			var result = await request.GetStringAsync();
@@ -64,8 +66,9 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task should_error_without_custom_role()
 		{
+			var token = JwtOrderCloud.CreateFake("mYcLiEnTiD");
 			var result = await TestFramework.Client
-				.WithFakeOrderCloudToken("mYcLiEnTiD") // check should be case insensitive
+				.WithOAuthBearerToken(token)
 				.Request("demo/custom")
 				.GetAsync();
 
@@ -77,9 +80,10 @@ namespace OrderCloud.Catalyst.Tests
 			var fixture = new Fixture();
 			var username = fixture.Create<string>();
 			var clientID = fixture.Create<string>();
-			var jwt = new JwtOrderCloud() { Username = username, ClientID = clientID, Roles = new List<string> { "Shopper" } };
+			var token = JwtOrderCloud.CreateFake(clientID, new List<string> { "Shopper" }, username: username);
+
 			var result = await TestFramework.Client
-				.WithFakeOrderCloudToken(jwt) // check should be case insensitive
+				.WithOAuthBearerToken(token)
 				.Request("demo/usercontext")
 				.GetJsonAsync<SimplifiedUser>();
 
@@ -94,10 +98,10 @@ namespace OrderCloud.Catalyst.Tests
 			var fixture = new Fixture();
 			var username = fixture.Create<string>();
 			var clientID = fixture.Create<string>();
-			var jwt = new JwtOrderCloud() { Username = username, ClientID = clientID, Roles = new List<string> { "Shopper" } };
+			var token = JwtOrderCloud.CreateFake(clientID, new List<string> { "Shopper" }, username: username);
 
 			var result = await TestFramework.Client
-				.Request($"demo/usercontext/{jwt.CreateFake()}")
+				.Request($"demo/usercontext/{token}")
 				.PostAsync()
 				.ReceiveJson<SimplifiedUser>();
 
@@ -111,15 +115,15 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			var fixture = new Fixture();
 
-			var jwt = new JwtOrderCloud()
-			{
-				ClientID = fixture.Create<string>(),
-				Roles = new List<string> { "Shopper" },
-				ExpiresUTC = DateTime.UtcNow + TimeSpan.FromHours(1),
-				NotValidBeforeUTC = DateTime.UtcNow - TimeSpan.FromHours(1)
-			};
+			var token = JwtOrderCloud.CreateFake(
+				clientID: fixture.Create<string>(), 
+				roles: new List<string> { "Shopper" },
+				expiresUTC: DateTime.UtcNow + TimeSpan.FromHours(1),
+				notValidBeforeUTC: DateTime.UtcNow - TimeSpan.FromHours(1)
+			);
+
 			var resp = await TestFramework.Client
-				.WithFakeOrderCloudToken(jwt)
+				.WithOAuthBearerToken(token)
 				.Request("demo/shop")
 				.GetStringAsync();
 
@@ -129,13 +133,10 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task should_deny_access_if_no_client_id()
 		{
-			var jwt = new JwtOrderCloud()
-			{
-				ClientID = null,
-				Roles = new List<string> { "Shopper" },
-			};
+			var token = JwtOrderCloud.CreateFake(null, new List<string> { "Shopper" });
+
 			var resp = await TestFramework.Client
-				.WithFakeOrderCloudToken(jwt)
+				.WithOAuthBearerToken(token)
 				.Request("demo/shop")
 				.GetAsync();
 
@@ -146,15 +147,16 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task should_deny_access_if_nvb_is_wrong()
 		{
 			var fixture = new Fixture();
-			var jwt = new JwtOrderCloud()
-			{
-				ClientID = fixture.Create<string>(),
-				Roles = new List<string> { "Shopper" },
-				ExpiresUTC = DateTime.UtcNow + TimeSpan.FromHours(2),
-				NotValidBeforeUTC = DateTime.UtcNow + TimeSpan.FromHours(1)
-			};
+
+			var token = JwtOrderCloud.CreateFake(
+				clientID: fixture.Create<string>(),
+				roles: new List<string> { "Shopper" },
+				expiresUTC: DateTime.UtcNow + TimeSpan.FromHours(2),
+				notValidBeforeUTC: DateTime.UtcNow + TimeSpan.FromHours(1)
+			);
+
 			var resp = await TestFramework.Client
-				.WithFakeOrderCloudToken(jwt)
+				.WithOAuthBearerToken(token)
 				.Request("demo/shop")
 				.GetAsync();
 
@@ -162,10 +164,12 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 
-		public async Task should_succeed_based_on_token_not_roles()
+		public async Task should_succeed_based_on_token_not_me_get()
 		{
+			var token = JwtOrderCloud.CreateFake(null, new List<string> { "OrderAdmin" }); // token has the role
+
 			var request = TestFramework.Client
-				.WithFakeOrderCloudToken("mYcLiEnTiD", new List<string>() { "OrderAdmin" }) // token has the role
+				.WithOAuthBearerToken(token)
 				.Request("demo/admin");
 
 			TestStartup.oc.Me.GetAsync(Arg.Any<string>()).Returns(new MeUser
@@ -185,37 +189,39 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task should_deny_access_if_past_expiry()
 		{
 			var fixture = new Fixture();
-			var jwt = new JwtOrderCloud() {
-				ClientID = fixture.Create<string>(),
-				Roles = new List<string> { "Shopper" },
-				ExpiresUTC = DateTime.UtcNow - TimeSpan.FromHours(1)
-			};
+
+			var token = JwtOrderCloud.CreateFake(
+				clientID: fixture.Create<string>(),
+				roles: new List<string> { "Shopper" },
+				expiresUTC: DateTime.UtcNow - TimeSpan.FromHours(1)
+			);
+
 			var resp = await TestFramework.Client
-				.WithFakeOrderCloudToken(jwt)
+				.WithOAuthBearerToken(token)
 				.Request("demo/shop")
 				.GetAsync();
 
 			resp.ShouldBeApiError("InvalidToken", 401, "Access token is invalid or expired.");
 		}
 
-		[TestCase(true)]
-		[TestCase(false)]
-		public async Task ordercloud_error_should_be_forwarded(bool useKid)
+		[TestCase(true, 401)]
+		[TestCase(true, 403)]
+		[TestCase(true, 500)]
+		[TestCase(true, 404)]
+		[TestCase(false, 401)]
+		[TestCase(false, 403)]
+		[TestCase(false, 500)]
+		public async Task ordercloud_error_should_be_forwarded(bool useKid, int statusCode)
 		{
 			var fixture = new Fixture();
 			var errorCode = fixture.Create<string>();
-			var statusCode = fixture.Create<int>();
 			var message = fixture.Create<string>();
 
-			var jwt = new JwtOrderCloud() { ClientID = "mYcLiEnTiD", Roles = new List<string> { "Shopper" } };
-
-			if (useKid)
-			{
-				jwt.KeyID = "something";
-			}
+			var keyID = useKid ? "something" : null;
+			var token = JwtOrderCloud.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" }, keyID: keyID); // token has the role
 
 			var request = TestFramework.Client
-				.WithFakeOrderCloudToken(jwt)
+				.WithOAuthBearerToken(token)
 				.Request("demo/shop");
 			var error = OrderCloudExceptionFactory.Create((HttpStatusCode)statusCode, "", new ApiError[] { new ApiError() { 
 				Message = message,
@@ -230,25 +236,6 @@ namespace OrderCloud.Catalyst.Tests
 			result.ShouldBeApiError(errorCode, statusCode, message);
 		}
 
-		public async Task auth_should_succeed_based_on_token_not_roles()
-		{
-			var request = TestFramework.Client
-				.WithFakeOrderCloudToken("mYcLiEnTiD", new List<string>() { "OrderAdmin" }) // token has the role
-				.Request("demo/admin");
-
-			TestStartup.oc.Me.GetAsync(Arg.Any<string>()).Returns(new MeUser
-			{
-				Username = "joe",
-				ID = "",
-				Active = true,
-				AvailableRoles = new[] { "MeAdmin", "MeXpAdmin" } // me get does not have the role
-			});
-
-			var result = await request.GetStringAsync();
-
-			result.Should().Be("\"hello admin!\""); // auth should work
-		}
-
 		[TestCase("demo/shop", true)]
 		[TestCase("demo/admin", false)]
 		[TestCase("demo/either", true)]
@@ -256,8 +243,10 @@ namespace OrderCloud.Catalyst.Tests
 		[TestCase("demo/anon", true)]
 		public async Task can_authorize_by_role(string endpoint, bool success)
 		{
+			var token = JwtOrderCloud.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" });
+
 			var request = TestFramework.Client
-					.WithFakeOrderCloudToken("mYcLiEnTiD", new List<string> { "Shopper" })
+					.WithOAuthBearerToken(token)
 					.Request(endpoint);
 
 			if (success)
@@ -273,34 +262,14 @@ namespace OrderCloud.Catalyst.Tests
 			}	
 		}
 
-		[Test]
-		public async Task without_kid_user_authorization_is_cached()
-		{
-			TestStartup.oc.ClearReceivedCalls();
-			var request = TestFramework.Client
-				.WithFakeOrderCloudToken("mYcLiEnTiD", new List<string> { "Shopper" })
-				.Request("demo/shop");
-			TestStartup.oc.ClearReceivedCalls();
-
-			// Two back-to-back requests 
-			await request.GetAsync();
-			await request.GetAsync();
-
-			// But exactly one request to Ordercloud
-			await TestStartup.oc.Received(1).Me.GetAsync(Arg.Any<string>());
-		}
-
 		[TestCase(true)]
 		[TestCase(false)]
 		public async Task user_authorization_is_cached(bool useKid)
 		{
-			var jwt = new JwtOrderCloud() { ClientID = "mYcLiEnTiD", Roles = new List<string> { "Shopper" } };
+			var keyID = useKid ? "something" : null;
+			var token = JwtOrderCloud.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" }, keyID: keyID);
 
-			if (useKid)
-			{
-				jwt.KeyID = "something";
-			}
-			var request = TestFramework.Client.WithFakeOrderCloudToken(jwt).Request("demo/shop");
+			var request = TestFramework.Client.WithOAuthBearerToken(token).Request("demo/shop");
 
 			TestStartup.oc.ClearReceivedCalls();
 

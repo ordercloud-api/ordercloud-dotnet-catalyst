@@ -17,7 +17,7 @@ namespace OrderCloud.Catalyst
 			{
 				if (ocClient == null)
 				{
-					ocClient = JWT.BuildOrderCloudClient(GetToken());
+					ocClient = GetToken().BuildClient();
 				}
 				return ocClient;
 			}
@@ -31,8 +31,8 @@ namespace OrderCloud.Catalyst
 		public string TokenApiUrl => GetToken().ApiUrl;
 		public string TokenAuthUrl => GetToken().AuthUrl;
 		public string TokenClientID => GetToken().ClientID;
-		public DateTime TokenExpiresUTC => GetToken().ExpiresUTC ?? throw new NoUserContextException();
-		public DateTime TokenNotValidBeforeUTC => GetToken().NotValidBeforeUTC ?? throw new NoUserContextException();
+		public DateTime TokenExpiresUTC => GetToken().ExpiresUTC;
+		public DateTime TokenNotValidBeforeUTC => GetToken().NotValidBeforeUTC;
 
 		private JwtOrderCloud token;
 		private IOrderCloudClient ocClient;
@@ -76,7 +76,7 @@ namespace OrderCloud.Catalyst
 					else
 					{
 						var publicKey = await _oc.Certs.GetPublicKeyAsync(parsedToken.KeyID);
-						return JWT.IsTokenCryptoValid(token, publicKey);
+						return parsedToken.IsTokenCryptoValid(publicKey);
 					}
 				}
 				catch (OrderCloudException ex)

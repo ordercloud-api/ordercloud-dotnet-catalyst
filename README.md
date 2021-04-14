@@ -1,10 +1,14 @@
 # ordercloud-dotnet-catalyst
 
-[![OrderCloud.Catalyst](https://img.shields.io/nuget/v/OrderCloud.AzureApp.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.AzureApp/)
+[![OrderCloud.Catalyst](https://img.shields.io/nuget/v/ordercloud-dotnet-catalyst.svg?maxAge=3600)](https://www.nuget.org/packages/ordercloud-dotnet-catalyst/)
 
-Extensions and helpers for building ASP.NET Core 3.1 API apps and WebJobs that integrate with the OrderCloud e-commerce platform. Below is a list of features and how to use them. See [examples](https://github.com/ordercloud-api/dotnet-catalyst-examples) for step-by-step guides on solving commerce problems. 
+A foundational library for building OrderCloud middleware, plugins and extensions with ASP.NET Core. A toolbox of helpers for authentication, performant bulk requests, error handling, jobs, project setup, ect.    
 
-`OrderCloud.Catalyst` is a continuous work in progress based entirely on developer feedback. If you're building solutions for OrderCloud using ASP.NET Core and find a particular task difficult or tedious, we welcome you to [suggest a feature](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/issues/new) for inclusion in this library. 
+See [dotnet-catalyst-examples](https://github.com/ordercloud-api/dotnet-catalyst-examples) for a starter template of a middleware project that uses this library. Targeted guides are found in the examples project.
+
+If you're building solutions for OrderCloud using ASP.NET Core and find a particular task difficult or tedious, we welcome you to [suggest a feature](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/issues/new) for inclusion in this library. 
+
+## Features
 
 ### User Authentication
 
@@ -13,7 +17,7 @@ Use Ordercloud's authentication scheme in your own APIs. [More Details](https://
 ```c#
 [HttpGet("hello"), OrderCloudUserAuth(ApiRole.Shopper)]
 public string SayHello() {
-    return $"Hello {_userContext.FirstName} {_userContext.LastName}";  
+    return $"Hello {_user.Username}";  // _user is a request-scoped serivice
 }
 ```
 
@@ -44,7 +48,8 @@ Receive list requests to your API with user defined filters, search, paging, and
 [HttpGet("orders"), OrderCloudUserAuth(ApiRole.Shopper)]
 public async Task<ListPage<Order>> ListOrders(IListArgs args)
 {
-    args.Filters.Add(new ListFilter("FromCompanyID", _userContext.Buyer.ID))
+    await _user.RequestMeUserAsync() // get user details
+    args.Filters.Add(new ListFilter("FromCompanyID", _user.MeUser.Buyer.ID)) 
     args.Filters.Add(new ListFilter("LineItemCount", ">5"))
 
     var orders = await _oc.Orders.ListAsync(OrderDirection.Incoming,
@@ -105,7 +110,7 @@ public class SupplierOnlyException : CatalystBaseException
 
 ....
 
-if (_userContext.UserType != "Supplier") {
+if (_user.CommerceRole != CommerceRole.Supplier) {
     throw new SupplierOnlyException();
 }
 ```
@@ -135,6 +140,7 @@ public class Startup
         services
             .ConfigureServices()
             .AddSingleton<ISimpleCache, LazyCacheService>()
+            .AddScoped<VerifiedUserContext>()
             .AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
     }
 
@@ -149,7 +155,12 @@ public class Startup
 When writing integration tests that hit an endpoint marked with `[OrderCloudUserAuth]`, you'll need to pass a properly formatted JWT token in the Authorization header, otherwise the call will fail. Fake tokens are a bit tedious to create, so `OrderCloud.Catalyst` provides a helper: 
 
 ```c#
-var token = FakeOrderCloudToken.Create("my-client-id");
+var token = JwtOrderCloud.CreateFake(
+    clientID: "my-client-id", 
+    roles: new List<string> { "Shopper" },
+    expiresUTC: DateTime.UtcNow + TimeSpan.FromHours(1),
+    notValidBeforeUTC: DateTime.UtcNow - TimeSpan.FromHours(1)
+);
 httpClient.DefaultRequestHeaders.Authorization =
     new AuthenticationHeaderValue("Bearer", token);
 ```

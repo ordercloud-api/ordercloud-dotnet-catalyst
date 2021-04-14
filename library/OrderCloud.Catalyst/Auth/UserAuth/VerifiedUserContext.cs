@@ -10,7 +10,10 @@ using OrderCloud.SDK;
 namespace OrderCloud.Catalyst
 {	
 	public class VerifiedUserContext
-	{	
+	{
+		/// <summary>
+		/// An OrderCloud Client object for making request to the API in the context of the authenticated user.
+		/// </summary>
 		public IOrderCloudClient OcClient
 		{
 			get
@@ -22,8 +25,15 @@ namespace OrderCloud.Catalyst
 				return ocClient;
 			}
 		}
+
+		/// <summary>
+		/// Full details of the authenticated user. Can be accessed after ReqestMeUserDetailsAsync() has been called.
+		/// </summary>
+		public MeUser MeUser => meUser ?? throw new UserContextException("MeUser is not populated. Call VerifiedUserContext.RequestMeUserAsync() to populate.");
+
+		public string AccessToken => GetToken().AccessToken;
 		public string Username => GetToken().Username;
-		public bool IsAnonUser => GetToken().AnonOrderID != null;
+		public bool IsAnonToken => GetToken().AnonOrderID != null;
 		public bool IsPortalIssuedToken => GetToken().CompanyInteropID != null;
 		public bool IsImpersonationToken => GetToken().ImpersonatingUserDatabaseID != null;
 		public ImmutableList<string> AvailableRoles => ImmutableList.ToImmutableList(GetToken().Roles);
@@ -34,6 +44,7 @@ namespace OrderCloud.Catalyst
 		public DateTime TokenExpiresUTC => GetToken().ExpiresUTC;
 		public DateTime TokenNotValidBeforeUTC => GetToken().NotValidBeforeUTC;
 
+		private MeUser meUser;
 		private JwtOrderCloud token;
 		private IOrderCloudClient ocClient;
 		private readonly ISimpleCache _cache;
@@ -45,12 +56,26 @@ namespace OrderCloud.Catalyst
 			_oc = oc;
 		}
 
+		/// <summary>
+		/// Requests full details of the authenticated user from OrderCloud. Sets the MeDetails property.
+		/// </summary>
+		public async Task<MeUser> RequestMeUserAsync()
+		{
+			return meUser ??= await _oc.Me.GetAsync(GetToken().AccessToken);
+		}
+
+		/// <summary>
+		/// Verifies an HttpRequest through the OrderCloud token it contains and sets the User Context.
+		/// </summary>
 		public async Task VerifyAsync(HttpRequest request, List<string> requiredRoles = null)
 		{
 			var token = request.GetOrderCloudToken();
 			await VerifyAsync(token, requiredRoles);
 		}
 
+		/// <summary>
+		/// Verifies an OrderCloud token and sets the User Context.
+		/// </summary>
 		public async Task VerifyAsync(string token, List<string> requiredRoles = null)
 		{
 			if (string.IsNullOrEmpty(token))
@@ -62,39 +87,15 @@ namespace OrderCloud.Catalyst
 				throw new UnAuthorizedException();
 
 			// we've validated the token as much as we can on this end, go make sure it's ok on OC	
-			var allowValidateTokenRetry = false;
-			var isValid = await _cache.GetOrAddAsync(token, TimeSpan.FromDays(1), async () =>
+			bool isValid;
+			// some valid tokens - e.g. those from the portal - do not have a "kid"
+			if (parsedToken.KeyID == null)
 			{
-				try
-				{
-					// some valid tokens - e.g. those from the portal - do not have a "kid"
-					if (parsedToken.KeyID == null)
-					{
-						var user = await _oc.Me.GetAsync(token);
-						return user != null && user.Active;
-					}
-					else
-					{
-						var publicKey = await _oc.Certs.GetPublicKeyAsync(parsedToken.KeyID);
-						return parsedToken.IsTokenCryptoValid(publicKey);
-					}
-				}
-				catch (OrderCloudException ex)
-				{
-					throw ex;
-				}
-				catch (FlurlHttpException ex) when (ex.Call.Response?.StatusCode < 500)
-				{
-					return false;
-				}
-				catch (Exception ex)
-				{
-					allowValidateTokenRetry = true;
-					return false;
-				}
-			});
-			if (allowValidateTokenRetry)
-				await _cache.RemoveAsync(token); // not their fault, don't make them wait 5 min      
+				isValid = await ValidateTokenWithMeGet(parsedToken); // also sets meUser field;
+			} else
+			{
+				isValid = await ValidateTokenWithKeyID(parsedToken);
+			}
 
 			if (!isValid)
 				throw new UnAuthorizedException();
@@ -109,7 +110,57 @@ namespace OrderCloud.Catalyst
 			}
 			this.token = parsedToken;
 		}
-		private JwtOrderCloud GetToken() => token ?? throw new NoUserContextException();
+
+		private async Task<bool> ValidateTokenWithMeGet(JwtOrderCloud jwt)
+		{
+			var cacheKey = jwt.AccessToken;
+
+			return await _cache.GetOrAddAsync(cacheKey, TimeSpan.FromHours(1), async () =>
+			{
+				try
+				{
+					meUser = await _oc.Me.GetAsync();
+					return meUser != null && meUser.Active;	
+				}
+				catch (OrderCloudException ex)
+				{
+					throw ex;
+				}
+				catch (Exception ex)
+				{
+					await _cache.RemoveAsync(cacheKey); // not their fault, don't make them wait 1 hr   
+					return false; 
+				}
+			});
+		}
+
+		private async Task<bool> ValidateTokenWithKeyID(JwtOrderCloud jwt)
+		{
+			var cacheKey = jwt.KeyID;
+
+			return await _cache.GetOrAddAsync(cacheKey, TimeSpan.FromDays(30), async () =>
+			{
+				try
+				{
+					var publicKey = await _oc.Certs.GetPublicKeyAsync(jwt.KeyID);
+					return jwt.IsTokenCryptoValid(publicKey);
+				}
+				catch (OrderCloudException ex)
+				{
+					throw ex;
+				}
+				catch (Exception ex)
+				{
+					await _cache.RemoveAsync(cacheKey); // not their fault, don't make them wait 5 min   
+					return false;
+				}
+			});
+		}
+
+		private JwtOrderCloud GetToken()
+		{
+			return token ?? throw new UserContextException("No user token verified in this context. Provide a token by adding [OrderCloudUserAuth] on the controller route or call VerifiedUserContext.VerifyAsync()");
+		}
 
 		private static CommerceRole GetCommerceRole(string userType)
 		{

@@ -11,6 +11,7 @@ using System;
 using System.Net.Http;
 using AutoFixture;
 using OrderCloud.Catalyst.TestApi;
+using Newtonsoft.Json.Linq;
 
 namespace OrderCloud.Catalyst.Tests
 {
@@ -37,17 +38,28 @@ namespace OrderCloud.Catalyst.Tests
 			var payload = fixture.Create<WebhookPayloads.Addresses.Save>();
 
 			var resp = await SendWebhookReq("webhook/saveaddress", payload, "dfadasfd");
-			Assert.AreEqual(401, resp.StatusCode);
+			resp.ShouldBeApiError("Unauthorized", 401, "X-oc-hash header does not match. Endpoint can only be hit from a valid OrderCloud webhook.");
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
 		public async Task prewebhook_is_blocked_or_not(bool proceed)
 		{
-			var resp = await SendWebhookReq($"webhook/response-testing/{proceed}", null);
+			Fixture fixture = new Fixture();
+			var payload = fixture.Create<ExampleModel>();
+
+			var resp = await SendWebhookReq($"webhook/response-testing/{proceed}", payload);
 			var json = await resp.GetJsonAsync<PreWebhookResponse>();
-			Assert.AreEqual(false, json.proceed);
-			Assert.AreEqual(null, json.body);
+			Assert.AreEqual(proceed, json.proceed);
+			if (proceed)
+			{
+				Assert.AreEqual(null, json.body);
+			}
+			else
+			{
+				Assert.AreEqual(payload.BoundedString, ((JObject) json.body).GetValue("BoundedString").ToObject<string>());
+				Assert.AreEqual(payload.RequiredField, ((JObject)json.body).GetValue("RequiredField").ToObject<string>());
+			}
 		}
 
 		[TestCase("something")]

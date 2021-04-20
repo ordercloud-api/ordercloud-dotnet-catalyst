@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using AutoFixture.NUnit3;
 using FluentAssertions;
 using Flurl.Http;
 using NSubstitute;
@@ -286,6 +287,20 @@ namespace OrderCloud.Catalyst.Tests
 			{
 				await TestStartup.oc.Received(1).Me.GetAsync(Arg.Any<string>());
 			}
+		}
+
+		[Test]
+		[AutoData]
+		public async Task can_build_user_context(string clientID)
+		{
+			var token = JwtOrderCloud.CreateFake(clientID);
+
+			var oc = Substitute.For<IOrderCloudClient>();
+			oc.Me.GetAsync().Returns(new MeUser() { Active = true });
+			var context = new VerifiedUserContext(new LazyCacheService(), oc);
+			await context.VerifyAsync(token);
+
+			Assert.AreEqual(clientID, context.TokenClientID);
 		}
 
 		//[Test]

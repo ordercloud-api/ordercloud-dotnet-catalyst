@@ -10,6 +10,11 @@ namespace OrderCloud.Catalyst
         public UnAuthorizedException() : base("InvalidToken", 401, "Access token is invalid or expired.") { }
     }
 
+    public class WebhookUnauthorizedException : CatalystBaseException
+    {
+        public WebhookUnauthorizedException() : base("Unauthorized", 401, "X-oc-hash header does not match. Endpoint can only be hit from a valid OrderCloud webhook.") { }
+    }
+
     public class InsufficientRolesException : CatalystBaseException
     {
         public InsufficientRolesException(InsufficientRolesError data) : base("InsufficientRoles", 403, "User does not have role(s) required to perform this action.", data) { }

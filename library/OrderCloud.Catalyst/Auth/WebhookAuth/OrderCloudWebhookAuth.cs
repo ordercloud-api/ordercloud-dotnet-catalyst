@@ -35,25 +35,32 @@ namespace OrderCloud.Catalyst
 			}
 
 			if (!Context.Request.Headers.ContainsKey("X-oc-hash")) {
-				return AuthenticateResult.Fail("X-oc-hash header was not sent. Endpoint can only be hit from a valid OrderCloud webhook.");
+				throw new WebhookUnauthorizedException();
 			}
 
 			var sent = Context.Request.Headers["X-oc-hash"].FirstOrDefault();
 			if (string.IsNullOrEmpty(sent)) {
-				return AuthenticateResult.Fail("X-oc-hash header was not sent. Endpoint can only be hit from a valid OrderCloud webhook.");
+				throw new WebhookUnauthorizedException();
 			}
 
 			Context.Request.EnableBuffering();
+			// Just choose something reasonable - https://stackoverflow.com/questions/3033771/file-i-o-with-streams-best-memory-buffer-size
+			var bufferSize = 4096;
 
 			try {
+				using var reader = new StreamReader(Request.Body, encoding: Encoding.UTF8, false, bufferSize, true);
+				var bodyBytes = Encoding.UTF8.GetBytes(await reader.ReadToEndAsync());
+
 				var keyBytes = Encoding.UTF8.GetBytes(Options.HashKey);
-				var hash = new HMACSHA256(keyBytes).ComputeHash(Context.Request.Body);
+				var hash = new HMACSHA256(keyBytes).ComputeHash(bodyBytes);
 				var computed = Convert.ToBase64String(hash);
 
-				if (sent != computed) {
-					return AuthenticateResult.Fail("X-oc-hash header does not match. Endpoint can only be hit from a valid OrderCloud webhook.");
+				if (sent != computed)
+				{
+					throw new WebhookUnauthorizedException();
 				}
-				else {
+				else
+				{
 					var cid = new ClaimsIdentity("OcWebhook");
 					var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcWebhook");
 					return AuthenticateResult.Success(ticket);

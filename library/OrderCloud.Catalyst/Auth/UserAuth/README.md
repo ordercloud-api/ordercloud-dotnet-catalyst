@@ -78,8 +78,8 @@ In a C# context that is not a request to a Controller, for example a serverless 
     await _user.VerifyAsync(token); // will throw same errors if the there is any problem with the token
 ```
 
+Proxy the Ordercloud API, adding your own permission logic
 ```c#
-    // Proxy the Ordercloud API, adding your own permission logic
     [HttpGet, Route("orders/mystore")]
     [OrderCloudUserAuth(ApiRole.Shopper)] 
     public async Task<ListPage<Order>> ListOrdersFromMyStore(ListArgs args) {

@@ -65,6 +65,16 @@ namespace OrderCloud.Catalyst
 		}
 
 		/// <summary>
+		/// Requests full details of the authenticated user from OrderCloud. Sets the MeDetails property.
+		/// </summary>
+		public async Task<T> RequestMeUserAsync<T>()
+			where T : MeUser
+		{
+			meUser ??= await _oc.Me.GetAsync<T>(GetToken().AccessToken);
+			return (T) meUser;
+		}
+
+		/// <summary>
 		/// Verifies an HttpRequest through the OrderCloud token it contains and sets the User Context.
 		/// </summary>
 		public async Task VerifyAsync(HttpRequest request, List<string> requiredRoles = null)

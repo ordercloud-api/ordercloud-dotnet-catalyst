@@ -169,7 +169,7 @@ namespace OrderCloud.Catalyst
 
 		private JwtOrderCloud GetToken()
 		{
-			return token ?? throw new UserContextException("No user token verified in this context. Provide a token by adding [OrderCloudUserAuth] on the controller route or call VerifiedUserContext.VerifyAsync()");
+			return token ?? throw new UserContextException("No user token verified in this context. Add [OrderCloudUserAuth] on the controller route or call VerifyAsync(). Also make sure VerifiedUserContext and downstream services are request-scoped.");
 		}
 
 		private static CommerceRole GetCommerceRole(string userType)

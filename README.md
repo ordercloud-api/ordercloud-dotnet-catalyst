@@ -4,7 +4,7 @@
 
 A foundational library for building OrderCloud middleware, plugins and extensions with ASP.NET Core. A toolbox of helpers for authentication, performant bulk requests, error handling, jobs, project setup, ect.    
 
-See [dotnet-catalyst-examples](https://github.com/ordercloud-api/dotnet-catalyst-examples) for a starter template of a middleware project that uses this library. Targeted guides are found in the examples project.
+See [dotnet-catalyst-examples](https://github.com/ordercloud-api/dotnet-catalyst-examples) for a starter template of a middleware project that uses this library. Targeted guides are found there.
 
 If you're building solutions for OrderCloud using ASP.NET Core and find a particular task difficult or tedious, we welcome you to [suggest a feature](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/issues/new) for inclusion in this library. 
 
@@ -17,7 +17,7 @@ Use Ordercloud's authentication scheme in your own APIs. [More Details](https://
 ```c#
 [HttpGet("hello"), OrderCloudUserAuth(ApiRole.Shopper)]
 public string SayHello() {
-    return $"Hello {_user.Username}";  // _user is a request-scoped serivice
+    return $"Hello {_user.Username}";  // _user is a service injected in the constructor
 }
 ```
 

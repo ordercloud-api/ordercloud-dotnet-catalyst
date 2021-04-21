@@ -1,7 +1,7 @@
 ## Error Handling  
 
 Catalyst comes with a GlobalExceptionHandler that catches all runtime exceptions and converts them into an API error response with a standard format of
-```json
+```jsonc
 {
 	"ErrorCode": "InvalidTieColor",
 	"Message" : "A string describing how to fix your wardrobe malfunction"

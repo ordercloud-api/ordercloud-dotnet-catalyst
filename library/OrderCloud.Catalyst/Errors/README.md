@@ -16,16 +16,16 @@ This is the same format as errors from the Ordercloud platform, which is helpful
 Catalyst provides a number of out of the box exceptions in the file DerivedExceptions.cs that may be helpful such as UnAuthorizedException, NotFoundException, and InvalidPropertyException.
 
 ```c#
-	if (UserContext.UserType != "Supplier") {
-		throw new UnAuthorizedException();
-	}
+if (UserContext.UserType != "Supplier") {
+	throw new UnAuthorizedException();
+}
 ```
 
 You can also extend the CatalystBaseException in order to deliver your own error messages.
 
 ```c#
     public class DivideByZeroException : CatalystBaseException
-	{
+    {
         public DivideByZeroException() : base("DivideByZero", 400, "You have violated a fundamental mathmatical law.") { }
     }
 ```

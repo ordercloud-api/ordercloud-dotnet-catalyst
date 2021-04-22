@@ -24,10 +24,10 @@ foreach (var prod in products) {
 var requests = products.Select(prod => ocClient.Products.Create(prod));
 await Task.WhenAll(requests);
 
-var maxConcurency = 20;
-var minPause = 100 // ms
 
 // A happy medium - some speed up, but a bounded degree of concurency. 
+var maxConcurency = 20;
+var minPause = 100 // ms
 await Throttler.RunAsync(cars, minPause, maxConcurency, prod => ocClient.Products.Create(prod));
 
 // Example of returning results 

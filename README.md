@@ -10,9 +10,9 @@ If you're building solutions for OrderCloud using ASP.NET Core and find a partic
 
 ## Features
 
-### User Authentication
+### [User Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Auth/UserAuth)
 
-Use Ordercloud's authentication scheme in your own APIs. [More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Auth/UserAuth)
+Use Ordercloud's authentication scheme in your own APIs.
 
 ```c#
 [HttpGet("hello"), OrderCloudUserAuth(ApiRole.Shopper)]
@@ -21,9 +21,9 @@ public string SayHello() {
 }
 ```
 
-### Webhook Authentication 
+### [Webhook Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Auth/WebhookAuth)
 
-Securely receive push notifications of events from the Ordercloud platform. [More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Auth/WebhookAuth)
+Securely receive push notifications of events from the Ordercloud platform.
 
 ```c#
 [HttpPost("webhook"), OrderCloudWebhookAuth]
@@ -32,18 +32,17 @@ public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConf
 }
 ```
 
-### Listing All Pages
+### [Listing All Pages](./library/OrderCloud.Catalyst/DataMovement/ListAllAsync)
 
-If OrderCloud's limit of 100 records per page is a pain point. [More Details](./library/OrderCloud.Catalyst/DataMovement/ListAllAsync)
+If OrderCloud's limit of 100 records per page is a pain point.
 
 ```c#
 var orders = new OrderCloudClient(...).Orders.ListAllAsync();
 ```
 
-### Proxying Platform List Calls
+### [Proxying Platform List Calls](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Models/ListOptions)
 
-Receive list requests to your API with user defined filters, search, paging, and sorting. [More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Models/ListOptions)
-
+Receive list requests to your API with user defined filters, search, paging, and sorting.
 ```c#
 [HttpGet("orders"), OrderCloudUserAuth(ApiRole.Shopper)]
 public async Task<ListPage<Order>> ListOrders(IListArgs args)

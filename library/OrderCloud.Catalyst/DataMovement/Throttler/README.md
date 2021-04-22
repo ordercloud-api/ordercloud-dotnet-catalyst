@@ -28,10 +28,10 @@ var maxConcurency = 20;
 var minPause = 100 // ms
 
 // A happy medium - some speed up, but a bounded degree of concurency. 
-await Throttler.RunAsync(cars, 100, 20, prod => ocClient.Products.Create(prod));
+await Throttler.RunAsync(cars, minPause, maxConcurency, prod => ocClient.Products.Create(prod));
 
 // Example of returning results 
-var products = await Throttler.RunAsync(cars, 100, 20, prod => ocClient.Products.Get(prod.ID));
+var products = await Throttler.RunAsync(cars, minPause, maxConcurency, prod => ocClient.Products.Get(prod.ID));
 
 ```
 

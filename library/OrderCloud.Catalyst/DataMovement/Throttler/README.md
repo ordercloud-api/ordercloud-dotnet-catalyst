@@ -16,20 +16,22 @@ The throttler will start after every **minPuase** interval. However, if the **ma
 #### Example 
 ```c#
 // Make a bunch of async function calls sequentially. Downside is, it could be slow.
-foreach (var car in cars) {
-    await apiClient.CreateCar(car);
+foreach (var prod in products) {
+    await ocClient.Products.Create(prod);
 }
 
 // Make a bunch of async function calls concurently. Downside is, could strain resources. 
-var requests = cars.Select(car => apiClient.CreateCar(car));
+var requests = products.Select(prod => ocClient.Products.Create(prod));
 await Task.WhenAll(requests);
 
+var maxConcurency = 20;
+var minPause = 100 // ms
 
 // A happy medium - some speed up, but a bounded degree of concurency. 
-await Throttler.RunAsync(cars, 100, 20, car => apiClient.CreateCar(car);
+await Throttler.RunAsync(cars, 100, 20, prod => ocClient.Products.Create(prod));
 
 // Example of returning results 
-var carOwners = await Throttler.RunAsync(cars, 100, 20, car => apiClient.GetCurrentOwner(car.ID);
+var products = await Throttler.RunAsync(cars, 100, 20, prod => ocClient.Products.Get(prod.ID));
 
 ```
 

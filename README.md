@@ -62,9 +62,9 @@ public async Task<ListPage<Order>> ListOrders(IListArgs args)
 }
 ```
 
-### Caching 
+### [Caching](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/DataMovement/Caching)
 
-Use Redis or LazyCache. Or, define your own implementation of ISimpleCache. [More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/DataMovement/Caching) 
+Use Redis or LazyCache. Or, define your own implementation of ISimpleCache.
 
 ```c#
 private ISimpleCache _cache;
@@ -85,9 +85,9 @@ public Thing EditThing(string thingID) {
 }
 ```
 
-### Throttler 
+### [Throttler](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/DataMovement/Throttler) 
 
-A perfomance helper for multiple async function calls. [More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/DataMovement/Throttler)
+A perfomance helper for multiple async function calls.
 
 ```c# 
 var cars = new List<Car>();
@@ -97,9 +97,9 @@ var minPause = 100 // ms
 var carOwners = await Throttler.RunAsync(cars, minPause, maxConcurency, car => apiClient.GetCarOwner(car.ID);
 ```
 
-### Error Handling  
+### [Error Handling](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Errors)
 
-Handle API errors, including unexpected ones, with a standard JSON response structure. Define your own errors. [More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Errors)
+Handle API errors, including unexpected ones, with a standard JSON response structure. Define your own errors.
 
 ```c#
 public class SupplierOnlyException : CatalystBaseException
@@ -114,9 +114,9 @@ if (_user.CommerceRole != CommerceRole.Supplier) {
 }
 ```
 
-### API StartUp
+### [API StartUp](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Startup)
 
-Remove some of the boilerplate code of starting up a new API project. [More Details](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Startup)
+Remove some of the boilerplate code of starting up a new API project.
 
 ```c#
 public class Program

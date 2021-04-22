@@ -1,0 +1,15 @@
+{
+  "name": "catalyst-codegen",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "codegen": "tsc --p . && oc-codegen -t templates -o ../library/OrderCloud.Catalyst/Generated -k hooks.js -c"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@ordercloud/oc-codegen": "0.0.1-19",
+    "typescript": "^3.8.2"
+  }
+}

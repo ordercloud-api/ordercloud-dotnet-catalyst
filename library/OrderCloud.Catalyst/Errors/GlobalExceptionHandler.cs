@@ -36,8 +36,8 @@ namespace OrderCloud.Catalyst
             switch (ex)
             {
                 case CatalystBaseException intException:
-                    context.Response.StatusCode = intException.HttpStatus;
-                    return context.Response.WriteAsync(JsonConvert.SerializeObject(intException.ApiError));
+                    context.Response.StatusCode = (int)intException.Errors[0].StatusCode;
+                    return context.Response.WriteAsync(JsonConvert.SerializeObject(new { Errors = intException.Errors }));
                 case OrderCloudException ocException:
                     context.Response.StatusCode = (int) ocException.HttpStatus;
                     return context.Response.WriteAsync(JsonConvert.SerializeObject(ocException.Errors[0]));

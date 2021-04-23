@@ -24,44 +24,73 @@ namespace OrderCloud.Catalyst.Tests
 			result.ShouldBeApiError("InternalServerError", 500, "Unknown error has occured.");
 		}
 
+		//[Test]
+		//[AutoData]
+		//public void catalsyst_exception_should_have_message(ErrorCode errorCode, string message)
+		//{
+		//	var ex1 = new CatalystBaseException(new ApiError() { ErrorCode = errorCode.Code, Message = message });
+		//	var ex2 = new CatalystBaseException(errorCode);
+
+		//	Assert.AreEqual(message, ex1.ApiErrors[0].Message);
+		//	Assert.AreEqual(errorCode.DefaultMessage, ex2.ApiErrors[0].Message);
+		//	Assert.AreEqual(errorCode.Code, ex1.ApiErrors[0].ErrorCode);
+		//	Assert.AreEqual(errorCode.Code, ex2.ApiErrors[0].ErrorCode);
+		//}
+
 		[Test]
 		[AutoData]
-		public void catalsyst_exception_should_have_message(string code, string message)
-		{
-			var ex1 = new CatalystBaseException(new ApiError() { ErrorCode = code, Message = message });
-			var ex2 = new CatalystBaseException(code, message);
-
-			Assert.AreEqual(message, ex1.Message);
-			Assert.AreEqual(message, ex2.Message);
-			Assert.AreEqual(code, ex1.ApiError.ErrorCode);
-			Assert.AreEqual(code, ex2.ApiError.ErrorCode);
-		}
-
-		[Test]
-		public void require_that_does_not_throw_catalyst_exception()
+		public void require_that_does_not_throw_catalyst_exception(ErrorCode errorCode)
         {
-			Assert.DoesNotThrow(() => Require.That(true, new CatalystBaseException("code", "message")));
+			Assert.DoesNotThrow(() => Require.That(true, null));
+			Assert.DoesNotThrow(() => Require.That(true, errorCode));
+			Assert.DoesNotThrow(() => Require.That(true, null));
+			Assert.DoesNotThrow(() => Require.That(true, null));
 		}
 
 		[Test]
 		[AutoData]
-		public void require_that_throws_catalyst_exception(string code, string message)
+		public void require_that_throws_catalyst_exception(ErrorCode<UserContextException> errorCode, string message)
         {
 			var data = new { key = "value" };
-			var ex1 = Assert.Throws<CatalystBaseException>(() => Require.That(false, new CatalystBaseException(code, message)));
-			var ex2 = Assert.Throws<CatalystBaseException>(() => Require.That(false, new CatalystBaseException(new ApiError() { ErrorCode = code, Message = message })));
-			var ex3 = Assert.Throws<CatalystBaseException>(() => Require.That(false, new CatalystBaseException(new ApiError() { ErrorCode = code, Message = message }), data));
-			var ex4 = Assert.Throws<CatalystBaseException>(() => Require.That(false, new CatalystBaseException(code, message), () => data));
+			var ex1 = Assert.Throws<CatalystBaseException>(() => Require.That(false, errorCode));
+			var ex2 = Assert.Throws<CatalystBaseException>(() => Require.That(false, errorCode, new UserContextException(message)));
+			var ex3 = Assert.Throws<CatalystBaseException>(() => Require.That(false, errorCode));
+			var ex4 = Assert.Throws<CatalystBaseException>(() => Require.That(false, errorCode));
+			// Assert on Exception 1
 			Assert.AreEqual(message, ex1.Message);
+			Assert.AreEqual(errorCode, ex1.Errors[0].ErrorCode);
+			// Assert on Exception 2
 			Assert.AreEqual(message, ex2.Message);
+			Assert.AreEqual(errorCode, ex2.Errors[0].ErrorCode);
+			// Assert on Exception 3
 			Assert.AreEqual(message, ex3.Message);
+			Assert.AreEqual(errorCode, ex3.Errors[0].ErrorCode);
+			Assert.AreEqual(data, ex3.Errors[0].Data);
+			// Assert on Exception 4
 			Assert.AreEqual(message, ex4.Message);
-			Assert.AreEqual(code, ex1.ApiError.ErrorCode);
-			Assert.AreEqual(code, ex2.ApiError.ErrorCode);
-			Assert.AreEqual(code, ex3.ApiError.ErrorCode);
-			Assert.AreEqual(code, ex4.ApiError.ErrorCode);
-			Assert.AreEqual(data, ex3.ApiError.Data);
-			Assert.AreEqual(data, ex4.ApiError.Data);
+			Assert.AreEqual(errorCode, ex4.Errors[0].ErrorCode);
+			Assert.AreEqual(data, ex4.Errors[0].Data);
+		}
+
+		[Test]
+		[AutoData]
+		public void throw_multiple_errors(ErrorCode<dynamic> errorCode1, ErrorCode<dynamic> errorCode2)
+        {
+			var exceptionData1 = new { This = "That" };
+			var exceptionData2 = new { That = "This" };
+			var errors = new ApiErrorList();
+			errors.Add<dynamic>(errorCode1, exceptionData1);
+			errors.Add<dynamic>(errorCode2, exceptionData2);
+			var ex = Assert.Throws<CatalystBaseException>(() => errors.ThrowIfAny());
+			// Assert on errorCode.Code
+			Assert.AreEqual(errorCode1.Code, ex.Errors[0].ErrorCode);
+			Assert.AreEqual(errorCode2.Code, ex.Errors[1].ErrorCode);
+			// Assert on errorCode.StatusCode
+			Assert.AreEqual(errorCode1.HttpStatus, (int)ex.Errors[0].StatusCode);
+			Assert.AreEqual(errorCode2.HttpStatus, (int)ex.Errors[1].StatusCode);
+			// Assert on errorCode.Data
+			Assert.AreEqual(exceptionData1, ex.Errors[0].Data);
+			Assert.AreEqual(exceptionData2, ex.Errors[1].Data);
 		}
 	}
 }

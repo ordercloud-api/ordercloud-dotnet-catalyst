@@ -68,7 +68,7 @@ namespace OrderCloud.Catalyst
 				var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcUser");
 				return AuthenticateResult.Success(ticket);
 			}
-			catch (CatalystBaseException ex) when (ex.HttpStatus == 403)
+			catch (ApiErrorException ex) when (ex.StatusCode == 403)
 			{
 				throw ex;
 			}

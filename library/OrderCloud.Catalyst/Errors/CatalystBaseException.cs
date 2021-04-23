@@ -1,49 +1,45 @@
-﻿using OrderCloud.SDK;
+﻿using Flurl.Http;
+using OrderCloud.Catalyst.Extensions;
+using OrderCloud.SDK;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Text.Json.Serialization;
 
 namespace OrderCloud.Catalyst
 {
 	public class CatalystBaseException : Exception
 	{
-		public ApiError ApiError { get; }
-		public int HttpStatus { get; set; }
+		public HttpStatusCode? HttpStatus { get; }
+		public ApiError[] Errors { get; }
 
-		public CatalystBaseException(string errorCode, string message, object data = null) : base(message)
+		internal CatalystBaseException(FlurlCall call, ApiError[] errors) : base(BuildMessage(call, errors), call.Exception)
 		{
-			HttpStatus = 400;
-			ApiError = new ApiError
-			{
-				ErrorCode = errorCode,
-				Message = message,
-				Data = data
-			};
+			HttpStatus = call.HttpResponseMessage.StatusCode;
+			Errors = errors;
 		}
 
-		public CatalystBaseException(string errorCode, int httpStatus, string message, object data = null) : base(message)
+		private static string BuildMessage(FlurlCall call, ApiError[] errors)
 		{
-			HttpStatus = httpStatus;
-			ApiError = new ApiError
-			{
-				ErrorCode = errorCode,
-				Message = message,
-				Data = data
-			};
-		}
+			var code = errors?.FirstOrDefault()?.ErrorCode;
+			var msg = errors?.FirstOrDefault()?.Message;
+			if (!string.IsNullOrEmpty(code) && !string.IsNullOrEmpty(msg))
+				return $"{code}: {msg}";
 
-		public CatalystBaseException(ApiError apiError) : base(apiError.Message)
-		{
-			HttpStatus = 400;
-			ApiError = new ApiError
-			{
-				ErrorCode = apiError.ErrorCode,
-				Message = apiError.Message,
-				Data = apiError.Data
-			};
+			return new[] { code, msg, call?.Exception?.Message, "An unknown error occurred." }
+				.FirstOrDefault(x => !string.IsNullOrEmpty(x));
 		}
 	}
 
-	public class ApiError<T> : ApiError 
+	internal class ApiErrorResponse
 	{
-		public new T Data { get; set; }
+		public ApiError[] Errors { get; set; }
+	}
+
+	internal class AuthErrorResponse
+	{
+		public string error { get; set; }
+		public string error_description { get; set; }
 	}
 }

@@ -257,10 +257,11 @@ namespace OrderCloud.Catalyst.Tests
 			} else
 			{
 				var response = await request.GetAsync();
-				var json = await request.GetJsonAsync<ApiError<InsufficientRolesError>>();
+				var json = await request.GetJsonAsync();
 				response.ShouldBeApiError("InsufficientRoles", 403, "User does not have role(s) required to perform this action.");
-				Assert.AreEqual("OrderAdmin", json.Data.SufficientRoles[0]);
-			}	
+				Assert.AreEqual(true, true);
+                Assert.AreEqual("OrderAdmin", json.Data.SufficientRoles[0]);
+            }	
 		}
 
 		[TestCase(true)]

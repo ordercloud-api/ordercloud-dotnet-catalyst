@@ -75,6 +75,9 @@ namespace OrderCloud.Catalyst.TestApi
 		[HttpGet("listargs")]
 		public IListArgs DeserializeListArgs(ListArgs<ExampleModel> args) => args;
 
+		[HttpGet("searchargs")]
+		public SearchArgs<ExampleModel> DeserializeSearchArgs(SearchArgs<ExampleModel> args) => args;
+
 		[HttpGet("listargspageonly")]
 		public ListArgsPageOnly DeserializeListArgsPageOnly(ListArgsPageOnly args) => args;
 	}

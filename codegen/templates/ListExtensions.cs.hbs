@@ -1,0 +1,25 @@
+// This file is generated automatically, do not edit directly. See codegen/templates/ListExtensions.cs.hbs
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using OrderCloud.SDK;
+
+namespace OrderCloud.Catalyst
+{
+	public static class ListExtensions
+	{
+        {{#resources}}{{#with this as | resource |}}{{#operations}}{{#with this as | operation |}}{{#if isList}}       
+        public static async Task<ListPage{{#if isFacetList}}WithFacets{{else}}{{/if}}<{{operation.returnType}}>> {{operation.name}}Async(this I{{resource.id}}Resource resource, {{#listArgsParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listArgsParams}}{{#if isFacetList}}SearchArgs<{{operation.returnType}}>{{else}}IListArgs{{/if}} args = null, string accessToken = null) 
+        {
+            args ??= new {{#if isFacetList}}SearchArgs{{else}}ListArgs{{/if}}<{{operation.returnType}}>();
+			return await resource.{{operation.name}}Async({{#allParams}}{{listArgsValue}}, {{/allParams}}accessToken);
+        }
+        
+        {{#if operation.hasXP}}public static async Task<ListPage{{#if isFacetList}}WithFacets{{else}}{{/if}}<T>> {{operation.name}}Async<T>(this I{{resource.id}}Resource resource, {{#listArgsParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listArgsParams}}{{#if isFacetList}}SearchArgs<T>{{else}}IListArgs{{/if}} args = null, string accessToken = null) 
+            where T : {{operation.returnType}}
+        {
+            args ??= new {{#if isFacetList}}SearchArgs{{else}}ListArgs{{/if}}<T>();
+			return await resource.{{operation.name}}Async<T>({{#allParams}}{{listArgsValue}}, {{/allParams}}accessToken);
+        }{{/if}}{{/if}}{{/with}}{{/operations}}{{/with}}{{/resources}}
+    }
+}

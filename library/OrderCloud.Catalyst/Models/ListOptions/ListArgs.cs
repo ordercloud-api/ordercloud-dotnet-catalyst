@@ -19,6 +19,7 @@ namespace OrderCloud.Catalyst
         IList<ListFilter> Filters { get; set; }
 		void ValidateAndNormalize();
         string ToFilterString();
+		string ToSortString();
     }
 
 	[ModelBinder(typeof(ListArgsModelBinder))]
@@ -74,6 +75,11 @@ namespace OrderCloud.Catalyst
 		{
 			var filters = Filters.Select(t => $"{t.PropertyName}={t.FilterExpression.Replace("&", "%26")}");
 			return string.Join("&", filters);
+		}
+
+		public string ToSortString()
+		{
+			return string.Join(",", SortBy);
 		}
 	}
 }

@@ -28,7 +28,7 @@ public class MyThingController
     // Inject user context, which is scoped to a single request. Fields will only be defined if [OrderCloudUserAuth] is defined on the route.
     public MyThingController(VerifiedUserContext user) 
     {
-        _usee = user;
+        _user = user;
     }
 
     // Without access, requestor recieves a 401 Unauthorized or 403 InsuffientRoles error.

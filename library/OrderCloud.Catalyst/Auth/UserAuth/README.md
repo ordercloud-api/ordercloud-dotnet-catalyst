@@ -118,7 +118,7 @@ public class OrderSubmitCommand
     public async Task<Order> SubmitOrderAsync(string orderID, OrderDirection direction, OrderCloudIntegrationsCreditCardPayment payment) 
     {
         // Order details, inlcuding all line items. Requested with "super user" client context.
-        var worksheet = await _oc.IntegrationEvents.GetWorksheetAsync<HSOrderWorksheet>(OrderDirection.Incoming, orderID);
+        var worksheet = await _oc.IntegrationEvents.GetWorksheetAsync(OrderDirection.Incoming, orderID);
         // Perform validation with full "super user" data
         await ValidateOrderAsync(worksheet, payment);
         await _card.AuthorizePayment(payment);  // do this in middleware for security.

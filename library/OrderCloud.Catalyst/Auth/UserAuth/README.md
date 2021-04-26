@@ -88,7 +88,7 @@ Proxy the Ordercloud API, adding your own permission logic
         // Access a developer-defined extended property (xp) on the user called "StoreID".
         var storeID = me.xp.StoreID 
         // Create a filter. Only return orders where Order.BillingAddress.ID equals the user's storeID.   
-        var billingAddressFilter = new ListFilter() { PropertyName = "BillingAddress.ID", FilterExpression = storeID };
+        var billingAddressFilter = new ListFilter("BillingAddress.ID", storeID);
         // Add the filter on top of any additional api user-defined filters. 
         args.Filters.Add(billingAddressFilter);
         // request orders from an admin endpoint

@@ -51,13 +51,7 @@ public async Task<ListPage<Order>> ListOrders(IListArgs args)
     args.Filters.Add(new ListFilter("FromCompanyID", _user.MeUser.Buyer.ID)) 
     args.Filters.Add(new ListFilter("LineItemCount", ">5"))
 
-    var orders = await _oc.Orders.ListAsync(OrderDirection.Incoming,
-        page: args.Page,
-        pageSize: args.PageSize,
-        sortBy: string.Join(',', args.SortBy),
-        search: args.Search,
-        searchOn: args.SearchOn,
-        filters: args.ToFilterString());
+    var orders = await _oc.Orders.ListAsync(OrderDirection.Incoming, args); // apply list args with an extension version of ListAsync()
     return orders;
 }
 ```

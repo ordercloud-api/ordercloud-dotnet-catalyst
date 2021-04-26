@@ -28,11 +28,13 @@ var expensiveLineItems = _oc.LineItems.ListAllAsync(OrderDirection.Incomming, or
 // Imagine you want to write line items to a comma separated value file.
 // use a call-back function that will be triggered for each list page that's found. This saves memory because only one list page is stored at a given time. 
 CloudAppendBlob csvFile = client.GetContainerReference("...").GetAppendBlobReference("..."); // A reference to an append blob in Azure storage
+
 _oc.LineItems.ListAllAsync(OrderDirection.Incomming, orderID, listPage => {	
+	
 	// Write the lineItems in batches of 100, the default pageSize for ListAll
 	var lineItems = listPage.Items;
 	foreach(var lineItem in lineItems) {
-		var csvLine = ConvertToCSV(lineItem);
+		string csvLine = ConvertToCSV(lineItem);
 		csvFile.AppendTextAsync(csvLine); // save that batch of lineItems in the cloud. Allows them to be garbage collected locally. 
 	}	
 });

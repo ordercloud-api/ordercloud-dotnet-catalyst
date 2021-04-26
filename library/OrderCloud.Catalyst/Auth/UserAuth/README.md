@@ -35,6 +35,7 @@ public class MyThingController
     [HttpGet, Route("thing")] 
     [OrderCloudUserAuth(ApiRole.Shopper, ApiRole.OrderReader, ApiRole.OrderAdmin)] // Any one of these threee roles gives access the endpoint 
     public Thing Get(string id) {
+        var username = _user.Username;
         ...
     }
 }

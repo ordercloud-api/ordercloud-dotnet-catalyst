@@ -16,7 +16,7 @@ public virtual void ConfigureServices(IServiceCollection services) {
 Authorization: Bearer my-ordercloud-token
 ```
 
-##### 3. Mark any of your controllers or action  methods with `[OrderCloudUserAuth]`. Inject the `VerifiedUserContext`.
+#### 3. Mark any of your controllers or action  methods with `[OrderCloudUserAuth]`. Inject the `VerifiedUserContext`.
 
 Optionally, You may provide one or more required roles in this attribute, **any one of which** the user must be assigned in order for authorization to succeed.
 

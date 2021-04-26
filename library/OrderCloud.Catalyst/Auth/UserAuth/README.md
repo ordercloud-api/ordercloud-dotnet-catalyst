@@ -55,7 +55,7 @@ Access data in the claims of the OrderCloud token used in the request.
     [HttpPut, Route("hello")]
     [OrderCloudUserAuth] // No roles are defined, so any valid Ordercloud Token gives access.
     public string Hello([FromBody] Thing thing) {
-        return $"Hello {_user.Username}, your role is {_userContext.CommerceRole}";.
+        return $"Hello {_user.Username}, your role is {_user.CommerceRole}";.
     }
 ```
 

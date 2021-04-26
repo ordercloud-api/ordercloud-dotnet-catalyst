@@ -5,6 +5,7 @@ When a user authenticates and acquires an access token from OrderCloud.io, typic
 #### 1. Register OrderCloud user authentication and register user context in your [`Startup`](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/startup) class.
 
 ```c#
+// In Startup.cs
 public virtual void ConfigureServices(IServiceCollection services) {
     services.AddOrderCloudUserAuth();
     services.AddScoped<VerifiedUserContext>(); // instances are scoped to the reqest

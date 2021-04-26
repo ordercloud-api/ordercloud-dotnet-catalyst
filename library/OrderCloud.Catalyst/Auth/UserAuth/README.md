@@ -98,4 +98,42 @@ Proxy the Ordercloud API, adding your own permission logic
 }
 ```
 
+Inject the User Context into a command class. Within a method, an OrderCloud request can be made using that user's token. 
+
+```c#
+public class OrderSubmitCommand 
+{
+    private readonly IOrderCloudClient _oc;      // Injected with Integration Client ID context. FullAccess "super user".
+    private readonly VerifiedUserContext _user; 
+    private readonly ICreditCardCommand _card;   // Details of card processing left unopinionated
+    
+    public OrderSubmitCommand(IOrderCloudClient oc, VerifiedUserContext user, ICreditCardCommand card)
+    {
+        _oc = oc;
+        _user = user;
+        _card = card;
+    }
+
+    public async Task<Order> SubmitOrderAsync(string orderID, OrderDirection direction, OrderCloudIntegrationsCreditCardPayment payment) 
+    {
+        // Order details, inlcuding all line items. Requested with "super user" client context.
+        var worksheet = await _oc.IntegrationEvents.GetWorksheetAsync<HSOrderWorksheet>(OrderDirection.Incoming, orderID);
+        // Perform validation with full "super user" data
+        await ValidateOrderAsync(worksheet, payment);
+        await _card.AuthorizePayment(payment);  // do this in middleware for security.
+        try
+        {
+            // Make the submit order request with the original user's token.
+            return await _user.OcClient.Orders.SubmitAsync(direction, orderID); 
+        }
+        catch (Exception)
+        {
+            await _card.VoidPaymentAsync(orderID);
+            throw;
+        }
+    }
+}
+```     
+
+    
 

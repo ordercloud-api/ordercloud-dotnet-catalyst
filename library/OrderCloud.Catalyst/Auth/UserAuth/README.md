@@ -31,7 +31,7 @@ public class MyThingController
         _user = user;
     }
 
-    // Without access, requestor recieves a 401 Unauthorized or 403 InsuffientRoles error.
+    // Without access, requestor recieves a 401 Unauthorized or 403 InsufficientRoles error.
     [HttpGet, Route("thing")] 
     [OrderCloudUserAuth(ApiRole.Shopper, ApiRole.OrderReader, ApiRole.OrderAdmin)] // Any one of these threee roles gives access the endpoint 
     public Thing Get(string id) {

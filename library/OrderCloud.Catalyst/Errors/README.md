@@ -17,7 +17,7 @@ Catalyst comes with a GlobalExceptionHandler that catches all runtime exceptions
 
 This is the same format as errors from the Ordercloud platform, which is helpful because your Frontend can share error handling code. 
 
-Catalyst provides a number of out of the box exceptions in the file DerivedExceptions.cs that may be helpful such as UnAuthorizedException, NotFoundException, and InvalidPropertyException.
+Catalyst provides a number of out of the box exceptions in the file Exceptions.cs that may be helpful such as UnAuthorizedException, NotFoundException, and InvalidPropertyException.
 
 ```c#
 if (UserContext.UserType != "Supplier") {
@@ -30,7 +30,7 @@ You can also extend the CatalystBaseException in order to deliver your own error
 ```c#
     public class DivideByZeroException : CatalystBaseException
     {
-        public DivideByZeroException() : base("DivideByZero", 400, "You have violated a fundamental mathmatical law.") { }
+        public DivideByZeroException() : base("DivideByZero", "You have violated a fundamental mathmatical law.", null, 400) { }
     }
 ```
 

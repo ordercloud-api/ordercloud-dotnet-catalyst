@@ -45,7 +45,7 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task page_should_throw_error_if_invalid(string query)
 		{
 			var response = await QueryListArgsRoute(query);
-			response.ShouldBeApiError("InvalidRequest", 400, "page must be an integer greater than or equal to 1.");
+			response.ShouldHaveFirstApiError("InvalidRequest", 400, "page must be an integer greater than or equal to 1.");
 		}
 
 		[TestCase("", 20)] // default pageSize is 20
@@ -75,7 +75,7 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task page_size_should_throw_error_if_invalid(string query)
 		{
 			var response = await QueryListArgsRoute(query);
-			response.ShouldBeApiError("InvalidRequest", 400, "pageSize must be an integer between 1 and 100.");
+			response.ShouldHaveFirstApiError("InvalidRequest", 400, "pageSize must be an integer between 1 and 100.");
 		}
 	}
 }

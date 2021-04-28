@@ -36,7 +36,7 @@ namespace OrderCloud.Catalyst.Tests
 				.Request("demo/shop")
 				.GetAsync();
 
-			resp.ShouldBeApiError("InvalidToken", 401, "Access token is invalid or expired.");
+			resp.ShouldHaveFirstApiError("InvalidToken", 401, "Access token is invalid or expired.");
 		}
 
 		[Test]
@@ -141,7 +141,7 @@ namespace OrderCloud.Catalyst.Tests
 				.Request("demo/shop")
 				.GetAsync();
 
-			resp.ShouldBeApiError("InvalidToken", 401, "Access token is invalid or expired.");
+			resp.ShouldHaveFirstApiError("InvalidToken", 401, "Access token is invalid or expired.");
 		}
 
 		[Test]
@@ -161,7 +161,7 @@ namespace OrderCloud.Catalyst.Tests
 				.Request("demo/shop")
 				.GetAsync();
 
-			resp.ShouldBeApiError("InvalidToken", 401, "Access token is invalid or expired.");
+			resp.ShouldHaveFirstApiError("InvalidToken", 401, "Access token is invalid or expired.");
 		}
 
 
@@ -202,7 +202,7 @@ namespace OrderCloud.Catalyst.Tests
 				.Request("demo/shop")
 				.GetAsync();
 
-			resp.ShouldBeApiError("InvalidToken", 401, "Access token is invalid or expired.");
+			resp.ShouldHaveFirstApiError("InvalidToken", 401, "Access token is invalid or expired.");
 		}
 
 		[TestCase(true, 401)]
@@ -234,7 +234,7 @@ namespace OrderCloud.Catalyst.Tests
 
 			var result = await request.GetAsync();
 
-			result.ShouldBeApiError(errorCode, statusCode, message);
+			result.ShouldHaveFirstApiError(errorCode, statusCode, message);
 		}
 
 		[TestCase("demo/shop", true)]
@@ -258,7 +258,7 @@ namespace OrderCloud.Catalyst.Tests
 			{
 				var response = await request.GetAsync();
 				var json = await request.GetJsonAsync();
-				response.ShouldBeApiError("InsufficientRoles", 403, "User does not have role(s) required to perform this action.");
+				response.ShouldHaveFirstApiError("InsufficientRoles", 403, "User does not have role(s) required to perform this action.");
 				Assert.AreEqual(true, true);
                 Assert.AreEqual("OrderAdmin", json.Errors[0].Data.SufficientRoles[0]);
             }	

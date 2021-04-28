@@ -11,14 +11,13 @@ namespace OrderCloud.Catalyst
 	public class CatalystBaseException : Exception
 	{
 		public override string Message => Errors?.FirstOrDefault()?.Message ?? "";
-		[JsonIgnore]
-		public int StatusCode { get; set; }
+		public int HttpStatus { get; set; }
 
 		public IList<ApiError> Errors { get; }
 
-		public CatalystBaseException(ApiError apiError, int status = 400) : base(apiError.Message)
+		public CatalystBaseException(ApiError apiError, int httpStatus = 400) : base(apiError.Message)
 		{
-			StatusCode = status;
+			HttpStatus = httpStatus;
 			Errors = new[] {
 				new ApiError
 				{
@@ -29,17 +28,17 @@ namespace OrderCloud.Catalyst
 			};
 		}
 
-		public CatalystBaseException(IList<ApiError> errors, int status = 400)
+		public CatalystBaseException(IList<ApiError> errors, int httpStatus = 400)
 		{
-			StatusCode = status;
+			HttpStatus = httpStatus;
 			if (errors.IsNullOrEmpty())
 				throw new Exception("errors collection must contain at least one item.");
 			Errors = errors;
 		}
 
-		protected CatalystBaseException(string errorCode, string message, object data, int status = 400)
+		protected CatalystBaseException(string errorCode, string message, object data, int httpStatus = 400)
 		{
-			StatusCode = status;
+			HttpStatus = httpStatus;
 			Errors = new[] {
 				new ApiError {
 					ErrorCode = errorCode,

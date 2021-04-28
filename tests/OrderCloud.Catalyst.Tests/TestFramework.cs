@@ -34,7 +34,7 @@ namespace OrderCloud.Catalyst.Tests
 			}
 		}
 
-		public static async void ShouldBeApiError(this IFlurlResponse response, string errorCode, int statusCode, string message)
+		public static async void ShouldHaveFirstApiError(this IFlurlResponse response, string errorCode, int statusCode, string message)
 		{
 			var error = await response.GetJsonAsync<ErrorList>();
 			Assert.AreEqual(statusCode, response.StatusCode);

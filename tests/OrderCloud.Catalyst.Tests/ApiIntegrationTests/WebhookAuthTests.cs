@@ -38,7 +38,7 @@ namespace OrderCloud.Catalyst.Tests
 			var payload = fixture.Create<WebhookPayloads.Addresses.Save>();
 
 			var resp = await SendWebhookReq("webhook/saveaddress", payload, "dfadasfd");
-			resp.ShouldBeApiError("Unauthorized", 401, "X-oc-hash header does not match. Endpoint can only be hit from a valid OrderCloud webhook.");
+			resp.ShouldHaveFirstApiError("Unauthorized", 401, "X-oc-hash header does not match. Endpoint can only be hit from a valid OrderCloud webhook.");
 		}
 
 		[TestCase(true)]

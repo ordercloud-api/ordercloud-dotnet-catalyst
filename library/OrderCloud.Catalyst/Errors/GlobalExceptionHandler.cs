@@ -10,7 +10,7 @@ using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst
 {
-    public static class GlobalExceptionHandler 
+    public static class GlobalExceptionHandler
     {
         public static IApplicationBuilder UseCatalystExceptionHandler(this IApplicationBuilder builder)
         {
@@ -36,10 +36,10 @@ namespace OrderCloud.Catalyst
             switch (ex)
             {
                 case CatalystBaseException intException:
-                    context.Response.StatusCode = (int)intException.Errors[0].StatusCode;
-                    return context.Response.WriteAsync(JsonConvert.SerializeObject(new { Errors = intException.Errors }));
+                    context.Response.StatusCode = intException.StatusCode;
+                    return context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorList(intException.Errors)));
                 case OrderCloudException ocException:
-                    context.Response.StatusCode = (int) ocException.HttpStatus;
+                    context.Response.StatusCode = (int)ocException.HttpStatus;
                     return context.Response.WriteAsync(JsonConvert.SerializeObject(ocException.Errors[0]));
             }
 
@@ -52,6 +52,13 @@ namespace OrderCloud.Catalyst
             });
             context.Response.StatusCode = (int)code;
             return context.Response.WriteAsync(result);
+        }
+    }
+    public class ErrorList {
+        public IList<ApiError> Errors { get; set; }
+        public ErrorList(IList<ApiError> errors)
+        {
+            Errors = errors;
         }
     }
 }

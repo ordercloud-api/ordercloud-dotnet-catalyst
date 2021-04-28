@@ -36,10 +36,10 @@ namespace OrderCloud.Catalyst.Tests
 
 		public static async void ShouldBeApiError(this IFlurlResponse response, string errorCode, int statusCode, string message)
 		{
-			var error = await response.GetJsonAsync<ApiErrorList>();
+			var error = await response.GetJsonAsync<ErrorList>();
 			Assert.AreEqual(statusCode, response.StatusCode);
-            Assert.AreEqual(errorCode, error[0].ErrorCode);
-            Assert.AreEqual(message, error[0].Message);
+            Assert.AreEqual(errorCode, error.Errors[0].ErrorCode);
+            Assert.AreEqual(message, error.Errors[0].Message);
         }
 	}
 }

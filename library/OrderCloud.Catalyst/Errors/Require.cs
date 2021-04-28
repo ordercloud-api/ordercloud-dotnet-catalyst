@@ -9,36 +9,26 @@ namespace OrderCloud.Catalyst
     {
         /// <summary>
         /// Throws an error if condition is false. HTTP status is defined in the ErrorCode object. 
-        /// Example usage: Require.That(check == true, CatalystException.NotFound, SomeObject); 
+        /// Example usage: Require.That(check == true, new NotFoundException()); 
         /// See ErrorCodes.txt for error definitions 
         /// </summary>
-        public static void That<TModel>(bool condition, ErrorCode<TModel> errorCode, TModel model)
+        public static void That(bool condition, CatalystBaseException ex)
         {
             if (!condition)
             {
-                throw new CatalystBaseException(errorCode, model);
+                throw ex;
             }
         }
 
         /// <summary>
         /// Throws an error if condition is false. Error data model is built lazily. HTTP status is defined in the ErrorCode object. 
-        /// Example usage: Require.That(check == true, CatalystException.NotFound, () => new { key = "value" }); 
+        /// Example usage: Require.That(check == true, () => new CatalystBaseException("NotFound", $"Not found.", null, 404)); 
         /// </summary>
-        public static void That<TModel>(bool condition, ErrorCode<TModel> errorCode, Func<TModel> buildModel)
+        public static void That(bool condition, Func<CatalystBaseException> buildException)
         {
             if (!condition)
             {
-                throw new CatalystBaseException(errorCode, buildModel());
-            }
-        }
-        /// <summary>
-        /// Overload for when you don't need to pass back an object
-        /// </summary>
-        public static void That(bool condition, ErrorCode errorCode)
-        {
-            if (!condition)
-            {
-                throw new CatalystBaseException(errorCode, null);
+                throw buildException();
             }
         }
     }

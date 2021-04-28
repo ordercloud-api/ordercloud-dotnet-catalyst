@@ -12,29 +12,13 @@ namespace OrderCloud.Catalyst
 	{
 		public override string Message => Errors?.FirstOrDefault()?.Message ?? "";
 		[JsonIgnore]
-		public int StatusCode =>
-            Errors.IsNullOrEmpty() ? 500 :
-            (Errors.Any(e => e.StatusCode == HttpStatusCode.InternalServerError)) ? 500 :
-			(Errors.Any(e => e.StatusCode == HttpStatusCode.BadRequest)) ? 400 :
-			(int)Errors.First().StatusCode;
+		public int StatusCode { get; set; }
 
 		public IList<ApiError> Errors { get; }
 
-		public CatalystBaseException(ErrorCode errorCode, object data = null)
+		public CatalystBaseException(ApiError apiError, int status = 400) : base(apiError.Message)
 		{
-			Errors = new[] {
-				new ApiError
-				{
-					ErrorCode = errorCode.Code,
-					StatusCode = (HttpStatusCode)errorCode.HttpStatus,
-					Message = errorCode.DefaultMessage,
-					Data = data
-				}
-			};
-		}
-
-		public CatalystBaseException(ApiError apiError) : base(apiError.Message)
-		{
+			StatusCode = status;
 			Errors = new[] {
 				new ApiError
 				{
@@ -45,64 +29,24 @@ namespace OrderCloud.Catalyst
 			};
 		}
 
-		public CatalystBaseException(IList<ApiError> errors)
+		public CatalystBaseException(IList<ApiError> errors, int status = 400)
 		{
+			StatusCode = status;
 			if (errors.IsNullOrEmpty())
 				throw new Exception("errors collection must contain at least one item.");
 			Errors = errors;
 		}
 
-		protected CatalystBaseException(string errorCode, int status, string message, object data)
+		protected CatalystBaseException(string errorCode, string message, object data, int status = 400)
 		{
+			StatusCode = status;
 			Errors = new[] {
 				new ApiError {
 					ErrorCode = errorCode,
-					StatusCode = (HttpStatusCode)status,
 					Message = message,
 					Data = data
 				}
 			};
 		}
-	}
-
-	public class ApiErrorList : List<ApiError>
-	{
-		public void Add<TData>(ErrorCode<TData> errorCode, TData data)
-		{
-			Add(new ApiError
-			{
-				ErrorCode = errorCode.Code,
-				StatusCode = (HttpStatusCode)errorCode.HttpStatus,
-				Message = errorCode.DefaultMessage,
-				Data = data
-			});
-		}
-		public void AddIf<TData>(bool condition, ErrorCode<TData> errorCode, TData data)
-		{
-			if (condition) Add(errorCode, data);
-		}
-		public void AddIf(bool condition, ErrorCode errorCode)
-		{
-			if (condition)
-				Add(new ApiError
-				{
-					ErrorCode = errorCode.Code,
-					StatusCode = (HttpStatusCode)errorCode.HttpStatus,
-					Message = errorCode.DefaultMessage
-				});
-		}
-        public void ThrowIfAny()
-        {
-            if (this.Any()) throw new CatalystBaseException(this);
-        }
-    }
-
-	public class ApiError
-	{
-		[JsonIgnore]
-		public HttpStatusCode StatusCode { get; set; }
-		public string ErrorCode { get; set; }
-		public string Message { get; set; }
-		public object Data { get; set; }
 	}
 }

@@ -24,6 +24,11 @@ namespace OrderCloud.Catalyst.Tests
 			get
 			{
 				var server = new TestServer(CatalystWebHostBuilder.CreateWebHostBuilder<TestStartup, TestSettings>(new string[] { }));
+				// AllowSynchronousIO = false became the default in asp.net core 3.0 to combat application hangs
+				// however we're using synchronous APIs when validating webhook hash
+				// specifically ComputeHash will trigger an error here
+				// TODO: figure out how to compute the hash in an async manner so we can remove this
+				server.AllowSynchronousIO = true; // for webhook tests
 				return new FlurlClient(server.CreateClient())
 					.AllowAnyHttpStatus();  // This allows us to test error responses.
 			}
@@ -31,10 +36,10 @@ namespace OrderCloud.Catalyst.Tests
 
 		public static async void ShouldBeApiError(this IFlurlResponse response, string errorCode, int statusCode, string message)
 		{
-			var error = await response.GetJsonAsync<ApiErrorResponse>();
+			var error = await response.GetJsonAsync<ApiErrorList>();
 			Assert.AreEqual(statusCode, response.StatusCode);
-			//Assert.AreEqual(errorCode, error.ErrorCode);
-			//Assert.AreEqual(message, error.Message);
-		}
+            Assert.AreEqual(errorCode, error[0].ErrorCode);
+            Assert.AreEqual(message, error[0].Message);
+        }
 	}
 }

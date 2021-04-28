@@ -16,7 +16,7 @@ namespace OrderCloud.Catalyst
         {
             if (!condition)
             {
-                throw new ApiErrorException(errorCode, model);
+                throw new CatalystBaseException(errorCode, model);
             }
         }
 
@@ -28,7 +28,7 @@ namespace OrderCloud.Catalyst
         {
             if (!condition)
             {
-                throw new ApiErrorException(errorCode, buildModel());
+                throw new CatalystBaseException(errorCode, buildModel());
             }
         }
         /// <summary>
@@ -38,7 +38,7 @@ namespace OrderCloud.Catalyst
         {
             if (!condition)
             {
-                throw new ApiErrorException(errorCode, null);
+                throw new CatalystBaseException(errorCode, null);
             }
         }
     }

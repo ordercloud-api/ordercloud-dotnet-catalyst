@@ -1,5 +1,4 @@
-﻿using Flurl.Http;
-using OrderCloud.Catalyst.Extensions;
+﻿using OrderCloud.Catalyst.Extensions;
 using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
@@ -11,35 +10,99 @@ namespace OrderCloud.Catalyst
 {
 	public class CatalystBaseException : Exception
 	{
-		public HttpStatusCode? HttpStatus { get; }
-		public ApiError[] Errors { get; }
+		public override string Message => Errors?.FirstOrDefault()?.Message ?? "";
+		[JsonIgnore]
+		public int StatusCode =>
+            Errors.IsNullOrEmpty() ? 500 :
+            (Errors.Any(e => e.StatusCode == HttpStatusCode.InternalServerError)) ? 500 :
+			(Errors.Any(e => e.StatusCode == HttpStatusCode.BadRequest)) ? 400 :
+			(int)Errors.First().StatusCode;
 
-		internal CatalystBaseException(FlurlCall call, ApiError[] errors) : base(BuildMessage(call, errors), call.Exception)
+		public IList<ApiError> Errors { get; }
+
+		public CatalystBaseException(ErrorCode errorCode, object data = null)
 		{
-			HttpStatus = call.HttpResponseMessage.StatusCode;
+			Errors = new[] {
+				new ApiError
+				{
+					ErrorCode = errorCode.Code,
+					StatusCode = (HttpStatusCode)errorCode.HttpStatus,
+					Message = errorCode.DefaultMessage,
+					Data = data
+				}
+			};
+		}
+
+		public CatalystBaseException(ApiError apiError) : base(apiError.Message)
+		{
+			Errors = new[] {
+				new ApiError
+				{
+					ErrorCode = apiError.ErrorCode,
+					Message = apiError.Message,
+					Data = apiError.Data
+				}
+			};
+		}
+
+		public CatalystBaseException(IList<ApiError> errors)
+		{
+			if (errors.IsNullOrEmpty())
+				throw new Exception("errors collection must contain at least one item.");
 			Errors = errors;
 		}
 
-		private static string BuildMessage(FlurlCall call, ApiError[] errors)
+		protected CatalystBaseException(string errorCode, int status, string message, object data)
 		{
-			var code = errors?.FirstOrDefault()?.ErrorCode;
-			var msg = errors?.FirstOrDefault()?.Message;
-			if (!string.IsNullOrEmpty(code) && !string.IsNullOrEmpty(msg))
-				return $"{code}: {msg}";
-
-			return new[] { code, msg, call?.Exception?.Message, "An unknown error occurred." }
-				.FirstOrDefault(x => !string.IsNullOrEmpty(x));
+			Errors = new[] {
+				new ApiError {
+					ErrorCode = errorCode,
+					StatusCode = (HttpStatusCode)status,
+					Message = message,
+					Data = data
+				}
+			};
 		}
 	}
 
-	internal class ApiErrorResponse
+	public class ApiErrorList : List<ApiError>
 	{
-		public ApiError[] Errors { get; set; }
-	}
+		public void Add<TData>(ErrorCode<TData> errorCode, TData data)
+		{
+			Add(new ApiError
+			{
+				ErrorCode = errorCode.Code,
+				StatusCode = (HttpStatusCode)errorCode.HttpStatus,
+				Message = errorCode.DefaultMessage,
+				Data = data
+			});
+		}
+		public void AddIf<TData>(bool condition, ErrorCode<TData> errorCode, TData data)
+		{
+			if (condition) Add(errorCode, data);
+		}
+		public void AddIf(bool condition, ErrorCode errorCode)
+		{
+			if (condition)
+				Add(new ApiError
+				{
+					ErrorCode = errorCode.Code,
+					StatusCode = (HttpStatusCode)errorCode.HttpStatus,
+					Message = errorCode.DefaultMessage
+				});
+		}
+        public void ThrowIfAny()
+        {
+            if (this.Any()) throw new CatalystBaseException(this);
+        }
+    }
 
-	internal class AuthErrorResponse
+	public class ApiError
 	{
-		public string error { get; set; }
-		public string error_description { get; set; }
+		[JsonIgnore]
+		public HttpStatusCode StatusCode { get; set; }
+		public string ErrorCode { get; set; }
+		public string Message { get; set; }
+		public object Data { get; set; }
 	}
 }

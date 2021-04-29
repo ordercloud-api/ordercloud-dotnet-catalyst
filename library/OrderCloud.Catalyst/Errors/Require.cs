@@ -9,36 +9,26 @@ namespace OrderCloud.Catalyst
     {
         /// <summary>
         /// Throws an error if condition is false. HTTP status is defined in the ErrorCode object. 
-        /// Example usage: Require.That(check == true, CatalystException.NotFound, SomeObject); 
+        /// Example usage: Require.That(check == true, new NotFoundException()); 
         /// See ErrorCodes.txt for error definitions 
         /// </summary>
-        public static void That<TModel>(bool condition, CatalystBaseException error, TModel model)
+        public static void That(bool condition, CatalystBaseException ex)
         {
             if (!condition)
             {
-                throw new CatalystBaseException(error.ApiError.ErrorCode, error.ApiError.Message, model);
+                throw ex;
             }
         }
 
         /// <summary>
         /// Throws an error if condition is false. Error data model is built lazily. HTTP status is defined in the ErrorCode object. 
-        /// Example usage: Require.That(check == true, CatalystException.NotFound, () => new { key = "value" }); 
+        /// Example usage: Require.That(check == true, () => new CatalystBaseException("NotFound", $"Not found.", null, 404)); 
         /// </summary>
-        public static void That<TModel>(bool condition, CatalystBaseException error, Func<TModel> buildModel)
+        public static void That(bool condition, Func<CatalystBaseException> buildException)
         {
             if (!condition)
             {
-                throw new CatalystBaseException(error.ApiError.ErrorCode, error.ApiError.Message, buildModel());
-            }
-        }
-        /// <summary>
-        /// Overload for when you don't need to pass back an object
-        /// </summary>
-        public static void That(bool condition, CatalystBaseException error, object data = null)
-        {
-            if (!condition)
-            {
-                throw new CatalystBaseException(error.ApiError.ErrorCode, error.ApiError.Message, data);
+                throw buildException();
             }
         }
     }

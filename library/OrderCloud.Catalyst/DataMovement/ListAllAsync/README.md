@@ -34,8 +34,8 @@ _oc.LineItems.ListAllAsync(OrderDirection.Incomming, orderID, listPage => {
 	var lineItems = listPage.Items;
 	foreach(var lineItem in lineItems) {
 		string csvLine = ConvertToCSV(lineItem);
-		csvFile.AppendTextAsync(csvLine); // save that batch of lineItems in the cloud. Allows them to be garbage collected locally. 
-	}	
+		await csvFile.AppendTextAsync(csvLine); // save that batch of lineItems in the cloud. Allows them to be garbage collected locally. 
+	}
 });
 ```
 

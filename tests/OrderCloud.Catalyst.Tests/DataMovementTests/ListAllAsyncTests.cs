@@ -44,6 +44,19 @@ namespace OrderCloud.Catalyst.Tests
 			allSuppliers.Count.Should().Be(500);
 		}
 
+		[Test, AutoNSubstituteData]
+		public async Task ListAll_Batched_Working()
+		{
+			var mockResponse = BuildListPage<Shipment>(5);
+			mockOrderCloudClient.Shipments.ListAsync().ReturnsForAnyArgs(mockResponse);
+			var shipments = new List<Shipment>();
+			await mockOrderCloudClient.Shipments.ListAllAsync(page => {
+				shipments.AddRange(page.Items);
+				return Task.CompletedTask;
+			});
+			shipments.Count.Should().Be(500);
+		}
+
 		[TestCase("OrderCheckoutIntegrationEventID=*")]
 		[TestCase("something=*else")]
 		[TestCase("something=el*se")]

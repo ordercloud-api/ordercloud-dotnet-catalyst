@@ -48,16 +48,10 @@ Receive list requests to your API with user defined filters, search, paging, and
 public async Task<ListPage<Order>> ListOrders(IListArgs args)
 {
     await _user.RequestMeUserAsync() // get user details
-    args.Filters.Add(new ListFilter("FromCompanyID", _user.MeUser.Buyer.ID)) 
+    args.Filters.Add(new ListFilter("FromCompanyID", _user.MeUser.Buyer.ID)) // filter using the user's buyer organization ID 
     args.Filters.Add(new ListFilter("LineItemCount", ">5"))
-
-    var orders = await _oc.Orders.ListAsync(OrderDirection.Incoming,
-        page: args.Page,
-        pageSize: args.PageSize,
-        sortBy: string.Join(',', args.SortBy),
-        search: args.Search,
-        searchOn: args.SearchOn,
-        filters: args.ToFilterString());
+    // list orders from an admin endpoint
+    var orders = await _oc.Orders.ListAsync(OrderDirection.Incoming, args); // apply list args with an extension version of ListAsync()
     return orders;
 }
 ```

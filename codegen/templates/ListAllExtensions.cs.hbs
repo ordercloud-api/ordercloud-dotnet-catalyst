@@ -1,0 +1,52 @@
+// This file is generated automatically, do not edit directly. See codegen/templates/ListAllExtensions.cs.hbs
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using OrderCloud.SDK;
+
+namespace OrderCloud.Catalyst
+{
+	public static class ListAllExtensions
+	{
+		private const int MAX_PAGE_SIZE = 100;
+        {{#resources}}{{#with this as | resource |}}{{#operations}}{{#with this as | operation |}}{{#if isList}}       
+        public static async Task<List<{{operation.returnType}}>> {{operation.listAllName}}Async(this I{{resource.id}}Resource resource, {{#listAllParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listAllParams}}string accessToken = null) 
+        {
+            return await ListAllHelper.{{#if isFacetList}}ListAllWithFacetsAsync{{else}}ListAllAsync{{/if}}((page, filter) =>
+			{
+				return resource.{{operation.name}}Async({{#allParams}}{{listAllValue}}, {{/allParams}}accessToken);
+			});
+        }   
+    
+        {{#if operation.hasXP}}public static async Task<List<T>> {{operation.listAllName}}Async<T>(this I{{resource.id}}Resource resource, {{#listAllParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listAllParams}}string accessToken = null) 
+            where T : {{operation.returnType}}
+        {
+            return await ListAllHelper.{{#if isFacetList}}ListAllWithFacetsAsync{{else}}ListAllAsync{{/if}}((page, filter) =>
+			{
+				return resource.{{operation.name}}Async<T>({{#allParams}}{{listAllValue}}, {{/allParams}}accessToken);
+			});
+        }{{/if}}
+
+        public static async Task {{operation.listAllName}}Async(this I{{resource.id}}Resource resource, Func<{{#if isFacetList}}ListPageWithFacets{{else}}ListPage{{/if}}<{{operation.returnType}}>, Task> action, {{#listAllParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listAllParams}}string accessToken = null) 
+        {
+            await ListAllHelper.{{#if isFacetList}}ListBatchedWithFacetsAsync{{else}}ListBatchedAsync{{/if}}(async (page) =>
+			{
+				var result = await resource.{{operation.name}}Async({{#allParams}}{{listAllBatchedValue}}, {{/allParams}}accessToken);
+                await action(result);
+                return result;
+			});
+        }
+
+        {{#if operation.hasXP}}public static async Task {{operation.listAllName}}Async<T>(this I{{resource.id}}Resource resource, Func<{{#if isFacetList}}ListPageWithFacets{{else}}ListPage{{/if}}<T>, Task> action, {{#listAllParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listAllParams}}string accessToken = null) 
+            where T : {{operation.returnType}}
+        {
+            await ListAllHelper.{{#if isFacetList}}ListBatchedWithFacetsAsync{{else}}ListBatchedAsync{{/if}}(async (page) =>
+			{
+				var result = await resource.{{operation.name}}Async<T>({{#allParams}}{{listAllBatchedValue}}, {{/allParams}}accessToken);
+                await action(result);
+                return result;
+			});
+        }{{/if}}
+        {{/if}}{{/with}}{{/operations}}{{/with}}{{/resources}}
+    }
+}

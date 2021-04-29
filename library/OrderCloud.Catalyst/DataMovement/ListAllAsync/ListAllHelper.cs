@@ -42,6 +42,28 @@ namespace OrderCloud.Catalyst
 			return await ListAllByFilterAsync(page1, id, filter => listFunc(1, filter));
 		}
 
+		public static async Task ListBatchedAsync<T>(Func<int, Task<ListPage<T>>> processPage)
+		{
+			var count = 1;
+			var page1 = await processPage(count);
+			while (count < page1.Meta.TotalPages)
+			{
+				count++;
+				await processPage(count);
+			}
+		}
+
+		public static async Task ListBatchedWithFacetsAsync<T>(Func<int, Task<ListPageWithFacets<T>>> processPage)
+		{
+			var count = 1;
+			var page1 = await processPage(count);
+			while (count < page1.Meta.TotalPages)
+			{
+				count++;
+				await processPage(count);
+			}
+		}
+
 		/// <summary>
 		/// Get all records of specific type from Ordercloud by requesting all list pages and combining the results.
 		/// </summary>

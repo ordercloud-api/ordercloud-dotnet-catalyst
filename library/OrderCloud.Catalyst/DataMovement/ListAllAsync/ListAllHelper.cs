@@ -46,7 +46,7 @@ namespace OrderCloud.Catalyst
 		{
 			var count = 1;
 			var page1 = await processPage(count);
-			while (count <= page1.Meta.TotalPages)
+			while (count < page1.Meta.TotalPages)
 			{
 				count++;
 				await processPage(count);
@@ -57,7 +57,7 @@ namespace OrderCloud.Catalyst
 		{
 			var count = 1;
 			var page1 = await processPage(count);
-			while (count <= page1.Meta.TotalPages)
+			while (count < page1.Meta.TotalPages)
 			{
 				count++;
 				await processPage(count);

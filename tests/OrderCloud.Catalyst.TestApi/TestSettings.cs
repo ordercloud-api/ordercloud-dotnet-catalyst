@@ -26,8 +26,8 @@ namespace OrderCloud.Catalyst.TestApi
 	public class OrderCloudSettings
 	{
 		public string ApiUrl { get; set; }
-		public string MiddlewareClientID { get; set; }
-		public string MiddlewareClientSecret { get; set; }
+		public string ClientID { get; set; }
+		public string ClientSecret { get; set; }
 		public string WebhookHashKey { get; } = "myhashkey"; //	Should match the HashKey configured on your webhook in the Ordercloud portal.
 	}
 }

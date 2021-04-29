@@ -47,8 +47,8 @@ namespace OrderCloud.Catalyst.TestApi
 				.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig() {
 					ApiUrl = _settings.OrderCloudSettings.ApiUrl,
 					AuthUrl = _settings.OrderCloudSettings.ApiUrl,
-					ClientId = _settings.OrderCloudSettings.MiddlewareClientID,
-					ClientSecret = _settings.OrderCloudSettings.MiddlewareClientSecret,
+					ClientId = _settings.OrderCloudSettings.ClientID,
+					ClientSecret = _settings.OrderCloudSettings.ClientSecret,
 				}))
 				.AddSwaggerGen(c =>
 				 {

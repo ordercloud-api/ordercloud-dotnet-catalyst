@@ -18,7 +18,6 @@ namespace OrderCloud.Catalyst.Tests.ApiIntegrationTests
 			return await TestFramework.Client.Request($"demo/searchargs?{query}").GetAsync();
 		}
 
-
 		[TestCase("", SearchType.AnyTerm)]
 		[TestCase("searchType=AnyTerm", SearchType.AnyTerm)]
 		[TestCase("searchType=AllTermsAnyField", SearchType.AllTermsAnyField)]
@@ -38,7 +37,7 @@ namespace OrderCloud.Catalyst.Tests.ApiIntegrationTests
 		public async Task search_type_should_throw_error_if_not_valid(string randomString)
 		{
 			var response = await QuerySearchArgsRoute($"searchType={randomString}");
-			response.ShouldBeApiError("InvalidRequest", 400, "searchType must be one of: AnyTerm, AllTermsAnyField, AllTermsSameField, ExactPhrase, ExactPhrasePrefix");
+			response.ShouldHaveFirstApiError("InvalidRequest", 400, "searchType must be one of: AnyTerm, AllTermsAnyField, AllTermsSameField, ExactPhrase, ExactPhrasePrefix");
 		}
 	}
 }

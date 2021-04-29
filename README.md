@@ -51,7 +51,7 @@ public async Task<ListPage<Order>> ListOrders(IListArgs args)
     args.Filters.Add(new ListFilter("FromCompanyID", _user.MeUser.Buyer.ID)) // filter using the user's buyer organization ID 
     args.Filters.Add(new ListFilter("LineItemCount", ">5"))
     // list orders from an admin endpoint
-    var orders = await _oc.Orders.ListAsync(OrderDirection.Incoming, args); // apply list args with an extension version of ListAsync()
+    var orders = await _oc.Orders.ListAsync(OrderDirection.Incoming, null, null, null, null, args); // apply list args with an extension version of ListAsync()
     return orders;
 }
 ```

@@ -110,7 +110,6 @@ namespace OrderCloud.Catalyst.TestApi
 		// Regex Example - Alphanumeric, no special characters or spaces
 		[RegularExpression(@"^[a-zA-Z][a-zA-Z0-9]*$", ErrorMessage = "Invalid characters (special characters and spaces are not allowed).")]
 		public string RegexExample { get; set; }
-
 	}
 
 	public class MyConfigData

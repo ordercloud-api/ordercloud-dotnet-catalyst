@@ -8,16 +8,19 @@ namespace OrderCloud.Catalyst.Tests
     [TestFixture]
     public class DataAnnotationTests
     {
-        ExampleModel modelExample = new ExampleModel()
+        private ExampleModel GetExampleModel()
         {
-            RequiredField = "RequiredValue",
-            BoundedString = "BoundedStringValue",
-            BoundedDecimal = 10M,
-            BoundedInteger = 25,
-            Email = "example@email.com",
-            CreditCardNumber = "4111111111111111",
-            RegexExample = "RegexExampleValue123"
-        };
+            return new ExampleModel()
+            {
+                RequiredField = "RequiredValue",
+                BoundedString = "BoundedStringValue",
+                BoundedDecimal = 10M,
+                BoundedInteger = 25,
+                Email = "example@email.com",
+                CreditCardNumber = "4111111111111111",
+                RegexExample = "RegexExampleValue123"
+            };
+        }
 
         private IFlurlRequest GetModelValidationRoute()
         {
@@ -27,6 +30,7 @@ namespace OrderCloud.Catalyst.Tests
         [Test]
         public async Task valid_example_triggers_no_errors()
         {
+            var modelExample = GetExampleModel();
             var url = GetModelValidationRoute();
             var response = await url
                 .PostJsonAsync(modelExample);
@@ -37,6 +41,7 @@ namespace OrderCloud.Catalyst.Tests
         [TestCase(null)]
         public async Task required_field_triggers_error(string requiredValue)
         {
+            var modelExample = GetExampleModel();
             modelExample.RequiredField = requiredValue;
             var url = GetModelValidationRoute();
             var response = await url
@@ -54,6 +59,7 @@ namespace OrderCloud.Catalyst.Tests
         [TestCase("abcdefghijabcdefghijabcdef")]
         public async Task bounded_string_field_triggers_error(string boundedStringValue)
         {
+            var modelExample = GetExampleModel();
             modelExample.BoundedString = boundedStringValue;
             var url = GetModelValidationRoute();
             var response = await url
@@ -72,6 +78,7 @@ namespace OrderCloud.Catalyst.Tests
         [TestCase("-1.11")]
         public async Task bounded_decimal_field_triggers_error(decimal boundedDecimalValue)
         {
+            var modelExample = GetExampleModel();
             modelExample.BoundedDecimal = boundedDecimalValue;
             var url = GetModelValidationRoute();
             var response = await url
@@ -90,6 +97,7 @@ namespace OrderCloud.Catalyst.Tests
         [TestCase("-1")]
         public async Task bounded_integer_field_triggers_error(int boundedIntegerValue)
         {
+            var modelExample = GetExampleModel();
             modelExample.BoundedInteger = boundedIntegerValue;
             var url = GetModelValidationRoute();
             var response = await url
@@ -107,6 +115,7 @@ namespace OrderCloud.Catalyst.Tests
         [TestCase("example at email dot com")]
         public async Task email_field_triggers_error(string email)
         {
+            var modelExample = GetExampleModel();
             modelExample.Email = email;
             var url = GetModelValidationRoute();
             var response = await url
@@ -129,6 +138,7 @@ namespace OrderCloud.Catalyst.Tests
         [TestCase("601112345678901")]
         public async Task credit_card_field_triggers_error(string creditCardNumber)
         {
+            var modelExample = GetExampleModel();
             modelExample.CreditCardNumber = creditCardNumber;
             var url = GetModelValidationRoute();
             var response = await url
@@ -145,6 +155,7 @@ namespace OrderCloud.Catalyst.Tests
         [TestCase("hello world")]
         public async Task regex_example_field_triggers_error(string regexExampleValue)
         {
+            var modelExample = GetExampleModel();
             modelExample.RegexExample = regexExampleValue;
             var url = GetModelValidationRoute();
             var response = await url

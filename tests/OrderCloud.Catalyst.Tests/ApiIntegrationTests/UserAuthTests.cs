@@ -10,6 +10,7 @@ using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,9 +43,9 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task can_auth_with_oc_token()
 		{
-			var token = JwtOrderCloud.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" }); // clientID check should be case insensitive
+			var token = OrderCloudToken.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" }); // clientID check should be case insensitive
 			var result = await TestFramework.Client
-				.WithOAuthBearerToken(token) 
+				.WithOAuthBearerToken(token)
 				.Request("demo/shop")
 				.GetStringAsync();
 
@@ -54,7 +55,7 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task should_succeed_with_custom_role()
 		{
-			var token = JwtOrderCloud.CreateFake("mYcLiEnTiD", new List<string> { "CustomRole" });
+			var token = OrderCloudToken.CreateFake("mYcLiEnTiD", new List<string> { "CustomRole" });
 			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/custom");
@@ -67,7 +68,7 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task should_error_without_custom_role()
 		{
-			var token = JwtOrderCloud.CreateFake("mYcLiEnTiD");
+			var token = OrderCloudToken.CreateFake("mYcLiEnTiD");
 			var result = await TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/custom")
@@ -76,12 +77,13 @@ namespace OrderCloud.Catalyst.Tests
 			Assert.AreEqual(403, result.StatusCode);
 		}
 
+		[Test]
 		public async Task can_get_user_context_from_auth()
 		{
 			var fixture = new Fixture();
 			var username = fixture.Create<string>();
 			var clientID = fixture.Create<string>();
-			var token = JwtOrderCloud.CreateFake(clientID, new List<string> { "Shopper" }, username: username);
+			var token = OrderCloudToken.CreateFake(clientID, new List<string> { "Shopper" }, username: username);
 
 			var result = await TestFramework.Client
 				.WithOAuthBearerToken(token)
@@ -94,12 +96,13 @@ namespace OrderCloud.Catalyst.Tests
 
 		}
 
+		[Test]
 		public async Task can_get_user_context_from_setting_it()
 		{
 			var fixture = new Fixture();
 			var username = fixture.Create<string>();
 			var clientID = fixture.Create<string>();
-			var token = JwtOrderCloud.CreateFake(clientID, new List<string> { "Shopper" }, username: username);
+			var token = OrderCloudToken.CreateFake(clientID, new List<string> { "Shopper" }, username: username);
 
 			var result = await TestFramework.Client
 				.Request($"demo/usercontext/{token}")
@@ -116,8 +119,8 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			var fixture = new Fixture();
 
-			var token = JwtOrderCloud.CreateFake(
-				clientID: fixture.Create<string>(), 
+			var token = OrderCloudToken.CreateFake(
+				clientID: fixture.Create<string>(),
 				roles: new List<string> { "Shopper" },
 				expiresUTC: DateTime.UtcNow + TimeSpan.FromHours(1),
 				notValidBeforeUTC: DateTime.UtcNow - TimeSpan.FromHours(1)
@@ -134,7 +137,7 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task should_deny_access_if_no_client_id()
 		{
-			var token = JwtOrderCloud.CreateFake(null, new List<string> { "Shopper" });
+			var token = OrderCloudToken.CreateFake(null, new List<string> { "Shopper" });
 
 			var resp = await TestFramework.Client
 				.WithOAuthBearerToken(token)
@@ -149,7 +152,7 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			var fixture = new Fixture();
 
-			var token = JwtOrderCloud.CreateFake(
+			var token = OrderCloudToken.CreateFake(
 				clientID: fixture.Create<string>(),
 				roles: new List<string> { "Shopper" },
 				expiresUTC: DateTime.UtcNow + TimeSpan.FromHours(2),
@@ -164,10 +167,12 @@ namespace OrderCloud.Catalyst.Tests
 			resp.ShouldHaveFirstApiError("InvalidToken", 401, "Access token is invalid or expired.");
 		}
 
-
+		[Test]
 		public async Task should_succeed_based_on_token_not_me_get()
 		{
-			var token = JwtOrderCloud.CreateFake(null, new List<string> { "OrderAdmin" }); // token has the role
+			var fixture = new Fixture();
+			var clientID = fixture.Create<string>();
+			var token = OrderCloudToken.CreateFake(clientID, new List<string> { "OrderAdmin" }); // token has the role
 
 			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)
@@ -191,7 +196,7 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			var fixture = new Fixture();
 
-			var token = JwtOrderCloud.CreateFake(
+			var token = OrderCloudToken.CreateFake(
 				clientID: fixture.Create<string>(),
 				roles: new List<string> { "Shopper" },
 				expiresUTC: DateTime.UtcNow - TimeSpan.FromHours(1)
@@ -219,12 +224,12 @@ namespace OrderCloud.Catalyst.Tests
 			var message = fixture.Create<string>();
 
 			var keyID = useKid ? "something" : null;
-			var token = JwtOrderCloud.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" }, keyID: keyID); // token has the role
+			var token = OrderCloudToken.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" }, keyID: keyID); // token has the role
 
 			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/shop");
-			var error = OrderCloudExceptionFactory.Create((HttpStatusCode)statusCode, "", new ApiError[] { new ApiError() { 
+			var error = OrderCloudExceptionFactory.Create((HttpStatusCode)statusCode, "", new ApiError[] { new ApiError() {
 				Message = message,
 				ErrorCode = errorCode,
 			}});
@@ -244,7 +249,7 @@ namespace OrderCloud.Catalyst.Tests
 		[TestCase("demo/anon", true)]
 		public async Task can_authorize_by_role(string endpoint, bool success)
 		{
-			var token = JwtOrderCloud.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" });
+			var token = OrderCloudToken.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" });
 
 			var request = TestFramework.Client
 					.WithOAuthBearerToken(token)
@@ -254,14 +259,15 @@ namespace OrderCloud.Catalyst.Tests
 			{
 				var response = await request.GetAsync();
 				Assert.AreEqual(200, response.StatusCode);
-			} else
+			}
+			else
 			{
 				var response = await request.GetAsync();
 				var json = await request.GetJsonAsync();
 				response.ShouldHaveFirstApiError("InsufficientRoles", 403, "User does not have role(s) required to perform this action.");
 				Assert.AreEqual(true, true);
-                Assert.AreEqual("OrderAdmin", json.Errors[0].Data.SufficientRoles[0]);
-            }	
+				Assert.AreEqual("OrderAdmin", json.Errors[0].Data.SufficientRoles[0]);
+			}
 		}
 
 		[TestCase(true)]
@@ -269,7 +275,7 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task user_authorization_is_cached(bool useKid)
 		{
 			var keyID = useKid ? "something" : null;
-			var token = JwtOrderCloud.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" }, keyID: keyID);
+			var token = OrderCloudToken.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" }, keyID: keyID);
 
 			var request = TestFramework.Client.WithOAuthBearerToken(token).Request("demo/shop");
 
@@ -291,17 +297,28 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
-		[AutoData]
-		public async Task can_build_user_context(string clientID)
+		public async Task user_auth_provider_handles_mulitple_concurrent_requests()
 		{
-			var token = JwtOrderCloud.CreateFake(clientID);
+			var requestCount = 10;
+			var fixture = new Fixture();
+			var clientIDs = new List<string>();
+			var requests = new List<Task<string>>();
 
-			var oc = Substitute.For<IOrderCloudClient>();
-			oc.Me.GetAsync().Returns(new MeUser() { Active = true });
-			var context = new VerifiedUserContext(new LazyCacheService(), oc);
-			await context.VerifyAsync(token);
+			foreach (var i in Enumerable.Range(0, requestCount))
+			{
+				var clientID = fixture.Create<string>();
+				clientIDs.Add(clientID);
+				var token = OrderCloudToken.CreateFake(clientID);
+				var request = TestFramework.Client.WithOAuthBearerToken(token).Request("demo/clientid").GetStringAsync();
+				requests.Add(request);
+			}
 
-			Assert.AreEqual(clientID, context.TokenClientID);
+			var results = await Task.WhenAll(requests);
+
+			foreach (var i in Enumerable.Range(0, requestCount))
+			{
+				Assert.AreEqual("\"" + clientIDs[i] + "\"", results[i]);
+			}
 		}
 
 		//[Test]

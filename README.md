@@ -17,7 +17,7 @@ Use Ordercloud's authentication scheme in your own APIs.
 ```c#
 [HttpGet("hello"), OrderCloudUserAuth(ApiRole.Shopper)]
 public string SayHello() {
-    return $"Hello {_user.Username}";  // _user is a service injected in the constructor
+    return $"Hello {UserAuthToken.Username}";  // UserAuthToken is a property on CatalystController
 }
 ```
 
@@ -47,8 +47,8 @@ Receive list requests to your API with user defined filters, search, paging, and
 [HttpGet("orders"), OrderCloudUserAuth(ApiRole.Shopper)]
 public async Task<ListPage<Order>> ListOrders(IListArgs args)
 {
-    await _user.RequestMeUserAsync() // get user details
-    args.Filters.Add(new ListFilter("FromCompanyID", _user.MeUser.Buyer.ID)) // filter using the user's buyer organization ID 
+    var user = await UserAuthToken.BuildClient().Me.GetAsync(); // get user details
+    args.Filters.Add(new ListFilter("FromCompanyID", user.MeUser.Buyer.ID)) // filter using the user's buyer organization ID 
     args.Filters.Add(new ListFilter("LineItemCount", ">5"))
     // list orders from an admin endpoint
     var orders = await _oc.Orders.ListAsync(OrderDirection.Incoming, null, null, null, null, args); // apply list args with an extension version of ListAsync()
@@ -103,7 +103,7 @@ public class SupplierOnlyException : CatalystBaseException
 
 ....
 
-if (_user.CommerceRole != CommerceRole.Supplier) {
+if (UserAuthToken.CommerceRole != CommerceRole.Supplier) {
     throw new SupplierOnlyException();
 }
 ```
@@ -133,7 +133,7 @@ public class Startup
         services
             .ConfigureServices()
             .AddSingleton<ISimpleCache, LazyCacheService>()
-            .AddScoped<VerifiedUserContext>()
+            .AddOrderCloudUserAuth()
             .AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
     }
 

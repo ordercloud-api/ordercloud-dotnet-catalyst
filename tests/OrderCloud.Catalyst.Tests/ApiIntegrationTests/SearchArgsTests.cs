@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Catalyst.Tests.ApiIntegrationTests
+namespace OrderCloud.Catalyst.Tests
 {
 	[TestFixture]
 	public class SearchArgsTests

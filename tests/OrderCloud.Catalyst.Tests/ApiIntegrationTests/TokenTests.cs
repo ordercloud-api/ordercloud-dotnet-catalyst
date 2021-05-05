@@ -1,5 +1,7 @@
 ﻿using AutoFixture;
+using AutoFixture.NUnit3;
 using NUnit.Framework;
+using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,20 +23,14 @@ namespace OrderCloud.Catalyst.Tests
 			var anonOrderID = fixture.Create<string>();
 			var authUrl = fixture.Create<string>();
 			var apiUrl = fixture.Create<string>();
-			var userType = fixture.Create<string>();
+			var userType = "admin";
 			var userDatabaseID = fixture.Create<string>();
-			var companyDatabaseID = fixture.Create<string>();
-			var sellerDatabaseID = fixture.Create<string>();
-			var companyInteropID = fixture.Create<string>();
-			var sellerInteropID = fixture.Create<string>();
-			var marketplaceID = fixture.Create<string>();
-			var issuedAtUTC = fixture.Create<DateTime>();
 			var impersonatingUserDatabaseID = fixture.Create<string>();
 			var exp = new DateTime(2010, 4, 14, 0, 0, 0, DateTimeKind.Utc);
 			var nvb = new DateTime(2000, 6, 1, 0, 0, 0, DateTimeKind.Utc);
 
-			var raw = JwtOrderCloud.CreateFake(clientID, roles, exp, nvb, username, keyID, anonOrderID, authUrl, apiUrl, userType, userDatabaseID, companyDatabaseID, sellerDatabaseID, companyInteropID, issuedAtUTC, sellerInteropID, marketplaceID, impersonatingUserDatabaseID);
-			var jwt = new JwtOrderCloud(raw);
+			var raw = OrderCloudToken.CreateFake(clientID, roles, exp, nvb, username, keyID, anonOrderID, authUrl, apiUrl, userType, userDatabaseID, impersonatingUserDatabaseID);
+			var jwt = new OrderCloudToken(raw);
 
 			Assert.AreEqual(raw, jwt.AccessToken);
 			Assert.AreEqual(keyID, jwt.KeyID);
@@ -43,25 +39,20 @@ namespace OrderCloud.Catalyst.Tests
 			Assert.AreEqual(roles, jwt.Roles);
 			Assert.AreEqual(authUrl, jwt.AuthUrl);
 			Assert.AreEqual(apiUrl, jwt.ApiUrl);
-			Assert.AreEqual(userType, jwt.UserType);
+			Assert.AreEqual(CommerceRole.Seller, jwt.CommerceRole);
 			Assert.AreEqual(clientID, jwt.ClientID);
 			Assert.AreEqual(userDatabaseID, jwt.UserDatabaseID);
-			Assert.AreEqual(companyDatabaseID, jwt.CompanyDatabaseID);
-			Assert.AreEqual(sellerDatabaseID, jwt.SellerDatabaseID);
-			Assert.AreEqual(companyInteropID, jwt.CompanyInteropID);
-			Assert.AreEqual(sellerInteropID, jwt.SellerInteropID);
-			Assert.AreEqual(Truncate(issuedAtUTC), Truncate(jwt.IssuedAtUTC));
-			Assert.AreEqual(marketplaceID, jwt.MarketplaceID);
 			Assert.AreEqual(impersonatingUserDatabaseID, jwt.ImpersonatingUserDatabaseID);
 			Assert.AreEqual(Truncate(exp), Truncate(jwt.ExpiresUTC));
 			Assert.AreEqual(Truncate(nvb), Truncate(jwt.NotValidBeforeUTC));
 		}
 
 		[Test]
-		public void create_fake_should_have_correct_defaults()
+		[AutoData]
+		public void create_fake_should_have_correct_defaults(string clientID)
 		{
-			var raw = JwtOrderCloud.CreateFake();
-			var jwt = new JwtOrderCloud(raw);
+			var raw = OrderCloudToken.CreateFake(clientID);
+			var jwt = new OrderCloudToken(raw);
 
 			Assert.AreEqual(raw, jwt.AccessToken);
 			Assert.AreEqual(new List<string>(), jwt.Roles);
@@ -73,15 +64,9 @@ namespace OrderCloud.Catalyst.Tests
 			Assert.AreEqual(null, jwt.KeyID);
 			Assert.AreEqual(null, jwt.AnonOrderID);
 			Assert.AreEqual(null, jwt.Username);
-			Assert.AreEqual(null, jwt.UserType);
-			Assert.AreEqual(null, jwt.ClientID);
+			Assert.AreEqual(CommerceRole.Seller, jwt.CommerceRole);
+			Assert.AreEqual(clientID, jwt.ClientID);
 			Assert.AreEqual(null, jwt.UserDatabaseID);
-			Assert.AreEqual(null, jwt.CompanyDatabaseID);
-			Assert.AreEqual(null, jwt.SellerDatabaseID);
-			Assert.AreEqual(null, jwt.CompanyInteropID);
-			Assert.AreEqual(null, jwt.SellerInteropID);
-			Assert.AreEqual(null, jwt.IssuedAtUTC);
-			Assert.AreEqual(null, jwt.MarketplaceID);
 			Assert.AreEqual(null, jwt.ImpersonatingUserDatabaseID);
 		}
 

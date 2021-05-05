@@ -38,6 +38,8 @@ namespace OrderCloud.Catalyst
 		public static IServiceCollection AddOrderCloudUserAuth(this IServiceCollection services)
 		{
 			services
+				.AddHttpContextAccessor()
+				.AddSingleton<UserAuthContextProvider>()
 				.AddSingleton<ISimpleCache, LazyCacheService>() // Can override by registering own implmentation
 				.AddAuthentication()
 				.AddScheme<OrderCloudUserAuthOptions, OrderCloudUserAuthHandler>("OrderCloudUser", null);

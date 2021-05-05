@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst.Tests
 {
-	class ListAllAsyncTests
+	[TestFixture]
+	public class ListAllAsyncTests
 	{
 		private IOrderCloudClient mockOrderCloudClient;
 

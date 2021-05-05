@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrderCloud.SDK;
@@ -10,13 +11,15 @@ using RequiredAttribute = System.ComponentModel.DataAnnotations.RequiredAttribut
 namespace OrderCloud.Catalyst.TestApi
 {
 	[Route("demo")]
-	public class DemoController : BaseController
+	public class DemoController : CatalystController
 	{
-		private static VerifiedUserContext _userContext;
+		private static UserAuthContextProvider _tokenProvider;
+		private static ExampleCommand _exampleCommand;
 
-		public DemoController(VerifiedUserContext userContext)
+		public DemoController(UserAuthContextProvider tokenProvider, ExampleCommand exampleCommand)
 		{
-			_userContext = userContext;
+			_tokenProvider = tokenProvider;
+			_exampleCommand = exampleCommand;
 		}
 
 		[HttpGet("shop"), OrderCloudUserAuth(ApiRole.Shopper)]
@@ -33,8 +36,6 @@ namespace OrderCloud.Catalyst.TestApi
 		[HttpGet("custom"), OrderCloudUserAuth("CustomRole")]
 		public object CustomRole() => "hello custom!";
 
-
-
 		[HttpGet("anybody"), OrderCloudUserAuth]
 		public object Anybody() => "hello anybody!";
 
@@ -46,20 +47,27 @@ namespace OrderCloud.Catalyst.TestApi
 		{
 			return new SimplifiedUser()
 			{
-				AvailableRoles = _userContext.AvailableRoles.ToList(),
-				Username = _userContext.Username,
-				TokenClientID = _userContext.TokenClientID
+				AvailableRoles = UserAuthToken.Roles.ToList(),
+				Username = UserAuthToken.Username,
+				TokenClientID = UserAuthToken.ClientID
 			};
+		}
+
+		[HttpGet("clientid"), OrderCloudUserAuth]
+		public string GetClientID()
+		{
+			Thread.Sleep(1000); // pause for 1 sec
+			return _exampleCommand.GetClientID();
 		}
 
 		[HttpPost("usercontext/{token}")]
 		public async Task<SimplifiedUser> SetUserContext(string token)
 		{
-			await _userContext.VerifyAsync(token);
+			var user = await _tokenProvider.VerifyTokenAsync(token);
 			return new SimplifiedUser() { 
-				AvailableRoles = _userContext.AvailableRoles.ToList(),
-				Username = _userContext.Username, 
-				TokenClientID = _userContext.TokenClientID 
+				AvailableRoles = user.Roles.ToList(),
+				Username = user.Username, 
+				TokenClientID = user.ClientID 
 			};
 		}
 
@@ -89,6 +97,8 @@ namespace OrderCloud.Catalyst.TestApi
 		public string TokenClientID { get; set; }
 
 	}
+
+
 
 	public class ExampleModel
 	{

@@ -16,7 +16,7 @@ namespace OrderCloud.Catalyst
 	/// <summary>
 	/// The raw jwt access token 
 	/// </summary>
-	public class JwtOrderCloud
+	public class OrderCloudToken
 	{
 		/// <summary>
 		/// The raw jwt access token 
@@ -49,7 +49,7 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// The user type ("buyer", "supplier", "admin") on the token. "usrtype" claim. Always non-null.
 		/// </summary>
-		public string UserType { get; }
+		public CommerceRole CommerceRole { get; } 
 		/// <summary>
 		/// The client ID on the token. "cid" claim. Always non-null.
 		/// </summary>
@@ -67,40 +67,16 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public string UserDatabaseID { get; }
 		/// <summary>
-		/// The internal database ID of the user's company. "coid" claim. Null unless Portal issued the token. 
-		/// </summary>
-		public string CompanyDatabaseID { get; }
-		/// <summary>
-		/// The internal database ID of the user's seller organization. "sid" claim. Null unless Portal issued the token. 
-		/// </summary>
-		public string SellerDatabaseID { get; }
-		/// <summary>
-		/// The public ID of the user's company (Buyer, Supplier, Seller). "coiid" claim. Null unless Portal issued the token. 
-		/// </summary>
-		public string CompanyInteropID { get; }
-		/// <summary>
-		/// The public ID of the user's seller organization. "siid" claim. Null unless Portal issued the token. 
-		/// </summary>
-		public string SellerInteropID { get; }
-		/// <summary>
-		/// The date the token was issued. "iat" claim. Null unless Portal issued the token. 
-		/// </summary>
-		public DateTime? IssuedAtUTC { get; }
-		/// <summary>
-		/// The Marketplace ID of the token. "mpid" claim. Null unless Portal issued the token. 
-		/// </summary>
-		public string MarketplaceID { get; }
-		/// <summary>
 		/// The internal database ID of the user who requested an impersonation token. "imp" claim. Null unless token is from impersonation.
 		/// </summary>
 		public string ImpersonatingUserDatabaseID { get; }
 
-		public JwtOrderCloud() { }
+		public OrderCloudToken() { }
 
 		/// <summary>
 		/// Create a JwtOrderCloud from a raw json web token.
 		/// </summary>
-		public JwtOrderCloud(string token) 
+		public OrderCloudToken(string token)
 		{
 			var jwt = new JwtSecurityToken(token);
 			var lookup = jwt.Claims.ToLookup(c => c.Type, c => c.Value);
@@ -113,17 +89,12 @@ namespace OrderCloud.Catalyst
 			Roles = lookup["role"].ToList();
 			AuthUrl = lookup["iss"].FirstOrDefault();
 			ApiUrl = lookup["aud"].FirstOrDefault();
-			UserType = lookup["usrtype"].FirstOrDefault();
-			ClientID = lookup["cid"].FirstOrDefault();
+			var type = lookup["usrtype"].FirstOrDefault();
+			CommerceRole = GetCommerceRole(type);
+			ClientID = lookup["cid"].FirstOrDefault() ?? throw new ArgumentNullException("Token must contain \"cid\" claim");
 			ExpiresUTC = UnixToUTCDateTime(lookup["exp"].FirstOrDefault()) ?? throw new ArgumentNullException("Token must contain \"exp\" claim");
 			NotValidBeforeUTC = UnixToUTCDateTime(lookup["nbf"].FirstOrDefault()) ?? throw new ArgumentNullException("Token must contain \"nbf\" claim"); ;
 			UserDatabaseID = lookup["u"].FirstOrDefault() ?? lookup["uid"].FirstOrDefault();
-			CompanyDatabaseID = lookup["coid"].FirstOrDefault();
-			SellerDatabaseID = lookup["sid"].FirstOrDefault();
-			CompanyInteropID = lookup["coiid"].FirstOrDefault();
-			IssuedAtUTC = UnixToUTCDateTime(lookup["iat"].FirstOrDefault());
-			SellerInteropID = lookup["siid"].FirstOrDefault();
-			MarketplaceID = lookup["mpid"].FirstOrDefault();
 			ImpersonatingUserDatabaseID = lookup["imp"].FirstOrDefault();
 		}
 
@@ -153,23 +124,17 @@ namespace OrderCloud.Catalyst
 		/// Create a fake token for unit testing. (Grants no access to the api). 
 		/// </summary>
 		public static string CreateFake(
-			string clientID = null,
+			string clientID,
 			List<string> roles = null,
 			DateTime? expiresUTC = null,
 			DateTime? notValidBeforeUTC = null,
 			string username = null,
-			string keyID = null, 
+			string keyID = null,
 			string anonOrderID = null,
 			string authUrl = null,
 			string apiUrl = null,
-			string userType = null,
+			string userType = "admin",
 			string userDatabaseID = null,
-			string companyDatabaseID = null,
-			string sellerDatabaseID = null,
-			string companyInteropID = null,
-			DateTime? issuedAtUTC = null,
-			string sellerInteropID = null,
-			string marketplaceID = null,
 			string impersonatingUserDatabaseID = null
 		)
 		{
@@ -188,12 +153,6 @@ namespace OrderCloud.Catalyst
 			AddClaimIfNotNull(claims, "usrtype", userType);
 			AddClaimIfNotNull(claims, "cid", clientID);
 			AddClaimIfNotNull(claims, "u", userDatabaseID);
-			AddClaimIfNotNull(claims, "coid", companyDatabaseID);
-			AddClaimIfNotNull(claims, "sid", sellerDatabaseID);
-			AddClaimIfNotNull(claims, "coiid", companyInteropID);
-			AddClaimIfNotNull(claims, "iat", UTCDateTimeToUnix(issuedAtUTC));
-			AddClaimIfNotNull(claims, "siid", sellerInteropID);
-			AddClaimIfNotNull(claims, "mpid", marketplaceID);
 			AddClaimIfNotNull(claims, "imp", impersonatingUserDatabaseID);
 
 			var payload = new JwtPayload(
@@ -205,7 +164,7 @@ namespace OrderCloud.Catalyst
 			);
 
 			var token = new JwtSecurityToken(header, payload);
-			
+
 			return new JwtSecurityTokenHandler().WriteToken(token);
 		}
 
@@ -271,6 +230,22 @@ namespace OrderCloud.Catalyst
 			string base64 = padded.Replace("_", "/")
 								  .Replace("-", "+");
 			return Convert.FromBase64String(base64);
+		}
+
+		private static CommerceRole GetCommerceRole(string userType)
+		{
+			switch (userType?.ToLower())
+			{
+				case "buyer":
+					return CommerceRole.Buyer;
+				case "seller":
+				case "admin":
+					return CommerceRole.Seller;
+				case "supplier":
+					return CommerceRole.Supplier;
+				default:
+					throw new Exception("unknown user type: " + userType);
+			}
 		}
 	}
 }

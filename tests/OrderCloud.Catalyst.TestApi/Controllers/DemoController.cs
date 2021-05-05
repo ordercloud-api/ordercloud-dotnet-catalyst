@@ -70,7 +70,7 @@ namespace OrderCloud.Catalyst.TestApi
 		public object InternalError() => (new string[] { })[10];
 
 		[HttpPost("modelvalidation")]
-		public ExampleModel ModelValidation(ExampleModel model) => model;
+		public ExampleModel ModelValidation([FromBody] ExampleModel model) => model;
 
 		[HttpGet("listargs")]
 		public IListArgs DeserializeListArgs(ListArgs<ExampleModel> args) => args;
@@ -92,12 +92,27 @@ namespace OrderCloud.Catalyst.TestApi
 
 	public class ExampleModel
 	{
-		[Required]
+		[Required(ErrorMessage = "This field is required, please try again.")]
 		public string RequiredField { get; set; }
-		[StringLength(100, MinimumLength = 10)]
+
+		[StringLength(25, MinimumLength = 10, ErrorMessage = "This value must be at least 10 characters and no more than 25 characters.")]
 		public string BoundedString { get; set; }
-		[Range(0.01, 100.00, ErrorMessage = "100 is the max, friend")]
+
+		[Range(0.01, 100.00, ErrorMessage = "This value must be between {1} and {2}.")]
 		public decimal BoundedDecimal { get; set; }
+
+		[Range(1, 100, ErrorMessage = "This value must be between {1} and {2}.")]
+		public int BoundedInteger { get; set; }
+
+		[EmailAddress(ErrorMessage = "The email address provided is not valid.")]
+		public string Email { get; set; }
+
+		[CreditCard(ErrorMessage = "The credit card number provided is not valid.")]
+		public string CreditCardNumber { get; set; }
+
+		// Regex Example - Alphanumeric, no special characters or spaces
+		[RegularExpression(@"^[a-zA-Z][a-zA-Z0-9]*$", ErrorMessage = "Invalid characters (special characters and spaces are not allowed).")]
+		public string RegexExample { get; set; }
 	}
 
 	public class MyConfigData

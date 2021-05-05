@@ -143,6 +143,15 @@ public class Startup
 }
 ```
 
+### [Model Validation](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/tests/OrderCloud.Catalyst.TestApi/Controllers/ModelValidation)
+
+Take advantage of DataAnnotation attributes to specify validation requirements for your own custom models.
+
+```c#
+	[Required(ErrorMessage = "This field is required, please try again.")]
+    public string RequiredField { get; set; }
+```
+
 ### Testing helpers
 
 When writing integration tests that hit an endpoint marked with `[OrderCloudUserAuth]`, you'll need to pass a properly formatted JWT token in the Authorization header, otherwise the call will fail. Fake tokens are a bit tedious to create, so `OrderCloud.Catalyst` provides a helper: 

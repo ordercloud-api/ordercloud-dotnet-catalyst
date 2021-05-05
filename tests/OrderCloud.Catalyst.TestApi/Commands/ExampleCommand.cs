@@ -7,15 +7,15 @@ namespace OrderCloud.Catalyst.TestApi
 {
 	public class ExampleCommand
 	{
-		private readonly OrderCloudUserAuthProvider _userAuth;
-		public ExampleCommand(OrderCloudUserAuthProvider userAuth)
+		private readonly OrderCloudUserAuthProvider _userProvider;
+		public ExampleCommand(OrderCloudUserAuthProvider userProvider)
 		{
-			_userAuth = userAuth;
+			_userProvider = userProvider;
 		}
 
 		public string GetClientID()
 		{
-			return _userAuth.GetToken().ClientID;
+			return _userProvider.GetToken().ClientID;
 		}
 	}
 }

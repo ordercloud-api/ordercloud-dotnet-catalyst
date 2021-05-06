@@ -87,14 +87,19 @@ In a C# context that is not a request to a Controller you can use the injectable
 ```c#
     string rawToken = "...";
     // Parses the token, but does not verify it. 
-    UserContext user = new UserContext(rawToken);
-    // Only data on the token is available. user.FirstName is not, for example.
+    UserContext context = new UserContext(rawToken);
+    // Only data on the token is available. user.FirstName and user.xp are not, for example.
     console.log(user.Username)
-    // Inject a UserContextProvider to verify. [OrderCloudUserAuth] uses this under the hood. 
+
+    // Inject a UserContextProvider to verify. [OrderCloudUserAuth] uses this method under the hood. 
     UserContext verified = await _userContextProvider.VerifyTokenAsync(rawToken); 
+
     // UserContextProvider can also get a UserContext from the current HttpRequest.
     // Only use this after calling VerifyTokenAsync, either directly or through [OrderCloudUserAuth].
     UserContext unverified = await _userContextProvider.GetUserContext(); 
+
+    // A shortcut method for getting the full user details
+    MeUser user = await _userContextProvider.GetMeAsync(); 
 
 ```
 

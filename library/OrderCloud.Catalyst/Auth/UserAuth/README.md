@@ -82,13 +82,23 @@ Proxy the Ordercloud API, adding your own permission logic
 }
 ```
 
-In a C# context that is not a request to a Controller you can use the injectable *OrderCloudUserAuthProvider* to verify and parse a user's token. 
+### UserContext and UserContextProvider
+In a C# context that is not a request to a Controller you can use the injectable *UserContextProvider* to parse and verify a user's token. 
 ```c#
     string rawToken = "...";
-    var parsed = await _userProvider.VerifyTokenAsync(rawToken); // will throw the same authentication errors as [OrderCloudUserAuth]
+    // Parses the token, but does not verify it. 
+    UserContext user = new UserContext(rawToken);
+    // Only data on the token is available. user.FirstName is not, for example.
+    console.log(user.Username)
+    // Inject a UserContextProvider to verify. [OrderCloudUserAuth] uses this under the hood. 
+    UserContext verified = await _userContextProvider.VerifyTokenAsync(rawToken); 
+    // UserContextProvider can also get a UserContext from the current HttpRequest.
+    // Only use this after calling VerifyTokenAsync, either directly or through [OrderCloudUserAuth].
+    UserContext unverified = await _userContextProvider.GetUserContext(); 
+
 ```
 
-Inject the OrderCloudUserAuthProvider into a command class. Within a method, an OrderCloud request can be made using that user's token. 
+Inject the UserContextProvider into a command class. Within a method, an OrderCloud request can be made using that user's token. 
 
 ```c#
 public class OrderSubmitCommand 
@@ -97,7 +107,7 @@ public class OrderSubmitCommand
     private readonly UserContextProvider _userContext; // User token that made the request 
     private readonly ICreditCardCommand _card;   // Details of card processing left unopinionated
     
-    public OrderSubmitCommand(IOrderCloudClient oc, OrderCloudUserAuthProvider userContext, ICreditCardCommand card)
+    public OrderSubmitCommand(IOrderCloudClient oc, UserContextProvider userContext, ICreditCardCommand card)
     {
         _oc = oc;
         _userContext = userContext;

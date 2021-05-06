@@ -25,6 +25,14 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Get a raw OrderCloud token
 		/// </summary>
+		public string GetOAuthToken()
+		{
+			return GetOAuthToken(_httpContextAccessor.HttpContext.Request);
+		}
+
+		/// <summary>
+		/// Get a raw OrderCloud token
+		/// </summary>
 		public static string GetOAuthToken(HttpRequest request)
 		{
 			if (!request.Headers.TryGetValue("Authorization", out var header))
@@ -95,7 +103,8 @@ namespace OrderCloud.Catalyst
 			if (parsedToken.KeyID == null)
 			{
 				isValid = await ValidateTokenWithMeGet(parsedToken); // also sets meUser field;
-			} else
+			}
+			else
 			{
 				isValid = await ValidateTokenWithKeyID(parsedToken);
 			}
@@ -112,6 +121,30 @@ namespace OrderCloud.Catalyst
 				});
 			}
 			return parsedToken;
+		}
+
+		/// <summary>
+		/// Get the full details of the currently authenticated user
+		/// </summary>
+		public async Task<T> GetMeUserAsync<T>()
+			where T : MeUser
+		{
+			var token = GetOAuthToken();
+			if (string.IsNullOrEmpty(token))
+				throw new UnAuthorizedException();
+			return await _oc.Me.GetAsync<T>(token);
+		}
+
+
+		/// <summary>
+		/// Get the full details of the currently authenticated user
+		/// </summary>
+		public async Task<MeUser> GetMeUserAsync()
+		{
+			var token = GetOAuthToken();
+			if (string.IsNullOrEmpty(token))
+				throw new UnAuthorizedException();
+			return await _oc.Me.GetAsync(token);
 		}
 
 		/// <summary>

@@ -44,14 +44,14 @@ namespace OrderCloud.Catalyst
 
 	public class OrderCloudUserAuthHandler : AuthenticationHandler<OrderCloudUserAuthOptions>
 	{
-		private static UserAuthContextProvider _tokenProvider;
+		private static OrderCloudUserAuthProvider _tokenProvider;
 
 		public OrderCloudUserAuthHandler(
 			IOptionsMonitor<OrderCloudUserAuthOptions> options,
 			ILoggerFactory logger,
 			UrlEncoder encoder,
 			ISystemClock clock,
-			UserAuthContextProvider tokenProvider
+			OrderCloudUserAuthProvider tokenProvider
 			)
 			: base(options, logger, encoder, clock)
 		{

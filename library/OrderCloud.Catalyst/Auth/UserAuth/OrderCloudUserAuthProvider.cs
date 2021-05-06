@@ -9,13 +9,13 @@ using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst
 {	
-	public class UserAuthContextProvider
+	public class OrderCloudUserAuthProvider
 	{
 		private readonly ISimpleCache _cache;
 		private readonly IOrderCloudClient _oc;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 
-		public UserAuthContextProvider(ISimpleCache cache, IOrderCloudClient oc, IHttpContextAccessor httpContextAccessor)
+		public OrderCloudUserAuthProvider(ISimpleCache cache, IOrderCloudClient oc, IHttpContextAccessor httpContextAccessor)
 		{
 			_cache = cache;
 			_oc = oc;

@@ -27,7 +27,7 @@ public class MyThingController : CatalystController
     [HttpGet, Route("thing")] 
     [OrderCloudUserAuth(ApiRole.Shopper, ApiRole.OrderReader, ApiRole.OrderAdmin)] // Any one of these threee roles gives access the endpoint 
     public Thing Get(string id) {
-        var username = UserAuthToken.Username; // UserAuthToken is a property on CatalystController
+        var username = UserContext.Username; // UserContext is a property on CatalystController
         ...
     }
 }
@@ -48,7 +48,7 @@ Access data in the claims of the OrderCloud token used in the request.
     [HttpPut, Route("hello")]
     [OrderCloudUserAuth] // No roles are defined, so any valid Ordercloud Token gives access.
     public string Hello([FromBody] Thing thing) {
-        return $"Hello {UserAuthToken.Username}, your role is {UserAuthToken.CommerceRole}";.
+        return $"Hello {UserContext.Username}, your role is {UserContext.CommerceRole}";.
     }
 ```
 
@@ -57,7 +57,7 @@ Get the full user details such as FirstName, LastName and xp from the GET /me en
     [HttpPut, Route("hello")]
     [OrderCloudUserAuth] // No roles are defined, so any valid Ordercloud Token gives access.
     public async Task<string> Hello([FromBody] Thing thing) {
-        var user = await UserAuthToken.BuildClient().Me.GetAsync();
+        var user = await _oc.Me.GetAsync(UserContext.AccessToken)
 
         return $"Hello {user.FirstName} {user.LastName}"; // now no error thrown
     }
@@ -69,14 +69,14 @@ Proxy the Ordercloud API, adding your own permission logic
     [OrderCloudUserAuth(ApiRole.Shopper)] 
     public async Task<ListPage<Order>> ListOrdersFromMyStore(ListArgs args) {
         // A different way to get the user details on MeUser. Make any request from OcClient as the authenticated user.
-        var me = await await UserAuthToken.BuildClient().Me.GetAsync();
+        var me = await await UserContext.BuildClient().Me.GetAsync();
         // Access a developer-defined extended property (xp) on the user called "StoreID".
         var storeID = me.xp.StoreID 
         // Create a filter. Only return orders where Order.BillingAddress.ID equals the user's storeID.   
         var billingAddressFilter = new ListFilter("BillingAddress.ID", storeID);
         // Add the filter on top of any additional api user-defined filters. 
         args.Filters.Add(billingAddressFilter);
-        // request orders from an admin endpoint
+        // request orders from an admin perspective
         return new OrderCloudClient(...).Orders.ListAsync(OrderDirection.Outgoing, page: args.Page, pageSize: args.PageSize, filters: args.ToFilterString()) 
     }
 }
@@ -94,13 +94,13 @@ Inject the OrderCloudUserAuthProvider into a command class. Within a method, an 
 public class OrderSubmitCommand 
 {
     private readonly IOrderCloudClient _oc;      // Injected with Integration Client ID context. FullAccess "super user".
-    private readonly OrderCloudUserAuthProvider _userProvider; 
+    private readonly UserContextProvider _userContext; // User token that made the request 
     private readonly ICreditCardCommand _card;   // Details of card processing left unopinionated
     
-    public OrderSubmitCommand(IOrderCloudClient oc, OrderCloudUserAuthProvider userProvider, ICreditCardCommand card)
+    public OrderSubmitCommand(IOrderCloudClient oc, OrderCloudUserAuthProvider userContext, ICreditCardCommand card)
     {
         _oc = oc;
-        _userProvider = userProvider;
+        _userContext = userContext;
         _card = card;
     }
 
@@ -114,7 +114,7 @@ public class OrderSubmitCommand
         try
         {
             // Make the submit order request with the original user's token.
-            return await _userProvider.GetClient().Orders.SubmitAsync(direction, orderID); 
+            return await _userContext.GetClient().Orders.SubmitAsync(direction, orderID); 
         }
         catch (Exception)
         {

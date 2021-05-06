@@ -17,7 +17,7 @@ Use Ordercloud's authentication scheme in your own APIs.
 ```c#
 [HttpGet("hello"), OrderCloudUserAuth(ApiRole.Shopper)]
 public string SayHello() {
-    return $"Hello {UserAuthToken.Username}";  // UserAuthToken is a property on CatalystController
+    return $"Hello {UserContext.Username}";  // UserContext is a property on CatalystController
 }
 ```
 
@@ -47,7 +47,7 @@ Receive list requests to your API with user defined filters, search, paging, and
 [HttpGet("orders"), OrderCloudUserAuth(ApiRole.Shopper)]
 public async Task<ListPage<Order>> ListOrders(IListArgs args)
 {
-    var user = await UserAuthToken.BuildClient().Me.GetAsync(); // get user details
+    var user = await _oc.Me.GetAsync(UserContext.AccessToken); // get user details
     args.Filters.Add(new ListFilter("FromCompanyID", user.MeUser.Buyer.ID)) // filter using the user's buyer organization ID 
     args.Filters.Add(new ListFilter("LineItemCount", ">5"))
     // list orders from an admin endpoint
@@ -103,7 +103,7 @@ public class SupplierOnlyException : CatalystBaseException
 
 ....
 
-if (UserAuthToken.CommerceRole != CommerceRole.Supplier) {
+if (UserContext.CommerceRole != UserContext.Supplier) {
     throw new SupplierOnlyException();
 }
 ```
@@ -148,7 +148,7 @@ public class Startup
 When writing integration tests that hit an endpoint marked with `[OrderCloudUserAuth]`, you'll need to pass a properly formatted JWT token in the Authorization header, otherwise the call will fail. Fake tokens are a bit tedious to create, so `OrderCloud.Catalyst` provides a helper: 
 
 ```c#
-var token = JwtOrderCloud.CreateFake(
+var token = FakeOrderCloudToken.Create(
     clientID: "my-client-id", 
     roles: new List<string> { "Shopper" },
     expiresUTC: DateTime.UtcNow + TimeSpan.FromHours(1),

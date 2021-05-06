@@ -14,9 +14,9 @@ using System.Text;
 namespace OrderCloud.Catalyst
 {
 	/// <summary>
-	/// The raw jwt access token 
+	/// Represents data inside a specific OrderCloud json web token 
 	/// </summary>
-	public class OrderCloudToken
+	public class UserContext
 	{
 		/// <summary>
 		/// The raw jwt access token 
@@ -71,12 +71,12 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public string ImpersonatingUserDatabaseID { get; }
 
-		public OrderCloudToken() { }
+		public UserContext() { }
 
 		/// <summary>
-		/// Create a JwtOrderCloud from a raw json web token.
+		/// Create a UserContext from a raw json web token.
 		/// </summary>
-		public OrderCloudToken(string token)
+		public UserContext(string token)
 		{
 			var jwt = new JwtSecurityToken(token);
 			var lookup = jwt.Claims.ToLookup(c => c.Type, c => c.Value);
@@ -120,90 +120,6 @@ namespace OrderCloud.Catalyst
 			return client;
 		}
 
-		/// <summary>
-		/// Create a fake token for unit testing. (Grants no access to the api). 
-		/// </summary>
-		public static string CreateFake(
-			string clientID,
-			List<string> roles = null,
-			DateTime? expiresUTC = null,
-			DateTime? notValidBeforeUTC = null,
-			string username = null,
-			string keyID = null,
-			string anonOrderID = null,
-			string authUrl = null,
-			string apiUrl = null,
-			string userType = "admin",
-			string userDatabaseID = null,
-			string impersonatingUserDatabaseID = null
-		)
-		{
-			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("blahblahblahblahblahblahblahblahblahblah"));
-			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-			var header = new JwtHeader(creds);
-			if (keyID != null)
-			{
-				header["kid"] = keyID;
-			}
-			var claims = (roles ?? new List<string>()).Select(r => new Claim("role", r)).ToList();
-
-			AddClaimIfNotNull(claims, "orderid", anonOrderID);
-			AddClaimIfNotNull(claims, "usr", username);
-			AddClaimIfNotNull(claims, "usrtype", userType);
-			AddClaimIfNotNull(claims, "cid", clientID);
-			AddClaimIfNotNull(claims, "u", userDatabaseID);
-			AddClaimIfNotNull(claims, "imp", impersonatingUserDatabaseID);
-
-			var payload = new JwtPayload(
-				issuer: authUrl ?? "mockdomain.com",
-				audience: apiUrl ?? "mockdomain.com",
-				claims: claims,
-				expires: expiresUTC ?? DateTime.Now.AddMinutes(30),
-				notBefore: notValidBeforeUTC ?? DateTime.Now
-			);
-
-			var token = new JwtSecurityToken(header, payload);
-
-			return new JwtSecurityTokenHandler().WriteToken(token);
-		}
-
-		/// <summary>
-		/// Verifiy the validity of an OrderCloud token, given details about the public key.
-		/// </summary>
-		public bool IsTokenCryptoValid(PublicKey publicKey)
-		{
-			if (publicKey == null)
-			{
-				return false;
-			}
-			var rsa = new RSACryptoServiceProvider(2048);
-			rsa.ImportParameters(new RSAParameters
-			{
-				Modulus = FromBase64Url(publicKey.n),
-				Exponent = FromBase64Url(publicKey.e)
-			});
-			var rsaSecurityKey = new RsaSecurityKey(rsa);
-
-			var result = new JsonWebTokenHandler().ValidateToken(AccessToken, new TokenValidationParameters
-			{
-				IssuerSigningKey = rsaSecurityKey,
-				RequireSignedTokens = true,
-				ValidateIssuerSigningKey = true,
-				ValidateLifetime = true,
-				LifetimeValidator = (nbf, exp, _, __) => nbf < DateTime.UtcNow && exp > DateTime.UtcNow,
-				ValidateIssuer = false,
-				RequireExpirationTime = true,
-				ValidateAudience = false
-			});
-			return result.IsValid;
-		}
-
-		private static void AddClaimIfNotNull(List<Claim> claims, string type, string value)
-		{
-			if (value != null) { claims.Add(new Claim(type, value)); }
-		}
-
 		private static string GetHeader(JwtSecurityToken jwt, string key)
 		{
 			return jwt.Header.FirstOrDefault(t => t.Key == key).Value?.ToString();
@@ -221,15 +137,6 @@ namespace OrderCloud.Catalyst
 			if (utc == null) { return null; }
 			var span = utc - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 			return ((int)span.Value.TotalSeconds).ToString();
-		}
-
-		private static byte[] FromBase64Url(string base64Url)
-		{
-			string padded = base64Url.Length % 4 == 0
-				? base64Url : base64Url + "====".Substring(base64Url.Length % 4);
-			string base64 = padded.Replace("_", "/")
-								  .Replace("-", "+");
-			return Convert.FromBase64String(base64);
 		}
 
 		private static CommerceRole GetCommerceRole(string userType)

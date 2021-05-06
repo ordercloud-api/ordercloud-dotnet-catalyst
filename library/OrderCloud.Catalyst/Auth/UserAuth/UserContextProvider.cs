@@ -2,20 +2,23 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Flurl.Http;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst
-{	
-	public class OrderCloudUserAuthProvider
+{
+	public class UserContextProvider
 	{
 		private readonly ISimpleCache _cache;
 		private readonly IOrderCloudClient _oc;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 
-		public OrderCloudUserAuthProvider(ISimpleCache cache, IOrderCloudClient oc, IHttpContextAccessor httpContextAccessor)
+		public UserContextProvider(ISimpleCache cache, IOrderCloudClient oc, IHttpContextAccessor httpContextAccessor)
 		{
 			_cache = cache;
 			_oc = oc;
@@ -23,7 +26,7 @@ namespace OrderCloud.Catalyst
 		}
 
 		/// <summary>
-		/// Get a raw OrderCloud token
+		/// Get a raw OrderCloud token from the current HttpRequest headers
 		/// </summary>
 		public string GetOAuthToken()
 		{
@@ -31,7 +34,7 @@ namespace OrderCloud.Catalyst
 		}
 
 		/// <summary>
-		/// Get a raw OrderCloud token
+		/// Get a raw OrderCloud token from the provided request headers
 		/// </summary>
 		public static string GetOAuthToken(HttpRequest request)
 		{
@@ -45,54 +48,55 @@ namespace OrderCloud.Catalyst
 			if (parts[0] != "Bearer")
 				return null;
 
-			return parts[1].Trim();
+			var accessToken = parts[1].Trim();
+			if (string.IsNullOrEmpty(accessToken))
+				throw new UnAuthorizedException();
+			return accessToken;
 		}
 
 		/// <summary>
-		/// Get a parsed model of the OrderCloud token for the HttpRequest
+		/// Get a parsed model of the OrderCloud token from the current HttpRequest headers
 		/// </summary>
-		public OrderCloudToken GetToken()
+		public UserContext GetUserContext()
 		{
-			return GetToken(_httpContextAccessor.HttpContext.Request);
+			return GetUserContext(_httpContextAccessor.HttpContext.Request);
 		}
 
 		/// <summary>
-		/// Get a parsed model of the OrderCloud token
+		/// Get a parsed model of the OrderCloud token from the provided request headers
 		/// </summary>
-		public static OrderCloudToken GetToken(HttpRequest request)
+		public static UserContext GetUserContext(HttpRequest request)
 		{
 			var token = GetOAuthToken(request);
-			if (string.IsNullOrEmpty(token))
-				throw new UnAuthorizedException();
-			return new OrderCloudToken(token);
+			return new UserContext(token);
 		}
 
 		/// <summary>
-		/// Verifies an HttpRequest through the OrderCloud token it contains.
+		/// Verifies the OrderCloud token on the current HttpRequest
 		/// </summary>
-		public async Task<OrderCloudToken> VerifyTokenAsync(List<string> requiredRoles = null)
+		public async Task<UserContext> VerifyTokenAsync(List<string> requiredRoles = null)
 		{
 			return await VerifyTokenAsync(_httpContextAccessor.HttpContext.Request, requiredRoles);
 		}
 
 		/// <summary>
-		/// Verifies an HttpRequest through the OrderCloud token it contains.
+		/// Verifies the OrderCloud token on the provided HttpRequest
 		/// </summary>
-		public async Task<OrderCloudToken> VerifyTokenAsync(HttpRequest request, List<string> requiredRoles = null)
+		public async Task<UserContext> VerifyTokenAsync(HttpRequest request, List<string> requiredRoles = null)
 		{
 			var token = GetOAuthToken(request);
 			return await VerifyTokenAsync(token, requiredRoles);
 		}
 
 		/// <summary>
-		/// Verifies an OrderCloud token
+		/// Verifies the provided OrderCloud token
 		/// </summary>
-		public async Task<OrderCloudToken> VerifyTokenAsync(string token, List<string> requiredRoles = null)
+		public async Task<UserContext> VerifyTokenAsync(string token, List<string> requiredRoles = null)
 		{
 			if (string.IsNullOrEmpty(token))
 				throw new UnAuthorizedException();
 
-			var parsedToken = new OrderCloudToken(token);
+			var parsedToken = new UserContext(token);
 
 			if (parsedToken.ClientID == null || parsedToken.NotValidBeforeUTC > DateTime.UtcNow || parsedToken.ExpiresUTC < DateTime.UtcNow)
 				throw new UnAuthorizedException();
@@ -102,11 +106,11 @@ namespace OrderCloud.Catalyst
 			// some valid tokens - e.g. those from the portal - do not have a "kid"
 			if (parsedToken.KeyID == null)
 			{
-				isValid = await ValidateTokenWithMeGet(parsedToken); // also sets meUser field;
+				isValid = await VerifyTokenWithMeGet(parsedToken); // also sets meUser field;
 			}
 			else
 			{
-				isValid = await ValidateTokenWithKeyID(parsedToken);
+				isValid = await VerifyTokenWithKeyID(parsedToken);
 			}
 
 			if (!isValid)
@@ -126,12 +130,10 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Get the full details of the currently authenticated user
 		/// </summary>
-		public async Task<T> GetMeUserAsync<T>()
+		public async Task<T> GetMeAsync<T>(string accessToken = null)
 			where T : MeUser
 		{
-			var token = GetOAuthToken();
-			if (string.IsNullOrEmpty(token))
-				throw new UnAuthorizedException();
+			var token = accessToken ?? GetOAuthToken();
 			return await _oc.Me.GetAsync<T>(token);
 		}
 
@@ -139,11 +141,9 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Get the full details of the currently authenticated user
 		/// </summary>
-		public async Task<MeUser> GetMeUserAsync()
+		public async Task<MeUser> GetMeAsync(string accessToken = null)
 		{
-			var token = GetOAuthToken();
-			if (string.IsNullOrEmpty(token))
-				throw new UnAuthorizedException();
+			var token = accessToken ?? GetOAuthToken();
 			return await _oc.Me.GetAsync(token);
 		}
 
@@ -152,10 +152,41 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public IOrderCloudClient BuildClient()
 		{
-			return GetToken().BuildClient();
+			return GetUserContext().BuildClient();
 		}
 
-		private async Task<bool> ValidateTokenWithMeGet(OrderCloudToken jwt)
+		/// <summary>
+		/// Verifiy the validity of an OrderCloud token, given details about the public key.
+		/// </summary>
+		public static bool IsTokenCryptoValid(string accessToken, PublicKey publicKey)
+		{
+			if (publicKey == null)
+			{
+				return false;
+			}
+			var rsa = new RSACryptoServiceProvider(2048);
+			rsa.ImportParameters(new RSAParameters
+			{
+				Modulus = FromBase64Url(publicKey.n),
+				Exponent = FromBase64Url(publicKey.e)
+			});
+			var rsaSecurityKey = new RsaSecurityKey(rsa);
+
+			var result = new JsonWebTokenHandler().ValidateToken(accessToken, new TokenValidationParameters
+			{
+				IssuerSigningKey = rsaSecurityKey,
+				RequireSignedTokens = true,
+				ValidateIssuerSigningKey = true,
+				ValidateLifetime = true,
+				LifetimeValidator = (nbf, exp, _, __) => nbf < DateTime.UtcNow && exp > DateTime.UtcNow,
+				ValidateIssuer = false,
+				RequireExpirationTime = true,
+				ValidateAudience = false
+			});
+			return result.IsValid;
+		}
+
+		private async Task<bool> VerifyTokenWithMeGet(UserContext jwt)
 		{
 			var cacheKey = jwt.AccessToken;
 
@@ -164,7 +195,7 @@ namespace OrderCloud.Catalyst
 				try
 				{
 					var meUser = await _oc.Me.GetAsync();
-					return meUser != null && meUser.Active;	
+					return meUser != null && meUser.Active;
 				}
 				catch (OrderCloudException ex)
 				{
@@ -173,12 +204,12 @@ namespace OrderCloud.Catalyst
 				catch (Exception ex)
 				{
 					await _cache.RemoveAsync(cacheKey); // not their fault, don't make them wait 1 hr   
-					return false; 
+					return false;
 				}
 			});
 		}
 
-		private async Task<bool> ValidateTokenWithKeyID(OrderCloudToken jwt)
+		private async Task<bool> VerifyTokenWithKeyID(UserContext jwt)
 		{
 			var cacheKey = jwt.KeyID;
 
@@ -187,7 +218,7 @@ namespace OrderCloud.Catalyst
 				try
 				{
 					var publicKey = await _oc.Certs.GetPublicKeyAsync(jwt.KeyID);
-					return jwt.IsTokenCryptoValid(publicKey);
+					return IsTokenCryptoValid(jwt.AccessToken, publicKey);
 				}
 				catch (OrderCloudException ex)
 				{
@@ -199,6 +230,15 @@ namespace OrderCloud.Catalyst
 					return false;
 				}
 			});
+		}
+
+		private static byte[] FromBase64Url(string base64Url)
+		{
+			string padded = base64Url.Length % 4 == 0
+				? base64Url : base64Url + "====".Substring(base64Url.Length % 4);
+			string base64 = padded.Replace("_", "/")
+								  .Replace("-", "+");
+			return Convert.FromBase64String(base64);
 		}
 	}
 }

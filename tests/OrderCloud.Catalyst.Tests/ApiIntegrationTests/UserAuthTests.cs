@@ -5,6 +5,7 @@ using Flurl.Http;
 using NSubstitute;
 using NUnit.Framework;
 using OrderCloud.Catalyst;
+using OrderCloud.Catalyst.Auth.UserAuth;
 using OrderCloud.Catalyst.TestApi;
 using OrderCloud.SDK;
 using System;
@@ -43,7 +44,7 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task can_auth_with_oc_token()
 		{
-			var token = OrderCloudToken.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" }); // clientID check should be case insensitive
+			var token = FakeOrderCloudToken.Create("mYcLiEnTiD", new List<string> { "Shopper" }); // clientID check should be case insensitive
 			var result = await TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/shop")
@@ -55,7 +56,7 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task should_succeed_with_custom_role()
 		{
-			var token = OrderCloudToken.CreateFake("mYcLiEnTiD", new List<string> { "CustomRole" });
+			var token = FakeOrderCloudToken.Create("mYcLiEnTiD", new List<string> { "CustomRole" });
 			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/custom");
@@ -68,7 +69,7 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task should_error_without_custom_role()
 		{
-			var token = OrderCloudToken.CreateFake("mYcLiEnTiD");
+			var token = FakeOrderCloudToken.Create("mYcLiEnTiD");
 			var result = await TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/custom")
@@ -83,7 +84,7 @@ namespace OrderCloud.Catalyst.Tests
 			var fixture = new Fixture();
 			var username = fixture.Create<string>();
 			var clientID = fixture.Create<string>();
-			var token = OrderCloudToken.CreateFake(clientID, new List<string> { "Shopper" }, username: username);
+			var token = FakeOrderCloudToken.Create(clientID, new List<string> { "Shopper" }, username: username);
 
 			var result = await TestFramework.Client
 				.WithOAuthBearerToken(token)
@@ -102,7 +103,7 @@ namespace OrderCloud.Catalyst.Tests
 			var fixture = new Fixture();
 			var username = fixture.Create<string>();
 			var clientID = fixture.Create<string>();
-			var token = OrderCloudToken.CreateFake(clientID, new List<string> { "Shopper" }, username: username);
+			var token = FakeOrderCloudToken.Create(clientID, new List<string> { "Shopper" }, username: username);
 
 			var result = await TestFramework.Client
 				.Request($"demo/usercontext/{token}")
@@ -119,7 +120,7 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			var fixture = new Fixture();
 
-			var token = OrderCloudToken.CreateFake(
+			var token = FakeOrderCloudToken.Create(
 				clientID: fixture.Create<string>(),
 				roles: new List<string> { "Shopper" },
 				expiresUTC: DateTime.UtcNow + TimeSpan.FromHours(1),
@@ -137,7 +138,7 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task should_deny_access_if_no_client_id()
 		{
-			var token = OrderCloudToken.CreateFake(null, new List<string> { "Shopper" });
+			var token = FakeOrderCloudToken.Create(null, new List<string> { "Shopper" });
 
 			var resp = await TestFramework.Client
 				.WithOAuthBearerToken(token)
@@ -152,7 +153,7 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			var fixture = new Fixture();
 
-			var token = OrderCloudToken.CreateFake(
+			var token = FakeOrderCloudToken.Create(
 				clientID: fixture.Create<string>(),
 				roles: new List<string> { "Shopper" },
 				expiresUTC: DateTime.UtcNow + TimeSpan.FromHours(2),
@@ -172,7 +173,7 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			var fixture = new Fixture();
 			var clientID = fixture.Create<string>();
-			var token = OrderCloudToken.CreateFake(clientID, new List<string> { "OrderAdmin" }); // token has the role
+			var token = FakeOrderCloudToken.Create(clientID, new List<string> { "OrderAdmin" }); // token has the role
 
 			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)
@@ -196,7 +197,7 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			var fixture = new Fixture();
 
-			var token = OrderCloudToken.CreateFake(
+			var token = FakeOrderCloudToken.Create(
 				clientID: fixture.Create<string>(),
 				roles: new List<string> { "Shopper" },
 				expiresUTC: DateTime.UtcNow - TimeSpan.FromHours(1)
@@ -224,7 +225,7 @@ namespace OrderCloud.Catalyst.Tests
 			var message = fixture.Create<string>();
 
 			var keyID = useKid ? "something" : null;
-			var token = OrderCloudToken.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" }, keyID: keyID); // token has the role
+			var token = FakeOrderCloudToken.Create("mYcLiEnTiD", new List<string> { "Shopper" }, keyID: keyID); // token has the role
 
 			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)
@@ -249,7 +250,7 @@ namespace OrderCloud.Catalyst.Tests
 		[TestCase("demo/anon", true)]
 		public async Task can_authorize_by_role(string endpoint, bool success)
 		{
-			var token = OrderCloudToken.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" });
+			var token = FakeOrderCloudToken.Create("mYcLiEnTiD", new List<string> { "Shopper" });
 
 			var request = TestFramework.Client
 					.WithOAuthBearerToken(token)
@@ -275,7 +276,7 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task user_authorization_is_cached(bool useKid)
 		{
 			var keyID = useKid ? "something" : null;
-			var token = OrderCloudToken.CreateFake("mYcLiEnTiD", new List<string> { "Shopper" }, keyID: keyID);
+			var token = FakeOrderCloudToken.Create("mYcLiEnTiD", new List<string> { "Shopper" }, keyID: keyID);
 
 			var request = TestFramework.Client.WithOAuthBearerToken(token).Request("demo/shop");
 
@@ -308,7 +309,7 @@ namespace OrderCloud.Catalyst.Tests
 			{
 				var clientID = fixture.Create<string>();
 				clientIDs.Add(clientID);
-				var token = OrderCloudToken.CreateFake(clientID);
+				var token = FakeOrderCloudToken.Create(clientID);
 				var request = TestFramework.Client.WithOAuthBearerToken(token).Request("demo/clientid").GetStringAsync();
 				requests.Add(request);
 			}

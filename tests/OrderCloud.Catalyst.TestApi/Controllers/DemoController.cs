@@ -13,10 +13,10 @@ namespace OrderCloud.Catalyst.TestApi
 	[Route("demo")]
 	public class DemoController : CatalystController
 	{
-		private static OrderCloudUserAuthProvider _tokenProvider;
+		private static UserContextProvider _tokenProvider;
 		private static ExampleCommand _exampleCommand;
 
-		public DemoController(OrderCloudUserAuthProvider tokenProvider, ExampleCommand exampleCommand)
+		public DemoController(UserContextProvider tokenProvider, ExampleCommand exampleCommand)
 		{
 			_tokenProvider = tokenProvider;
 			_exampleCommand = exampleCommand;
@@ -47,9 +47,9 @@ namespace OrderCloud.Catalyst.TestApi
 		{
 			return new SimplifiedUser()
 			{
-				AvailableRoles = UserAuthToken.Roles.ToList(),
-				Username = UserAuthToken.Username,
-				TokenClientID = UserAuthToken.ClientID
+				AvailableRoles = UserContext.Roles.ToList(),
+				Username = UserContext.Username,
+				TokenClientID = UserContext.ClientID
 			};
 		}
 

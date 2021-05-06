@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using AutoFixture.NUnit3;
 using NUnit.Framework;
+using OrderCloud.Catalyst.Auth.UserAuth;
 using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
@@ -29,8 +30,8 @@ namespace OrderCloud.Catalyst.Tests
 			var exp = new DateTime(2010, 4, 14, 0, 0, 0, DateTimeKind.Utc);
 			var nvb = new DateTime(2000, 6, 1, 0, 0, 0, DateTimeKind.Utc);
 
-			var raw = OrderCloudToken.CreateFake(clientID, roles, exp, nvb, username, keyID, anonOrderID, authUrl, apiUrl, userType, userDatabaseID, impersonatingUserDatabaseID);
-			var jwt = new OrderCloudToken(raw);
+			var raw = FakeOrderCloudToken.Create(clientID, roles, exp, nvb, username, keyID, anonOrderID, authUrl, apiUrl, userType, userDatabaseID, impersonatingUserDatabaseID);
+			var jwt = new UserContext(raw);
 
 			Assert.AreEqual(raw, jwt.AccessToken);
 			Assert.AreEqual(keyID, jwt.KeyID);
@@ -51,8 +52,8 @@ namespace OrderCloud.Catalyst.Tests
 		[AutoData]
 		public void create_fake_should_have_correct_defaults(string clientID)
 		{
-			var raw = OrderCloudToken.CreateFake(clientID);
-			var jwt = new OrderCloudToken(raw);
+			var raw = FakeOrderCloudToken.Create(clientID);
+			var jwt = new UserContext(raw);
 
 			Assert.AreEqual(raw, jwt.AccessToken);
 			Assert.AreEqual(new List<string>(), jwt.Roles);

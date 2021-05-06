@@ -12,7 +12,7 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Will be null unless [OrderCloudUserAuth] is added to the route.
 		/// </summary>
-		public OrderCloudToken UserAuthToken { get; private set; }
+		public UserContext UserContext { get; private set; }
 
 		public CatalystController() {}
 
@@ -21,7 +21,7 @@ namespace OrderCloud.Catalyst
 			var token = User.Claims.FirstOrDefault(claim => claim.Type == "AccessToken")?.Value;
 			if (token != null)
 			{
-				UserAuthToken = new OrderCloudToken(token);
+				UserContext = new UserContext(token);
 			}
 			base.OnActionExecuting(context);
 		}

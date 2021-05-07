@@ -15,7 +15,7 @@ namespace OrderCloud.Catalyst.TestApi
 
 		public string GetClientID()
 		{
-			return _userProvider.GetUserContext().ClientID;
+			return _userProvider.GetDecodedToken().ClientID;
 		}
 	}
 }

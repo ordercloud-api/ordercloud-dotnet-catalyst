@@ -31,7 +31,7 @@ namespace OrderCloud.Catalyst.Tests
 			var nvb = new DateTime(2000, 6, 1, 0, 0, 0, DateTimeKind.Utc);
 
 			var raw = FakeOrderCloudToken.Create(clientID, roles, exp, nvb, username, keyID, anonOrderID, authUrl, apiUrl, userType, userDatabaseID, impersonatingUserDatabaseID);
-			var jwt = new UserContext(raw);
+			var jwt = new DecodedToken(raw);
 
 			Assert.AreEqual(raw, jwt.AccessToken);
 			Assert.AreEqual(keyID, jwt.KeyID);
@@ -53,7 +53,7 @@ namespace OrderCloud.Catalyst.Tests
 		public void create_fake_should_have_correct_defaults(string clientID)
 		{
 			var raw = FakeOrderCloudToken.Create(clientID);
-			var jwt = new UserContext(raw);
+			var jwt = new DecodedToken(raw);
 
 			Assert.AreEqual(raw, jwt.AccessToken);
 			Assert.AreEqual(new List<string>(), jwt.Roles);

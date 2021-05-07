@@ -12,13 +12,16 @@ using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst
 {
-	public class UserContextProvider
+	/// <summary>
+	/// Injectable service to aid with getting, decoding, and verifying OrderCloud auth tokens on an HttpRequest. 
+	/// </summary>
+	public class RequestAuthenticationService
 	{
 		private readonly ISimpleCache _cache;
 		private readonly IOrderCloudClient _oc;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 
-		public UserContextProvider(ISimpleCache cache, IOrderCloudClient oc, IHttpContextAccessor httpContextAccessor)
+		public RequestAuthenticationService(ISimpleCache cache, IOrderCloudClient oc, IHttpContextAccessor httpContextAccessor)
 		{
 			_cache = cache;
 			_oc = oc;
@@ -26,17 +29,9 @@ namespace OrderCloud.Catalyst
 		}
 
 		/// <summary>
-		/// Get a raw OrderCloud token from the current HttpRequest headers
-		/// </summary>
-		public string GetOAuthToken()
-		{
-			return GetOAuthToken(_httpContextAccessor.HttpContext.Request);
-		}
-
-		/// <summary>
 		/// Get a raw OrderCloud token from the provided request headers
 		/// </summary>
-		public static string GetOAuthToken(HttpRequest request)
+		public static string GetToken(HttpRequest request)
 		{
 			if (!request.Headers.TryGetValue("Authorization", out var header))
 				return null;
@@ -55,110 +50,120 @@ namespace OrderCloud.Catalyst
 		}
 
 		/// <summary>
-		/// Get a parsed model of the OrderCloud token from the current HttpRequest headers
+		/// Get a raw OrderCloud token from the current HttpContext request headers
 		/// </summary>
-		public UserContext GetUserContext()
+		public string GetToken()
 		{
-			return GetUserContext(_httpContextAccessor.HttpContext.Request);
+			return GetToken(_httpContextAccessor.HttpContext.Request);
 		}
 
 		/// <summary>
-		/// Get a parsed model of the OrderCloud token from the provided request headers
+		/// Get a strongly typed model of the OrderCloud token from the provided request headers
 		/// </summary>
-		public static UserContext GetUserContext(HttpRequest request)
+		public static DecodedToken GetDecodedToken(HttpRequest request)
 		{
-			var token = GetOAuthToken(request);
-			return new UserContext(token);
+			var token = GetToken(request);
+			return new DecodedToken(token);
 		}
 
 		/// <summary>
-		/// Verifies the OrderCloud token on the current HttpRequest
+		/// Get a strongly typed model of the OrderCloud token from the current HttpContext request headers
 		/// </summary>
-		public async Task<UserContext> VerifyTokenAsync(List<string> requiredRoles = null)
+		public DecodedToken GetDecodedToken()
 		{
-			return await VerifyTokenAsync(_httpContextAccessor.HttpContext.Request, requiredRoles);
+			return GetDecodedToken(_httpContextAccessor.HttpContext.Request);
 		}
 
 		/// <summary>
-		/// Verifies the OrderCloud token on the provided HttpRequest
+		/// Verifies the provided OrderCloud token. Throws 401 if invalid or 403 if insufficient roles.
 		/// </summary>
-		public async Task<UserContext> VerifyTokenAsync(HttpRequest request, List<string> requiredRoles = null)
-		{
-			var token = GetOAuthToken(request);
-			return await VerifyTokenAsync(token, requiredRoles);
-		}
-
-		/// <summary>
-		/// Verifies the provided OrderCloud token
-		/// </summary>
-		public async Task<UserContext> VerifyTokenAsync(string token, List<string> requiredRoles = null)
+		public async Task<DecodedToken> VerifyTokenAsync(string token, List<string> requiredRoles = null)
 		{
 			if (string.IsNullOrEmpty(token))
 				throw new UnAuthorizedException();
 
-			var parsedToken = new UserContext(token);
+			var decodedToken = new DecodedToken(token);
 
-			if (parsedToken.ClientID == null || parsedToken.NotValidBeforeUTC > DateTime.UtcNow || parsedToken.ExpiresUTC < DateTime.UtcNow)
+			if (decodedToken.ClientID == null || decodedToken.NotValidBeforeUTC > DateTime.UtcNow || decodedToken.ExpiresUTC < DateTime.UtcNow)
 				throw new UnAuthorizedException();
 
 			// we've validated the token as much as we can on this end, go make sure it's ok on OC	
 			bool isValid;
 			// some valid tokens - e.g. those from the portal - do not have a "kid"
-			if (parsedToken.KeyID == null)
+			if (decodedToken.KeyID == null)
 			{
-				isValid = await VerifyTokenWithMeGet(parsedToken); // also sets meUser field;
+				isValid = await VerifyTokenWithMeGet(decodedToken); // also sets meUser field;
 			}
 			else
 			{
-				isValid = await VerifyTokenWithKeyID(parsedToken);
+				isValid = await VerifyTokenWithKeyID(decodedToken);
 			}
 
 			if (!isValid)
 				throw new UnAuthorizedException();
 
-			if (requiredRoles != null && requiredRoles.Count > 0 && !requiredRoles.Any(role => parsedToken.Roles.Contains(role)))
+			if (requiredRoles != null && requiredRoles.Count > 0 && !requiredRoles.Any(role => decodedToken.Roles.Contains(role)))
 			{
 				throw new InsufficientRolesException(new InsufficientRolesError()
 				{
 					SufficientRoles = requiredRoles,
-					AssignedRoles = parsedToken.Roles.ToList()
+					AssignedRoles = decodedToken.Roles.ToList()
 				});
 			}
-			return parsedToken;
+			return decodedToken;
 		}
 
 		/// <summary>
-		/// Get the full details of the currently authenticated user
+		/// Verifies the provided HttpRequest's Ordercloud Token. Throws 401 if invalid or 403 if insufficient roles.
 		/// </summary>
-		public async Task<T> GetMeAsync<T>(string accessToken = null)
+		public async Task<DecodedToken> VerifyTokenAsync(HttpRequest request, List<string> requiredRoles = null)
+		{
+			var token = GetToken(request);
+			return await VerifyTokenAsync(token, requiredRoles);
+		}
+
+
+		/// <summary>
+		/// Verifies the current HttpContext request's OrderCloud token. Throws 401 if invalid or 403 if insufficient roles.
+		/// </summary>
+		public async Task<DecodedToken> VerifyTokenAsync(List<string> requiredRoles = null)
+		{
+			return await VerifyTokenAsync(_httpContextAccessor.HttpContext.Request, requiredRoles);
+		}
+
+
+		/// <summary>
+		/// Get the full details of the currently authenticated user based on the HttpContext request token
+		/// </summary>
+		public async Task<T> GetUserAsync<T>()
 			where T : MeUser
 		{
-			var token = accessToken ?? GetOAuthToken();
+			var token = GetToken();
 			return await _oc.Me.GetAsync<T>(token);
 		}
 
 
 		/// <summary>
-		/// Get the full details of the currently authenticated user
+		/// Get the full details of the currently authenticated user based on the HttpContext request token
 		/// </summary>
-		public async Task<MeUser> GetMeAsync(string accessToken = null)
+		public async Task<MeUser> GetUserAsync()
 		{
-			var token = accessToken ?? GetOAuthToken();
+			var token = GetToken();
 			return await _oc.Me.GetAsync(token);
 		}
 
 		/// <summary>
-		/// Get an IOrderCloudClient with token set based on the token for the HttpRequest
+		/// Get an IOrderCloudClient with token set based on the HttpContext request
 		/// </summary>
 		public IOrderCloudClient BuildClient()
 		{
-			return GetUserContext().BuildClient();
+			return GetDecodedToken().BuildClient();
 		}
 
 		/// <summary>
 		/// Verifiy the validity of an OrderCloud token, given details about the public key.
 		/// </summary>
-		public static bool IsTokenCryptoValid(string accessToken, PublicKey publicKey)
+		public static bool VerifyTokenCryptoValid(string accessToken, PublicKey publicKey)
 		{
 			if (publicKey == null)
 			{
@@ -186,7 +191,7 @@ namespace OrderCloud.Catalyst
 			return result.IsValid;
 		}
 
-		private async Task<bool> VerifyTokenWithMeGet(UserContext jwt)
+		private async Task<bool> VerifyTokenWithMeGet(DecodedToken jwt)
 		{
 			var cacheKey = jwt.AccessToken;
 
@@ -209,7 +214,7 @@ namespace OrderCloud.Catalyst
 			});
 		}
 
-		private async Task<bool> VerifyTokenWithKeyID(UserContext jwt)
+		private async Task<bool> VerifyTokenWithKeyID(DecodedToken jwt)
 		{
 			var cacheKey = jwt.KeyID;
 
@@ -218,7 +223,7 @@ namespace OrderCloud.Catalyst
 				try
 				{
 					var publicKey = await _oc.Certs.GetPublicKeyAsync(jwt.KeyID);
-					return IsTokenCryptoValid(jwt.AccessToken, publicKey);
+					return VerifyTokenCryptoValid(jwt.AccessToken, publicKey);
 				}
 				catch (OrderCloudException ex)
 				{

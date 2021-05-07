@@ -7,8 +7,8 @@ namespace OrderCloud.Catalyst.TestApi
 {
 	public class ExampleCommand
 	{
-		private readonly UserContextProvider _userProvider;
-		public ExampleCommand(UserContextProvider userProvider)
+		private readonly RequestAuthenticationService _userProvider;
+		public ExampleCommand(RequestAuthenticationService userProvider)
 		{
 			_userProvider = userProvider;
 		}

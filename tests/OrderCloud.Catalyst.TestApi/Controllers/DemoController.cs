@@ -13,10 +13,10 @@ namespace OrderCloud.Catalyst.TestApi
 	[Route("demo")]
 	public class DemoController : CatalystController
 	{
-		private static UserContextProvider _tokenProvider;
+		private static RequestAuthenticationService _tokenProvider;
 		private static ExampleCommand _exampleCommand;
 
-		public DemoController(UserContextProvider tokenProvider, ExampleCommand exampleCommand)
+		public DemoController(RequestAuthenticationService tokenProvider, ExampleCommand exampleCommand)
 		{
 			_tokenProvider = tokenProvider;
 			_exampleCommand = exampleCommand;

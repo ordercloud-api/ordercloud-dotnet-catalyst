@@ -82,40 +82,40 @@ Proxy the Ordercloud API, adding your own permission logic
 }
 ```
 
-### UserContext and UserContextProvider
-In a C# context that is not a request to a Controller you can use the injectable *UserContextProvider* to parse and verify a user's token. 
+### DecodedToken and RequestAuthenticationService
+In a C# context that is not a request to a Controller you can use the injectable *RequestAuthenticationService* to parse and verify a user's token. 
 ```c#
     string rawToken = "...";
     // Parses the token, but does not verify it. 
-    UserContext context = new UserContext(rawToken);
+    DecodedToken context = new DecodedToken(rawToken);
     // Only data on the token is available. user.FirstName and user.xp are not, for example.
     console.log(user.Username)
 
-    // Inject a UserContextProvider to verify. [OrderCloudUserAuth] uses this method under the hood. 
-    UserContext verified = await _userContextProvider.VerifyTokenAsync(rawToken); 
+    // Inject a RequestAuthenticationService to verify. [OrderCloudUserAuth] uses this method under the hood. 
+    DecodedToken verified = await _requestAuthenticationService.VerifyTokenAsync(rawToken); 
 
-    // UserContextProvider can also get a UserContext from the current HttpRequest.
+    // RequestAuthenticationService can also get a DecodedToken from the current HttpContext.
     // Only use this after calling VerifyTokenAsync, either directly or through [OrderCloudUserAuth].
-    UserContext unverified = await _userContextProvider.GetUserContext(); 
+    DecodedToken unverified = await _requestAuthenticationService.GetDecodedToken(); 
 
     // A shortcut method for getting the full user details
-    MeUser user = await _userContextProvider.GetMeAsync(); 
+    MeUser user = await _requestAuthenticationService.GetUserAsync(); 
 
 ```
 
-Inject the UserContextProvider into a command class. Within a method, an OrderCloud request can be made using that user's token. 
+Inject the RequestAuthenticationService into a command class. Within a method, an OrderCloud request can be made using that user's token. 
 
 ```c#
 public class OrderSubmitCommand 
 {
     private readonly IOrderCloudClient _oc;      // Injected with Integration Client ID context. FullAccess "super user".
-    private readonly UserContextProvider _userContext; // User token that made the request 
+    private readonly RequestAuthenticationService _auth; // User token that made the request 
     private readonly ICreditCardCommand _card;   // Details of card processing left unopinionated
     
-    public OrderSubmitCommand(IOrderCloudClient oc, UserContextProvider userContext, ICreditCardCommand card)
+    public OrderSubmitCommand(IOrderCloudClient oc, RequestAuthenticationService auth, ICreditCardCommand card)
     {
         _oc = oc;
-        _userContext = userContext;
+        _auth = auth;
         _card = card;
     }
 
@@ -129,7 +129,7 @@ public class OrderSubmitCommand
         try
         {
             // Make the submit order request with the original user's token.
-            return await _userContext.GetClient().Orders.SubmitAsync(direction, orderID); 
+            return await _auth.GetClient().Orders.SubmitAsync(direction, orderID); 
         }
         catch (Exception)
         {

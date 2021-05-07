@@ -16,7 +16,7 @@ namespace OrderCloud.Catalyst
 	/// <summary>
 	/// Represents data inside a specific OrderCloud json web token 
 	/// </summary>
-	public class UserContext
+	public class DecodedToken
 	{
 		/// <summary>
 		/// The raw jwt access token 
@@ -71,12 +71,12 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public string ImpersonatingUserDatabaseID { get; }
 
-		public UserContext() { }
+		public DecodedToken() { }
 
 		/// <summary>
 		/// Create a UserContext from a raw json web token.
 		/// </summary>
-		public UserContext(string token)
+		public DecodedToken(string token)
 		{
 			var jwt = new JwtSecurityToken(token);
 			var lookup = jwt.Claims.ToLookup(c => c.Type, c => c.Value);

@@ -83,7 +83,7 @@ Proxy the Ordercloud API, adding your own permission logic
 ```
 
 ### DecodedToken and RequestAuthenticationService
-In a C# context that is not a request to a Controller you can use the injectable *RequestAuthenticationService* to parse and verify a user's token. 
+Outside a request to a Controller you can use the injectable `RequestAuthenticationService` to parse and verify a user's token. 
 ```c#
     string rawToken = "...";
     // Parses the token, but does not verify it. 

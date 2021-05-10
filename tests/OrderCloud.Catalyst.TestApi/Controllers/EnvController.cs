@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace OrderCloud.Catalyst.TestApi
 {
 	[Route("env")]
-	public class EnvController : BaseController
+	public class EnvController : CatalystController
 	{
 		private readonly TestSettings _settings;
 		public EnvController(TestSettings settings)

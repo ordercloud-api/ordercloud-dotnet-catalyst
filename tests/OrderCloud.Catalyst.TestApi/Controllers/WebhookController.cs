@@ -4,7 +4,7 @@ using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst.TestApi
 {
-	public class WebhookController : BaseController
+	public class WebhookController : CatalystController
 	{
 		[HttpPost("webhook/saveaddress"), OrderCloudWebhookAuth]
 		public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save payload)

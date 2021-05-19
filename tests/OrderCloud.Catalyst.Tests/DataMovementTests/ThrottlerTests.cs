@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace OrderCloud.Catalyst.Tests
 {
+    [TestFixture]
     public class ThrottlerTests
     {
         [Test]

@@ -8,7 +8,6 @@ When a user authenticates and acquires an access token from OrderCloud.io, typic
 // In Startup.cs
 public virtual void ConfigureServices(IServiceCollection services) {
     services.AddOrderCloudUserAuth();
-    services.AddScoped<VerifiedUserContext>(); // instances are scoped to the reqest
 }
 ```
 #### 2. In your front-end app, anywhere you call one of your custom endpoints, pass the OrderCloud.io access token in a request header.
@@ -17,26 +16,18 @@ public virtual void ConfigureServices(IServiceCollection services) {
 Authorization: Bearer my-ordercloud-token
 ```
 
-#### 3. Mark any of your controllers or action  methods with `[OrderCloudUserAuth]`. Inject the `VerifiedUserContext`.
+#### 3. Mark any of your controllers or action  methods with `[OrderCloudUserAuth]`. Use the CatalystBaseController property `UserContext`.
 
 Optionally, You may provide one or more required roles in this attribute, **any one of which** the user must be assigned in order for authorization to succeed.
 
 ```c#
-public class MyThingController 
+public class MyThingController : CatalystController
 {
-    private readonly VerifiedUserContext _user;
-
-    // Inject user context, which is scoped to a single request. Fields will only be defined if [OrderCloudUserAuth] is defined on the route.
-    public MyThingController(VerifiedUserContext user) 
-    {
-        _user = user;
-    }
-
     // Without access, requestor recieves a 401 Unauthorized or 403 InsufficientRoles error.
     [HttpGet, Route("thing")] 
     [OrderCloudUserAuth(ApiRole.Shopper, ApiRole.OrderReader, ApiRole.OrderAdmin)] // Any one of these threee roles gives access the endpoint 
     public Thing Get(string id) {
-        var username = _user.Username;
+        var username = UserContext.Username; // UserContext is a property on CatalystController
         ...
     }
 }
@@ -57,7 +48,7 @@ Access data in the claims of the OrderCloud token used in the request.
     [HttpPut, Route("hello")]
     [OrderCloudUserAuth] // No roles are defined, so any valid Ordercloud Token gives access.
     public string Hello([FromBody] Thing thing) {
-        return $"Hello {_user.Username}, your role is {_user.CommerceRole}";.
+        return $"Hello {UserContext.Username}, your role is {UserContext.CommerceRole}";.
     }
 ```
 
@@ -66,18 +57,10 @@ Get the full user details such as FirstName, LastName and xp from the GET /me en
     [HttpPut, Route("hello")]
     [OrderCloudUserAuth] // No roles are defined, so any valid Ordercloud Token gives access.
     public async Task<string> Hello([FromBody] Thing thing) {
-        var first = _user.MeUser.FirstName; // throws error    
+        var user = await _oc.Me.GetAsync(UserContext.AccessToken)
 
-        await _user.RequestMeUserAsync(); // Sets _user.MeUser
-
-        return $"Hello {_user.MeUser.FirstName} {_user.MeUser.LastName}"; // now no error thrown
+        return $"Hello {user.FirstName} {user.LastName}"; // now no error thrown
     }
-```
-
-In a C# context that is not a request to a Controller, for example a serverless function, set the user context via token.
-```c#
-    string token = "...";
-    await _user.VerifyAsync(token); // will throw same errors if the there is any problem with the token
 ```
 
 Proxy the Ordercloud API, adding your own permission logic
@@ -86,32 +69,53 @@ Proxy the Ordercloud API, adding your own permission logic
     [OrderCloudUserAuth(ApiRole.Shopper)] 
     public async Task<ListPage<Order>> ListOrdersFromMyStore(ListArgs args) {
         // A different way to get the user details on MeUser. Make any request from OcClient as the authenticated user.
-        var me = await this._userContext.OcClient.Me.Get();
+        var me = await await UserContext.BuildClient().Me.GetAsync();
         // Access a developer-defined extended property (xp) on the user called "StoreID".
         var storeID = me.xp.StoreID 
         // Create a filter. Only return orders where Order.BillingAddress.ID equals the user's storeID.   
         var billingAddressFilter = new ListFilter("BillingAddress.ID", storeID);
         // Add the filter on top of any additional api user-defined filters. 
         args.Filters.Add(billingAddressFilter);
-        // request orders from an admin endpoint
+        // request orders from an admin perspective
         return new OrderCloudClient(...).Orders.ListAsync(OrderDirection.Outgoing, page: args.Page, pageSize: args.PageSize, filters: args.ToFilterString()) 
     }
 }
 ```
 
-Inject the User Context into a command class. Within a method, an OrderCloud request can be made using that user's token. 
+### DecodedToken and RequestAuthenticationService
+Outside a request to a Controller you can use the injectable `RequestAuthenticationService` to parse and verify a user's token. 
+```c#
+    string rawToken = "...";
+    // Parses the token, but does not verify it. 
+    DecodedToken context = new DecodedToken(rawToken);
+    // Only data on the token is available. user.FirstName and user.xp are not, for example.
+    console.log(user.Username)
+
+    // Inject a RequestAuthenticationService to verify. [OrderCloudUserAuth] uses this method under the hood. 
+    DecodedToken verified = await _requestAuthenticationService.VerifyTokenAsync(rawToken); 
+
+    // RequestAuthenticationService can also get a DecodedToken from the current HttpContext.
+    // Only use this after calling VerifyTokenAsync, either directly or through [OrderCloudUserAuth].
+    DecodedToken unverified = await _requestAuthenticationService.GetDecodedToken(); 
+
+    // A shortcut method for getting the full user details
+    MeUser user = await _requestAuthenticationService.GetUserAsync(); 
+
+```
+
+Inject the RequestAuthenticationService into a command class. Within a method, an OrderCloud request can be made using that user's token. 
 
 ```c#
 public class OrderSubmitCommand 
 {
     private readonly IOrderCloudClient _oc;      // Injected with Integration Client ID context. FullAccess "super user".
-    private readonly VerifiedUserContext _user; 
+    private readonly RequestAuthenticationService _auth; // User token that made the request 
     private readonly ICreditCardCommand _card;   // Details of card processing left unopinionated
     
-    public OrderSubmitCommand(IOrderCloudClient oc, VerifiedUserContext user, ICreditCardCommand card)
+    public OrderSubmitCommand(IOrderCloudClient oc, RequestAuthenticationService auth, ICreditCardCommand card)
     {
         _oc = oc;
-        _user = user;
+        _auth = auth;
         _card = card;
     }
 
@@ -125,7 +129,7 @@ public class OrderSubmitCommand
         try
         {
             // Make the submit order request with the original user's token.
-            return await _user.OcClient.Orders.SubmitAsync(direction, orderID); 
+            return await _auth.GetClient().Orders.SubmitAsync(direction, orderID); 
         }
         catch (Exception)
         {

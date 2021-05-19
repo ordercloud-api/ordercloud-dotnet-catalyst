@@ -44,26 +44,27 @@ namespace OrderCloud.Catalyst
 
 	public class OrderCloudUserAuthHandler : AuthenticationHandler<OrderCloudUserAuthOptions>
 	{
-		private static VerifiedUserContext _userContext;
+		private static RequestAuthenticationService _tokenProvider;
 
 		public OrderCloudUserAuthHandler(
 			IOptionsMonitor<OrderCloudUserAuthOptions> options,
 			ILoggerFactory logger,
 			UrlEncoder encoder,
 			ISystemClock clock,
-			VerifiedUserContext userContext
+			RequestAuthenticationService tokenProvider
 			)
 			: base(options, logger, encoder, clock)
 		{
-			_userContext = userContext;
+			_tokenProvider = tokenProvider;
 		}
 
 		protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
 			try {
 				var requiredRoles = Context.GetRequiredOrderCloudRoles();
-				await _userContext.VerifyAsync(Request, requiredRoles);
+				var token = await _tokenProvider.VerifyTokenAsync(Request, requiredRoles);
 				var cid = new ClaimsIdentity("OcUser");
-				cid.AddClaims(_userContext.AvailableRoles.Select(r => new Claim(ClaimTypes.Role, r)));
+				cid.AddClaims(token.Roles.Select(r => new Claim(ClaimTypes.Role, r)));
+				cid.AddClaim(new Claim("AccessToken", token.AccessToken));
 
 				var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcUser");
 				return AuthenticateResult.Success(ticket);

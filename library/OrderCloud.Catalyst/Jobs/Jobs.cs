@@ -13,7 +13,7 @@ namespace OrderCloud.Catalyst.Jobs
         [FunctionName("ThirdPartyOrderProcessing")]
         public async Task Run(
         [ServiceBusTrigger(
-            queueName: "%ServiceBusSettings:OrderProcessingQueueName%",
+            queueName: "%ServiceBusSettings:OrderProcessingQueueName%",  // queueName can be stored in your app Configuration as it is here, or hard coded.
             Connection = "ServiceBusSettings:ConnectionString")]
         Message message,
         MessageReceiver messageReceiver,

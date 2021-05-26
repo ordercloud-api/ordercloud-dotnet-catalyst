@@ -15,7 +15,7 @@ Catalyst comes with a GlobalExceptionHandler that catches all runtime exceptions
 }
 ```
 
-This is the same format as errors from the Ordercloud platform, which is helpful because your Frontend can share error handling code. 
+This is the same format as errors from the OrderCloud platform, which is helpful because your Frontend can share error handling code. 
 
 Catalyst provides a number of out of the box exceptions in the file Exceptions.cs that may be helpful such as UnAuthorizedException, NotFoundException, and InvalidPropertyException.
 

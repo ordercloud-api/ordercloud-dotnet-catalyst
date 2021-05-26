@@ -114,7 +114,7 @@ namespace OrderCloud.Catalyst
 		}
 
 		/// <summary>
-		/// Verifies the provided HttpRequest's Ordercloud Token. Throws 401 if invalid or 403 if insufficient roles.
+		/// Verifies the provided HttpRequest's OrderCloud Token. Throws 401 if invalid or 403 if insufficient roles.
 		/// </summary>
 		public async Task<DecodedToken> VerifyTokenAsync(HttpRequest request, List<string> requiredRoles = null)
 		{

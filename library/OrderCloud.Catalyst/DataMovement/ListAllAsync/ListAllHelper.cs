@@ -12,22 +12,22 @@ using System.Threading.Tasks;
 namespace OrderCloud.Catalyst
 {
 	/// <summary>
-	/// Helps you get all records in one function call despite Ordercloud pagination.
+	/// Helps you get all records in one function call despite OrderCloud pagination.
 	/// </summary>	
 	internal static class ListAllHelper
 	{
-		// Only relevant to the conncurrent paging technique
+		// Only relevant to the concurrent paging technique
 		private const int MAX_NUM_PARALLEL_REQUESTS = 16;
-		// For record sizes above 30 pages, use last ID filter paging. Below 30 pages, use the page parameter concurently. 
+		// For record sizes above 30 pages, use last ID filter paging. Below 30 pages, use the page parameter concurrently. 
 		private const int PAGE_THRESHOLD_FOR_PAGING_TECHNIQUE = 30;
 		// Will be ignored by the SDK and have no effect on the request because Value is null;
 		private static (string Key, object Value) IGNORED_FILTER => ("ID", null);
 
 		/// <summary>
-		/// Get all records of specific type from Ordercloud by requesting all list pages and combining the results.
+		/// Get all records of specific type from OrderCloud by requesting all list pages and combining the results.
 		/// </summary>
 		/// <typeparam name="T">The type of record to list</typeparam>
-		/// <param name="listFunc">The list function to call repeatedly. Should have inputs of page and filter amd return a Task<ListPage<T>>>. Recomend sorting by ID and settings pageSize to 100.</param>
+		/// <param name="listFunc">The list function to call repeatedly. Should have inputs of page and filter amd return a Task<ListPage<T>>>. Recommend sorting by ID and settings pageSize to 100.</param>
 		/// <returns></returns>
 		public static async Task<List<T>> ListAllAsync<T>(Func<int, (string Key, object Value), Task<ListPage<T>>> listFunc)
 		{
@@ -65,10 +65,10 @@ namespace OrderCloud.Catalyst
 		}
 
 		/// <summary>
-		/// Get all records of specific type from Ordercloud by requesting all list pages and combining the results.
+		/// Get all records of specific type from OrderCloud by requesting all list pages and combining the results.
 		/// </summary>
 		/// <typeparam name="T">The type of record to list</typeparam>
-		/// <param name="listFunc">The list function to call repeatedly. Should have inputs of page and filter amd return a Task<ListPage<T>>>. Recomend sorting by ID and settings pageSize to 100.</param>
+		/// <param name="listFunc">The list function to call repeatedly. Should have inputs of page and filter amd return a Task<ListPage<T>>>. Recommend sorting by ID and settings pageSize to 100.</param>
 		/// <returns></returns>
 		public static async Task<List<T>> ListAllWithFacetsAsync<T>(Func<int, (string Key, object Value), Task<ListPageWithFacets<T>>> listFunc)
 		{

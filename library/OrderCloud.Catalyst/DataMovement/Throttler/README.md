@@ -1,11 +1,11 @@
 ## Throttler function
 
 #### Purpose 
-The throttler function provides a method for running many asynchronous tasks in concurrency. The function takes parameters for limiting the number of concurrent threads and enforcing a minimum wait time before starting each task. This allows for efficient performance and for avoiding an unnesecary load on the ordercloud API.
+The throttler function provides a method for running many asynchronous tasks in concurrency. The function takes parameters for limiting the number of concurrent threads and enforcing a minimum wait time before starting each task. This allows for efficient performance and for avoiding an unnecessary load on the OrderCloud API.
 
 #### Parameters
 The throttler function takes in four parameters...
-- items: A list of items to iterate over. This list can serve as an input into your asynchonous function.
+- items: A list of items to iterate over. This list can serve as an input into your asynchronous function.
 - minPause: A minimum pause time to enforce before beginning a new task (in milliseconds).
 - maxConcurrent: the maximum number of tasks to be running at once.
 - op: Your function you would like to implement
@@ -20,12 +20,12 @@ foreach (var prod in products) {
     await ocClient.Products.Create(prod);
 }
 
-// Make a bunch of async function calls concurently. Downside is, could strain resources. 
+// Make a bunch of async function calls concurrently. Downside is, could strain resources. 
 var requests = products.Select(prod => ocClient.Products.Create(prod));
 await Task.WhenAll(requests);
 
 
-// A happy medium - some speed up, but a bounded degree of concurency. 
+// A happy medium - some speed up, but a bounded degree of concurrency. 
 var maxConcurency = 20;
 var minPause = 100 // ms
 await Throttler.RunAsync(cars, minPause, maxConcurency, prod => ocClient.Products.Create(prod));

@@ -16,7 +16,7 @@
 	  <RepositoryUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</RepositoryUrl>
 	  <RepositoryType>git</RepositoryType>
 	  <Company>Four51 Inc</Company>
-	  <Product>Ordercloud</Product>
+	  <Product>OrderCloud</Product>
 	  <PackageIcon>ordercloud-logo-blue.png</PackageIcon>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>

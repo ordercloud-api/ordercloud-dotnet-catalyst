@@ -286,7 +286,7 @@ namespace OrderCloud.Catalyst.Tests
 			await request.GetAsync();
 			await request.GetAsync();
 
-			// But exactly one request to Ordercloud
+			// But exactly one request to OrderCloud
 			if (useKid)
 			{
 				await TestStartup.oc.Received(1).Certs.GetPublicKeyAsync(Arg.Any<string>());

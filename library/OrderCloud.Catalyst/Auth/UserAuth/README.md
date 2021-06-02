@@ -46,7 +46,7 @@ Give users access to these roles through https://ordercloud.io/api-reference/aut
 Access data in the claims of the OrderCloud token used in the request.
 ```c#
     [HttpPut, Route("hello")]
-    [OrderCloudUserAuth] // No roles are defined, so any valid Ordercloud Token gives access.
+    [OrderCloudUserAuth] // No roles are defined, so any valid OrderCloud Token gives access.
     public string Hello([FromBody] Thing thing) {
         return $"Hello {UserContext.Username}, your role is {UserContext.CommerceRole}";.
     }
@@ -55,7 +55,7 @@ Access data in the claims of the OrderCloud token used in the request.
 Get the full user details such as FirstName, LastName and xp from the GET /me endpoint
 ```c#
     [HttpPut, Route("hello")]
-    [OrderCloudUserAuth] // No roles are defined, so any valid Ordercloud Token gives access.
+    [OrderCloudUserAuth] // No roles are defined, so any valid OrderCloud Token gives access.
     public async Task<string> Hello([FromBody] Thing thing) {
         var user = await _oc.Me.GetAsync(UserContext.AccessToken)
 
@@ -63,7 +63,7 @@ Get the full user details such as FirstName, LastName and xp from the GET /me en
     }
 ```
 
-Proxy the Ordercloud API, adding your own permission logic
+Proxy the OrderCloud API, adding your own permission logic
 ```c#
     [HttpGet, Route("orders/mystore")]
     [OrderCloudUserAuth(ApiRole.Shopper)] 

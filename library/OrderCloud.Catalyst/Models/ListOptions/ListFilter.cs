@@ -16,7 +16,7 @@ namespace OrderCloud.Catalyst
     }
 
     /// <summary>
-    /// A filter applied to an Ordercloud list request. Represents one key/value query parameter in the raw http request. 
+    /// A filter applied to an OrderCloud list request. Represents one key/value query parameter in the raw http request. 
     /// </summary>
     public class ListFilter
     {

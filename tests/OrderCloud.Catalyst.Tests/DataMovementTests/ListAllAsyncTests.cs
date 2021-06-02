@@ -19,7 +19,7 @@ namespace OrderCloud.Catalyst.Tests
 		[SetUp]
 		public void Setup()
 		{
-			//Setup mocks and substitutions for Http, Ordercloud, and Fixture
+			//Setup mocks and substitutions for Http, OrderCloud, and Fixture
 			_fixture = new Fixture();
 			mockOrderCloudClient = Substitute.For<IOrderCloudClient>();
 		}

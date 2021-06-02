@@ -5,7 +5,7 @@ using System.Text;
 namespace OrderCloud.Catalyst
 {
     /// <summary>
-    /// Sent to Ordercloud in response to a pre-webhook. 
+    /// Sent to OrderCloud in response to a pre-webhook. 
     /// </summary>
     public class PreWebhookResponse
     {

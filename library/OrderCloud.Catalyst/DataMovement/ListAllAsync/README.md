@@ -2,7 +2,7 @@
 
 #### Purpose
 
-List endpoints in Ordercloud are paginated with a maximum of 100 records per request. ListAll methods defined in Catalyst will return a list of all records. 
+List endpoints in OrderCloud are paginated with a maximum of 100 records per request. ListAll methods defined in Catalyst will return a list of all records. 
 
 #### Details
 

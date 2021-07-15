@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -10,7 +10,7 @@
     <Description>Extensions and helpers for building ASP.NET Core 3.1 API apps and WebJobs, typically hosted in Azure App Services, that integrate with the OrderCloud.io e-commerce platform.</Description>
     <Copyright>Copyright 2021 Four51, Inc.</Copyright>
     <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/ordercloud-api/ordercloud-dotnet-catalyst/dev/ordercloud-logo-blue.png</PackageIconUrl>
+    <PackageIconUrl>ordercloud-logo-blue.png</PackageIconUrl>
     <PackageTags>ecommerce b2b azure aspnetcore webjobs four51 ordercloud</PackageTags>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</RepositoryUrl>
@@ -19,6 +19,10 @@
     <Product>OrderCloud</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Include="..\..\ordercloud-logo-blue.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="LazyCache" Version="2.1.3" />

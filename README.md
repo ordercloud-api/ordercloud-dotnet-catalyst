@@ -108,41 +108,6 @@ if (UserContext.CommerceRole != UserContext.Supplier) {
 }
 ```
 
-### [API StartUp](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Startup)
-
-Remove some of the boilerplate code of starting up a new API project.
-
-```c#
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        CatalystWebHostBuilder.CreateWebHostBuilder<Startup, AppSettings>(args).Build().Run();
-    }
-}
-
-public class Startup
-{
-    private readonly AppSettings _settings;
-
-    public Startup(AppSettings settings) {
-        _settings = settings;
-    }
-
-    public virtual void ConfigureServices(IServiceCollection services) {
-        services
-            .ConfigureServices()
-            .AddSingleton<ISimpleCache, LazyCacheService>()
-            .AddOrderCloudUserAuth()
-            .AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
-    }
-
-    public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-        CatalystApplicationBuilder.DefaultCatalystAppBuilder(app, env);
-    }
-}
-```
-
 ### [Model Validation](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/tests/OrderCloud.Catalyst.TestApi/Controllers/ModelValidation)
 
 Take advantage of DataAnnotation attributes to specify validation requirements for your own custom models.

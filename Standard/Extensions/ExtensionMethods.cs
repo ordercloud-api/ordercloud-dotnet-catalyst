@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -17,13 +18,6 @@ namespace OrderCloud.Catalyst
         public static Type WithoutGenericArgs(this Type type)
         {
             return type.IsGenericType ? type.GetGenericTypeDefinition() : type;
-        }
-
-		public static List<string> GetRequiredOrderCloudRoles(this HttpContext context)
-        {
-            var endpoint = context.GetEndpoint();
-            var authorizeAttributes = endpoint?.Metadata.GetOrderedMetadata<OrderCloudUserAuthAttribute>() ?? Array.Empty<OrderCloudUserAuthAttribute>();
-            return authorizeAttributes.SelectMany(a => a.OrderCloudRoles).ToList();
         }
 
 		/// <summary>
@@ -50,6 +44,13 @@ namespace OrderCloud.Catalyst
 			services.AddAuthentication()
 				.AddScheme<OrderCloudWebhookAuthOptions, OrderCloudWebhookAuthHandler>("OrderCloudWebhook", null, configureOptions);
 			return services;
+		}
+
+		public static List<string> GetRequiredOrderCloudRoles(this HttpContext context)
+		{
+			var endpointFeature = context.Features[typeof(IEndpointFeature)] as IEndpointFeature;
+			var authorizeAttributes = endpointFeature?.Endpoint?.Metadata.GetOrderedMetadata<OrderCloudUserAuthAttribute>() ?? Array.Empty<OrderCloudUserAuthAttribute>();
+			return authorizeAttributes.SelectMany(a => a.OrderCloudRoles).ToList();
 		}
 	}
 }

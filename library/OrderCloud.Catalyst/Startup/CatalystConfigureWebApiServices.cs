@@ -29,31 +29,5 @@ namespace OrderCloud.Catalyst
 
 			return services;
 		}
-
-		/// <summary>
-		/// Chain to IServiceCollection (typically in Startup.ConfigureServices) to enable authenticating by passing a valid
-		/// OrderCloud access token in the Authorization header. Add [OrderCloudUserAuth] attribute to specific controllers or actions
-		/// where this should be enforced. Typical use case is custom endpoints for front-end user apps.
-		/// </summary>
-		public static IServiceCollection AddOrderCloudUserAuth(this IServiceCollection services)
-		{
-			services
-				.AddHttpContextAccessor()
-				.AddSingleton<RequestAuthenticationService>()
-				.AddSingleton<ISimpleCache, LazyCacheService>() // Can override by registering own implmentation
-				.AddAuthentication()
-				.AddScheme<OrderCloudUserAuthOptions, OrderCloudUserAuthHandler>("OrderCloudUser", null);
-			return services;
-		}
-
-		/// <summary>
-		/// Chain to IServiceCollection (typically in Startup.ConfigureServices) to enable validation of incoming webhooks.
-		/// </summary>
-		public static IServiceCollection AddOrderCloudWebhookAuth(this IServiceCollection services, Action<OrderCloudWebhookAuthOptions> configureOptions)
-		{
-			services.AddAuthentication()
-				.AddScheme<OrderCloudWebhookAuthOptions, OrderCloudWebhookAuthHandler>("OrderCloudWebhook", null, configureOptions);
-			return services;
-		}
 	}
 }

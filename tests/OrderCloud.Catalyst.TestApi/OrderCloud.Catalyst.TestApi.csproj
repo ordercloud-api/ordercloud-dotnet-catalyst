@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.17" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="4.3.0" />
     <PackageReference Include="NSubstitute" Version="4.2.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.0.7" />

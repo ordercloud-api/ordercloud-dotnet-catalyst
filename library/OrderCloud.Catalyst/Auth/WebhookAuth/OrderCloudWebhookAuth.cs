@@ -48,22 +48,25 @@ namespace OrderCloud.Catalyst
 			var bufferSize = 4096;
 
 			try {
-				using var reader = new StreamReader(Request.Body, encoding: Encoding.UTF8, false, bufferSize, true);
-				var bodyBytes = Encoding.UTF8.GetBytes(await reader.ReadToEndAsync());
-
-				var keyBytes = Encoding.UTF8.GetBytes(Options.HashKey);
-				var hash = new HMACSHA256(keyBytes).ComputeHash(bodyBytes);
-				var computed = Convert.ToBase64String(hash);
-
-				if (sent != computed)
+				using (var reader = new StreamReader(Request.Body, encoding: Encoding.UTF8, false, bufferSize, true))
 				{
-					throw new WebhookUnauthorizedException();
-				}
-				else
-				{
-					var cid = new ClaimsIdentity("OcWebhook");
-					var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcWebhook");
-					return AuthenticateResult.Success(ticket);
+					var bodyBytes = Encoding.UTF8.GetBytes(await reader.ReadToEndAsync());
+
+					var keyBytes = Encoding.UTF8.GetBytes(Options.HashKey);
+					var hash = new HMACSHA256(keyBytes).ComputeHash(bodyBytes);
+					var computed = Convert.ToBase64String(hash);
+
+
+					if (sent != computed)
+					{
+						throw new WebhookUnauthorizedException();
+					}
+					else
+					{
+						var cid = new ClaimsIdentity("OcWebhook");
+						var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcWebhook");
+						return AuthenticateResult.Success(ticket);
+					}
 				}
 			}
 			finally {

@@ -1,15 +1,8 @@
-﻿using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
-using OrderCloud.SDK;
+﻿using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace OrderCloud.Catalyst
 {

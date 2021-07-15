@@ -1,7 +1,10 @@
 ﻿using Flurl.Http;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
@@ -23,7 +26,15 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			get
 			{
-				var server = new TestServer(CatalystWebHostBuilder.CreateWebHostBuilder<TestStartup, TestSettings>(new string[] { }));
+				var host = WebHost.CreateDefaultBuilder(new string[] { })
+					.UseDefaultServiceProvider(options => options.ValidateScopes = false)
+					.UseStartup<TestStartup>()
+					.ConfigureServices((ctx, services) =>
+					{
+						services.Configure<TestSettings>(ctx.Configuration);
+						services.AddTransient(sp => sp.GetService<IOptionsSnapshot<TestSettings>>().Value);
+					});
+				var server = new TestServer(host);
 				// AllowSynchronousIO = false became the default in asp.net core 3.0 to combat application hangs
 				// however we're using synchronous APIs when validating webhook hash
 				// specifically ComputeHash will trigger an error here

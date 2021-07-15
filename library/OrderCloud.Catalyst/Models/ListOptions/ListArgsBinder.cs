@@ -29,9 +29,10 @@ namespace OrderCloud.Catalyst
 		public virtual void LoadFromQueryString(IQueryCollection query, IListArgs listArgs)
 		{
 			listArgs.Filters = new List<ListFilter>();
-			foreach (var (key, value) in query)
+			foreach (var param in query)
 			{
 				int i;
+				var (key, value) = (param.Key, param.Value);
 				switch (key.ToLower())
 				{
 					case "sortby":
@@ -99,9 +100,10 @@ namespace OrderCloud.Catalyst
 
 		public virtual void LoadFromQueryString(IQueryCollection query, ListArgsPageOnly listArgs)
 		{
-			foreach (var (key, value) in query)
+			foreach (var param in query)
 			{
 				int i;
+				var (key, value) = (param.Key, param.Value);
 				switch (key.ToLower())
 				{
 

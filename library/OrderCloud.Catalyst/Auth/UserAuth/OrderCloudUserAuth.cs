@@ -6,9 +6,9 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst
@@ -18,7 +18,7 @@ namespace OrderCloud.Catalyst
 	/// </summary>
 	public class OrderCloudUserAuthAttribute : AuthorizeAttribute
 	{
-		public List<string> OrderCloudRoles => Roles?.Split(",")?.ToList() ?? new List<string> { };
+		public List<string> OrderCloudRoles => Roles?.Split(',')?.ToList() ?? new List<string> { };
 
 		public OrderCloudUserAuthAttribute()
 		{

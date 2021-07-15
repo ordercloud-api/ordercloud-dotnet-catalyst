@@ -10,7 +10,8 @@
     <Description>Extensions and helpers for building ASP.NET Core 3.1 API apps and WebJobs, typically hosted in Azure App Services, that integrate with the OrderCloud.io e-commerce platform.</Description>
     <Copyright>Copyright 2021 Four51, Inc.</Copyright>
     <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
-    <PackageIconUrl>ordercloud-logo-blue.png</PackageIconUrl>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageIcon>ordercloud-logo-blue.png</PackageIcon>
     <PackageTags>ecommerce b2b azure aspnetcore webjobs four51 ordercloud</PackageTags>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</RepositoryUrl>

@@ -46,6 +46,9 @@ namespace OrderCloud.Catalyst
 			return services;
 		}
 
+		/// <summary>
+		/// Looks for an OrderCloudUserAuthAttribute on the current route to find required roles.
+		/// </summary>
 		public static List<string> GetRequiredOrderCloudRoles(this HttpContext context)
 		{
 			var endpointFeature = context.Features[typeof(IEndpointFeature)] as IEndpointFeature;

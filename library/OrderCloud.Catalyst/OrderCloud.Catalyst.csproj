@@ -2,6 +2,23 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>1.2.0</Version>
+    <PackageId>ordercloud-dotnet-catalyst</PackageId>
+    <Title>OrderCloud SDK Extensions for Azure App Services</Title>
+    <Authors>Oliver Heywood</Authors>
+    <Description>Extensions and helpers for building ASP.NET Core 3.1 API apps and WebJobs, typically hosted in Azure App Services, that integrate with the OrderCloud.io e-commerce platform.</Description>
+    <Copyright>Copyright 2021 Four51, Inc.</Copyright>
+    <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageTags>ecommerce b2b azure aspnetcore webjobs four51 ordercloud</PackageTags>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Company>Four51 Inc</Company>
+    <Product>OrderCloud</Product>
+    <PackageIcon>ordercloud-logo-blue.png</PackageIcon>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>

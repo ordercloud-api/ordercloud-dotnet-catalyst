@@ -24,7 +24,7 @@ namespace OrderCloud.Catalyst.Tests
 			var anonOrderID = fixture.Create<string>();
 			var authUrl = fixture.Create<string>();
 			var apiUrl = fixture.Create<string>();
-			var userType = "admin";
+			var userType = CommerceRole.Seller;
 			var userDatabaseID = fixture.Create<string>();
 			var impersonatingUserDatabaseID = fixture.Create<string>();
 			var exp = new DateTime(2010, 4, 14, 0, 0, 0, DateTimeKind.Utc);

@@ -230,10 +230,17 @@ namespace OrderCloud.Catalyst.Tests
 			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/shop");
-			var error = OrderCloudExceptionFactory.Create((HttpStatusCode)statusCode, "", new ApiError[] { new ApiError() {
-				Message = message,
-				ErrorCode = errorCode,
-			}});
+
+			var error = new OrderCloudException(message)
+			{
+				HttpStatus = (HttpStatusCode)statusCode,
+				Errors = new ApiError[] {
+					new ApiError() {
+						Message = message,
+						ErrorCode = errorCode,
+					}
+				}
+			};
 
 			TestStartup.oc.Me.GetAsync(Arg.Any<string>()).Returns<MeUser>(x => { throw error; });
 			TestStartup.oc.Certs.GetPublicKeyAsync(Arg.Any<string>()).Returns<PublicKey>(x => { throw error; });
@@ -266,7 +273,6 @@ namespace OrderCloud.Catalyst.Tests
 				var response = await request.GetAsync();
 				var json = await request.GetJsonAsync();
 				response.ShouldHaveFirstApiError("InsufficientRoles", 403, "User does not have role(s) required to perform this action.");
-				Assert.AreEqual(true, true);
 				Assert.AreEqual("OrderAdmin", json.Errors[0].Data.SufficientRoles[0]);
 			}
 		}

@@ -12,8 +12,7 @@ namespace OrderCloud.Catalyst
 	{
 		public Task BindModelAsync(ModelBindingContext bindingContext)
 		{
-			if (bindingContext == null)
-				throw new ArgumentNullException(nameof(bindingContext));
+			Require.That(bindingContext != null, new ArgumentNullException(nameof(bindingContext)));
 
 			if (bindingContext.ModelType.WithoutGenericArgs() != typeof(ListArgs<>) && bindingContext.ModelType.WithoutGenericArgs() != typeof(SearchArgs<>))
 				return Task.CompletedTask;
@@ -85,8 +84,7 @@ namespace OrderCloud.Catalyst
 	{
 		public Task BindModelAsync(ModelBindingContext bindingContext)
 		{
-			if (bindingContext == null)
-				throw new ArgumentNullException(nameof(bindingContext));
+			Require.That(bindingContext != null, new ArgumentNullException(nameof(bindingContext)));
 
 			if (bindingContext.ModelType.WithoutGenericArgs() != typeof(ListArgsPageOnly))
 				return Task.CompletedTask;

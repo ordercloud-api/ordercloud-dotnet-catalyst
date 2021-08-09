@@ -30,18 +30,13 @@ namespace OrderCloud.Catalyst
 		public OrderCloudWebhookAuthHandler(IOptionsMonitor<OrderCloudWebhookAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock) { }
 
 		protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
-			if (string.IsNullOrEmpty(Options.HashKey)) {
-				throw new InvalidOperationException("OrderCloudWebhookAuthOptions.HashKey was not configured.");
-			}
+			Require.That(!string.IsNullOrEmpty(Options.HashKey),
+				new InvalidOperationException("OrderCloudWebhookAuthOptions.HashKey was not configured."));
 
-			if (!Context.Request.Headers.ContainsKey("X-oc-hash")) {
-				throw new WebhookUnauthorizedException();
-			}
+			Require.That(Context.Request.Headers.ContainsKey("X-oc-hash"), new WebhookUnauthorizedException());
 
 			var sent = Context.Request.Headers["X-oc-hash"].FirstOrDefault();
-			if (string.IsNullOrEmpty(sent)) {
-				throw new WebhookUnauthorizedException();
-			}
+			Require.That(!string.IsNullOrEmpty(sent), new WebhookUnauthorizedException());
 
 			Context.Request.EnableBuffering();
 			// Just choose something reasonable - https://stackoverflow.com/questions/3033771/file-i-o-with-streams-best-memory-buffer-size
@@ -56,17 +51,11 @@ namespace OrderCloud.Catalyst
 					var hash = new HMACSHA256(keyBytes).ComputeHash(bodyBytes);
 					var computed = Convert.ToBase64String(hash);
 
+					Require.That(sent == computed, new WebhookUnauthorizedException());
 
-					if (sent != computed)
-					{
-						throw new WebhookUnauthorizedException();
-					}
-					else
-					{
-						var cid = new ClaimsIdentity("OcWebhook");
-						var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcWebhook");
-						return AuthenticateResult.Success(ticket);
-					}
+					var cid = new ClaimsIdentity("OcWebhook");
+					var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcWebhook");
+					return AuthenticateResult.Success(ticket);
 				}
 			}
 			finally {

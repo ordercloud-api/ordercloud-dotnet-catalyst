@@ -132,7 +132,7 @@ namespace OrderCloud.Catalyst
 			return ((int)span.Value.TotalSeconds).ToString();
 		}
 
-		private static CommerceRole GetCommerceRole(string userType)
+		public static CommerceRole GetCommerceRole(string userType)
 		{
 			switch (userType?.ToLower())
 			{
@@ -145,6 +145,21 @@ namespace OrderCloud.Catalyst
 					return CommerceRole.Supplier;
 				default:
 					throw new Exception("unknown user type: " + userType);
+			}
+		}
+
+		public static string GetUserType(CommerceRole commerceRole)
+		{
+			switch (commerceRole)
+			{
+				case CommerceRole.Buyer:
+					return "buyer";
+				case CommerceRole.Seller:
+					return "admin";
+				case CommerceRole.Supplier:
+					return "supplier";
+				default:
+					throw new Exception("null or bad parameter: " + commerceRole);
 			}
 		}
 	}

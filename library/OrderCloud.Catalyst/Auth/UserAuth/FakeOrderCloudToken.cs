@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -23,7 +24,7 @@ namespace OrderCloud.Catalyst.Auth.UserAuth
 			string anonOrderID = null,
 			string authUrl = null,
 			string apiUrl = null,
-			string userType = "admin",
+			CommerceRole userType = CommerceRole.Seller,
 			string userDatabaseID = null,
 			string impersonatingUserDatabaseID = null
 		)
@@ -38,9 +39,11 @@ namespace OrderCloud.Catalyst.Auth.UserAuth
 			}
 			var claims = (roles ?? new List<string>()).Select(r => new Claim("role", r)).ToList();
 
+
+
 			AddClaimIfNotNull(claims, "orderid", anonOrderID);
 			AddClaimIfNotNull(claims, "usr", username);
-			AddClaimIfNotNull(claims, "usrtype", userType);
+			AddClaimIfNotNull(claims, "usrtype", DecodedToken.GetUserType(userType));
 			AddClaimIfNotNull(claims, "cid", clientID);
 			AddClaimIfNotNull(claims, "u", userDatabaseID);
 			AddClaimIfNotNull(claims, "imp", impersonatingUserDatabaseID);

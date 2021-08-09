@@ -36,6 +36,19 @@ namespace OrderCloud.Catalyst.TestApi
 		[HttpGet("custom"), OrderCloudUserAuth("CustomRole")]
 		public object CustomRole() => "hello custom!";
 
+		[HttpGet("supplier"), OrderCloudUserAuth, UserTypeRestrictedTo(CommerceRole.Supplier)]
+		public object Supplier() => "hello supplier!";
+
+		[HttpGet("supplierorseller"), OrderCloudUserAuth, UserTypeRestrictedTo(CommerceRole.Supplier, CommerceRole.Seller)]
+		public object SupplierOrSeller() => "hello supplier or seller!";
+
+		[HttpGet("supplieradmin"), OrderCloudUserAuth(ApiRole.SupplierAdmin), UserTypeRestrictedTo(CommerceRole.Supplier)]
+		public object SupplierAdmin() => "hello supplier admin!";
+
+		// User type doesn't apply without OrderCloudUserAuth
+		[HttpGet("unrestricted"), UserTypeRestrictedTo(CommerceRole.Supplier)]
+		public object Unrestricted() => "hello anyone!";
+
 		[HttpGet("anybody"), OrderCloudUserAuth]
 		public object Anybody() => "hello anybody!";
 

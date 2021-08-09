@@ -56,10 +56,8 @@ namespace OrderCloud.Catalyst
 
 			var queue = new Queue<string>(path.Split('.'));
 			var prop = type.GetProperty(queue.Dequeue(), BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-			if (prop == null)
-			{
-				throw new InvalidPropertyException(type, path);
-			}
+			Require.That(prop != null, new InvalidPropertyException(type, path));
+
 			//TODO: evaluate this requirement for reference sake
 			//Require.That(prop.HasAttribute<SortableAttribute>(), ErrorCodes.List.InvalidSortProperty, new InvalidPropertyError(type, path));
 			var result = prop?.Name;

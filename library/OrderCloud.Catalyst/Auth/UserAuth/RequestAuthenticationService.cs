@@ -42,8 +42,8 @@ namespace OrderCloud.Catalyst
 				return null;
 
 			var accessToken = parts[1].Trim();
-			if (string.IsNullOrEmpty(accessToken))
-				throw new UnAuthorizedException();
+			Require.That(!string.IsNullOrEmpty(accessToken), new UnAuthorizedException());
+
 			return accessToken;
 		}
 
@@ -75,15 +75,15 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Verifies the provided OrderCloud token. Throws 401 if invalid or 403 if insufficient roles.
 		/// </summary>
-		public async Task<DecodedToken> VerifyTokenAsync(string token, List<string> requiredRoles = null)
+		public async Task<DecodedToken> VerifyTokenAsync(string token, List<string> requiredRoles = null, List<CommerceRole> allowedUserTypes = null)
 		{
-			if (string.IsNullOrEmpty(token))
-				throw new UnAuthorizedException();
+			Require.That(!string.IsNullOrEmpty(token), new UnAuthorizedException());
+
 
 			var decodedToken = new DecodedToken(token);
 
-			if (decodedToken.ClientID == null || decodedToken.NotValidBeforeUTC > DateTime.UtcNow || decodedToken.ExpiresUTC < DateTime.UtcNow)
-				throw new UnAuthorizedException();
+			Require.That(decodedToken.ClientID != null && decodedToken.NotValidBeforeUTC < DateTime.UtcNow && decodedToken.ExpiresUTC > DateTime.UtcNow,
+				new UnAuthorizedException());
 
 			// we've validated the token as much as we can on this end, go make sure it's ok on OC	
 			bool isValid;
@@ -97,36 +97,44 @@ namespace OrderCloud.Catalyst
 				isValid = await VerifyTokenWithKeyID(decodedToken);
 			}
 
-			if (!isValid)
-				throw new UnAuthorizedException();
+			Require.That(isValid, new UnAuthorizedException());
 
-			if (requiredRoles != null && requiredRoles.Count > 0 && !requiredRoles.Any(role => decodedToken.Roles.Contains(role)))
-			{
-				throw new InsufficientRolesException(new InsufficientRolesError()
+			Require.That(allowedUserTypes == null || allowedUserTypes.Contains(decodedToken.CommerceRole),
+				new InvalidUserTypeException(new InvalidUserTypeError()
+				{
+					ThisUserType = decodedToken?.CommerceRole.ToString(),
+					UserTypesThatCanAccess = allowedUserTypes?.Select(x => x.ToString())?.ToList()
+				})
+			);
+
+
+			Require.That(requiredRoles == null || requiredRoles.Count == 0 || requiredRoles.Any(role => decodedToken.Roles.Contains(role)),
+				new InsufficientRolesException(new InsufficientRolesError()
 				{
 					SufficientRoles = requiredRoles,
 					AssignedRoles = decodedToken.Roles.ToList()
-				});
-			}
+				})
+			);
+
 			return decodedToken;
 		}
 
 		/// <summary>
 		/// Verifies the provided HttpRequest's OrderCloud Token. Throws 401 if invalid or 403 if insufficient roles.
 		/// </summary>
-		public async Task<DecodedToken> VerifyTokenAsync(HttpRequest request, List<string> requiredRoles = null)
+		public async Task<DecodedToken> VerifyTokenAsync(HttpRequest request, List<string> requiredRoles = null, List<CommerceRole> allowedUserTypes = null)
 		{
 			var token = GetToken(request);
-			return await VerifyTokenAsync(token, requiredRoles);
+			return await VerifyTokenAsync(token, requiredRoles, allowedUserTypes);
 		}
 
 
 		/// <summary>
 		/// Verifies the current HttpContext request's OrderCloud token. Throws 401 if invalid or 403 if insufficient roles.
 		/// </summary>
-		public async Task<DecodedToken> VerifyTokenAsync(List<string> requiredRoles = null)
+		public async Task<DecodedToken> VerifyTokenAsync(List<string> requiredRoles = null, List<CommerceRole> allowedUserTypes = null)
 		{
-			return await VerifyTokenAsync(_httpContextAccessor.HttpContext.Request, requiredRoles);
+			return await VerifyTokenAsync(_httpContextAccessor.HttpContext.Request, requiredRoles, allowedUserTypes);
 		}
 
 

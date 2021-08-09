@@ -35,11 +35,6 @@ namespace OrderCloud.Catalyst.Tests
 						services.AddTransient(sp => sp.GetService<IOptionsSnapshot<TestSettings>>().Value);
 					});
 				var server = new TestServer(host);
-				// AllowSynchronousIO = false became the default in asp.net core 3.0 to combat application hangs
-				// however we're using synchronous APIs when validating webhook hash
-				// specifically ComputeHash will trigger an error here
-				// TODO: figure out how to compute the hash in an async manner so we can remove this
-				server.AllowSynchronousIO = true; // for webhook tests
 				return new FlurlClient(server.CreateClient())
 					.AllowAnyHttpStatus();  // This allows us to test error responses.
 			}

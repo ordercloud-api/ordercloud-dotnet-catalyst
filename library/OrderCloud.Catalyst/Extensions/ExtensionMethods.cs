@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
+using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,17 +9,17 @@ using System.Text;
 
 namespace OrderCloud.Catalyst
 {
-    public static class ExtensionMethods
-    {
-        public static bool IsNullOrEmpty<T>(this IEnumerable<T> items)
-        {
-            return items == null || !items.Any();
-        }
+	public static class ExtensionMethods
+	{
+		public static bool IsNullOrEmpty<T>(this IEnumerable<T> items)
+		{
+			return items == null || !items.Any();
+		}
 
-        public static Type WithoutGenericArgs(this Type type)
-        {
-            return type.IsGenericType ? type.GetGenericTypeDefinition() : type;
-        }
+		public static Type WithoutGenericArgs(this Type type)
+		{
+			return type.IsGenericType ? type.GetGenericTypeDefinition() : type;
+		}
 
 		/// <summary>
 		/// Chain to IServiceCollection (typically in Startup.ConfigureServices) to enable authenticating by passing a valid
@@ -55,7 +56,28 @@ namespace OrderCloud.Catalyst
 			return endpointFeature?.Endpoint?.Metadata
 				.Where(x => x.GetType() == typeof(OrderCloudUserAuthAttribute))
 				.SelectMany(x => (x as OrderCloudUserAuthAttribute).OrderCloudRoles)
-				.ToList();		
+				.ToList();
+		}
+
+		/// <summary>
+		/// Looks for a UserTypeRestrictedToAttribute on the current route to find allowed user types.
+		/// </summary>
+		public static List<CommerceRole> GetAllowedUserTypes(this HttpContext context)
+		{
+			var endpointFeature = context.Features[typeof(IEndpointFeature)] as IEndpointFeature;
+
+			var attributes = endpointFeature?.Endpoint?.Metadata
+				.Where(x => x.GetType() == typeof(UserTypeRestrictedToAttribute));
+
+			if (attributes.Count() == 0)
+			{
+				// If attribute is not included, all types are allowed.
+				return new List<CommerceRole> { CommerceRole.Buyer, CommerceRole.Seller, CommerceRole.Supplier };
+			}
+
+			return attributes
+				.SelectMany(x => (x as UserTypeRestrictedToAttribute).AllowedUserTypes)
+				.ToList();
 		}
 	}
 }

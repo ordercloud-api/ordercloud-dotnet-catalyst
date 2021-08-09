@@ -296,6 +296,13 @@ namespace OrderCloud.Catalyst
             args = args ?? new ListArgs<T>();
 			return await resource.ListAsync<T>(args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
         }       
+        public static async Task<ListPage<SupplierBuyer>> ListBuyersAsync(this ISuppliersResource resource, string supplierID, IListArgs args = null, string accessToken = null) 
+        {
+            args = args ?? new ListArgs<SupplierBuyer>();
+			return await resource.ListBuyersAsync(supplierID, args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+        }
+        
+               
         public static async Task<ListPage<User>> ListAsync(this ISupplierUsersResource resource, string supplierID, string userGroupID = null, IListArgs args = null, string accessToken = null) 
         {
             args = args ?? new ListArgs<User>();
@@ -415,14 +422,14 @@ namespace OrderCloud.Catalyst
             args = args ?? new ListArgs<T>();
 			return await resource.ListSpecsAsync<T>(productID, args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
         }       
-        public static async Task<ListPage<Supplier>> ListSuppliersAsync(this IProductsResource resource, string productID, IListArgs args = null, string accessToken = null) 
+        public static async Task<ListPage<ProductSupplier>> ListSuppliersAsync(this IProductsResource resource, string productID, IListArgs args = null, string accessToken = null) 
         {
-            args = args ?? new ListArgs<Supplier>();
+            args = args ?? new ListArgs<ProductSupplier>();
 			return await resource.ListSuppliersAsync(productID, args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
         }
         
         public static async Task<ListPage<T>> ListSuppliersAsync<T>(this IProductsResource resource, string productID, IListArgs args = null, string accessToken = null) 
-            where T : Supplier
+            where T : ProductSupplier
         {
             args = args ?? new ListArgs<T>();
 			return await resource.ListSuppliersAsync<T>(productID, args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
@@ -640,17 +647,17 @@ namespace OrderCloud.Catalyst
             args = args ?? new ListArgs<T>();
 			return await resource.ListAddressesAsync<T>(args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
         }       
-        public static async Task<ListPage<Catalog>> ListCatalogsAsync(this IMeResource resource, IListArgs args = null, string accessToken = null) 
+        public static async Task<ListPage<Catalog>> ListCatalogsAsync(this IMeResource resource, string sellerID = null, IListArgs args = null, string accessToken = null) 
         {
             args = args ?? new ListArgs<Catalog>();
-			return await resource.ListCatalogsAsync(args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+			return await resource.ListCatalogsAsync(args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), sellerID, accessToken);
         }
         
-        public static async Task<ListPage<T>> ListCatalogsAsync<T>(this IMeResource resource, IListArgs args = null, string accessToken = null) 
+        public static async Task<ListPage<T>> ListCatalogsAsync<T>(this IMeResource resource, string sellerID = null, IListArgs args = null, string accessToken = null) 
             where T : Catalog
         {
             args = args ?? new ListArgs<T>();
-			return await resource.ListCatalogsAsync<T>(args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+			return await resource.ListCatalogsAsync<T>(args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), sellerID, accessToken);
         }       
         public static async Task<ListPage<Category>> ListCategoriesAsync(this IMeResource resource, string depth = null, string catalogID = null, string productID = null, IListArgs args = null, string accessToken = null) 
         {
@@ -712,17 +719,17 @@ namespace OrderCloud.Catalyst
             args = args ?? new ListArgs<T>();
 			return await resource.ListApprovableOrdersAsync<T>(from, to, args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
         }       
-        public static async Task<ListPageWithFacets<BuyerProduct>> ListProductsAsync(this IMeResource resource, string catalogID = null, string categoryID = null, string depth = null, SearchArgs<BuyerProduct> args = null, string accessToken = null) 
+        public static async Task<ListPageWithFacets<BuyerProduct>> ListProductsAsync(this IMeResource resource, string catalogID = null, string categoryID = null, string depth = null, string sellerID = null, SearchArgs<BuyerProduct> args = null, string accessToken = null) 
         {
             args = args ?? new SearchArgs<BuyerProduct>();
-			return await resource.ListProductsAsync(catalogID, categoryID, depth, args.Search, args.SearchOn, args.SearchType, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+			return await resource.ListProductsAsync(catalogID, categoryID, depth, args.Search, args.SearchOn, args.SearchType, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), sellerID, accessToken);
         }
         
-        public static async Task<ListPageWithFacets<T>> ListProductsAsync<T>(this IMeResource resource, string catalogID = null, string categoryID = null, string depth = null, SearchArgs<T> args = null, string accessToken = null) 
+        public static async Task<ListPageWithFacets<T>> ListProductsAsync<T>(this IMeResource resource, string catalogID = null, string categoryID = null, string depth = null, string sellerID = null, SearchArgs<T> args = null, string accessToken = null) 
             where T : BuyerProduct
         {
             args = args ?? new SearchArgs<T>();
-			return await resource.ListProductsAsync<T>(catalogID, categoryID, depth, args.Search, args.SearchOn, args.SearchType, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+			return await resource.ListProductsAsync<T>(catalogID, categoryID, depth, args.Search, args.SearchOn, args.SearchType, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), sellerID, accessToken);
         }       
         public static async Task<ListPage<Spec>> ListSpecsAsync(this IMeResource resource, string productID, string catalogID = null, IListArgs args = null, string accessToken = null) 
         {
@@ -760,6 +767,13 @@ namespace OrderCloud.Catalyst
             args = args ?? new ListArgs<T>();
 			return await resource.ListPromotionsAsync<T>(args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
         }       
+        public static async Task<ListPage<BuyerSupplier>> ListBuyerSellersAsync(this IMeResource resource, IListArgs args = null, string accessToken = null) 
+        {
+            args = args ?? new ListArgs<BuyerSupplier>();
+			return await resource.ListBuyerSellersAsync(args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+        }
+        
+               
         public static async Task<ListPage<Shipment>> ListShipmentsAsync(this IMeResource resource, string orderID = null, IListArgs args = null, string accessToken = null) 
         {
             args = args ?? new ListArgs<Shipment>();

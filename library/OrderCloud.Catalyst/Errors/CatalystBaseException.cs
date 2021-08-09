@@ -29,12 +29,11 @@ namespace OrderCloud.Catalyst
 		public CatalystBaseException(IList<ApiError> errors, int httpStatus = 400)
 		{
 			HttpStatus = httpStatus;
-			if (errors.IsNullOrEmpty())
-				throw new Exception("errors collection must contain at least one item.");
+			Require.That(!errors.IsNullOrEmpty(), new Exception("errors collection must contain at least one item."));
 			Errors = errors;
 		}
 
-		protected CatalystBaseException(string errorCode, string message, object data, int httpStatus = 400)
+		public  CatalystBaseException(string errorCode, string message, object data = null, int httpStatus = 400)
 		{
 			HttpStatus = httpStatus;
 			Errors = new[] {

@@ -52,6 +52,16 @@ Access data in the claims of the OrderCloud token used in the request.
     }
 ```
 
+Restrict route access so it can only be used by specific user types (Buyer, Supplier, Seller). Only works with OrderCloudUserAuth.
+```c#
+    [HttpPut, Route("hello")]
+    [OrderCloudUserAuth, UserTypeRestrictedTo(CommerceRole.Supplier)] // Any supplier user token can access
+    public string Hello([FromBody] Thing thing) {
+        return $"Hello Supplier User";.
+    }
+```
+UserTypeRestrictedTo(CommerceRole.Supplier)
+
 Get the full user details such as FirstName, LastName and xp from the GET /me endpoint
 ```c#
     [HttpPut, Route("hello")]

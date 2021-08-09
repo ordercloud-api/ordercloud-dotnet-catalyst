@@ -60,7 +60,6 @@ Restrict route access so it can only be used by specific user types (Buyer, Supp
         return $"Hello Supplier User";.
     }
 ```
-UserTypeRestrictedTo(CommerceRole.Supplier)
 
 Get the full user details such as FirstName, LastName and xp from the GET /me endpoint
 ```c#

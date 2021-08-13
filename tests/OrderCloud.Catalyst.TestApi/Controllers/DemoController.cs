@@ -58,6 +58,20 @@ namespace OrderCloud.Catalyst.TestApi
 		[HttpGet("anon")]
 		public object Anon() => "hello anon!";
 
+		[HttpGet("listall")]
+		public async Task<object> ListALl()
+		{
+			//List<Address> list = new List<Address>();
+			//await _oc.Addresses.ListAllAsync((page) =>
+			//{
+
+			//	return Task.Run(() => list.AddRange(page.Items));
+			//}, "0005");
+			var list = await _oc.XpIndices.ListAllAsync();
+			var c = list.Count;
+			return list;
+		}
+
 		[HttpGet("usercontext"), OrderCloudUserAuth]
 		public SimplifiedUser Username()
 		{

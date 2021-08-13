@@ -91,33 +91,6 @@ namespace OrderCloud.Catalyst.Tests
 			allProducts.Count.Should().Equals(response.Result.Items.Count);
 		}
 
-		[Test]
-		public void GetSortShouldReturnNull()
-        {
-			var sort = ListAllHelper.GetSort<NoID>();
-			Assert.IsTrue(sort == null);
-        }
-
-		[Test]
-		public void GetSortShouldReturnID()
-		{
-			var sort = ListAllHelper.GetSort<HasID>();
-			Assert.IsTrue(sort == "ID");
-		}
-
-		private class NoID
-		{
-			public string Name { get; set; }
-			public string Email { get; set; }
-		};
-
-		private class HasID
-        {
-            public string ID { get; set; }
-            public string Name { get; set; }
-			public string Email { get; set; }
-		}
-
 		//Setup Shipment Response using AutoFixture
 		public ListPage<T> BuildListPage<T>(int totalPages)
 		{

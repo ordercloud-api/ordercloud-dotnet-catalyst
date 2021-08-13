@@ -14,7 +14,7 @@ var postFormatOperation = function (operation) {
     var listAllParamMapping = {
         search: "null",
         searchOn: "null",
-        sortBy: "ListAllHelper.GetSort<UserGroup>()",
+        sortBy: "SORT_BY",
         pageSize: "MAX_PAGE_SIZE",
         filters: "filters.AndFilter(filter)",
         searchType: "SearchType.AnyTerm"
@@ -22,7 +22,9 @@ var postFormatOperation = function (operation) {
     var listAllBatchedParamMapping = {
         search: "null",
         searchOn: "null",
-        sortBy: "ListAllHelper.GetSort<UserGroup>()",
+        sortBy: "SORT_BY",
+        filters: "filters.AndFilter(filter)",
+        page: "PAGE_ONE",
         pageSize: "MAX_PAGE_SIZE",
         searchType: "SearchType.AnyTerm"
     };
@@ -45,6 +47,11 @@ var postFormatOperation = function (operation) {
             param.type = "DateTimeOffset?";
         }
     });
+    if (operation.returnType === "XpIndex") {
+        var sortBy = operation.allParams.find(function (x) { return x.name === "sortBy"; });
+        sortBy["listAllBatchedValue"] = "null";
+        sortBy["listAllValue"] = "null";
+    }
     // RETURN MODIFIED OPERATION - THIS IS IMPORTANT
     return operation;
 };

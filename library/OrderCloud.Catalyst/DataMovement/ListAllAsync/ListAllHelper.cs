@@ -20,11 +20,11 @@ namespace OrderCloud.Catalyst
 		// Always sort by ID to enable id-filter paging technique 
 		public const string SORT_BY = "ID";
 		// Only relevant to the concurrent paging technique
-		private const int MAX_NUM_PARALLEL_REQUESTS = 16;
-		// For record sizes above 30 pages, use last ID filter paging. Below 30 pages, use the page parameter concurrently. 
-		private const int PAGE_THRESHOLD_FOR_PAGING_TECHNIQUE = 30;
+		public const int MAX_NUM_PARALLEL_REQUESTS = 16;
+		// For record sizes above 300 (30 pages), use last ID filter paging. Below 30 pages, use the page parameter concurrently. 
+		public const int PAGE_THRESHOLD_FOR_PAGING_TECHNIQUE = 30;
 		// Will be ignored by the SDK and have no effect on the request because Value is null;
-		private static (string Key, object Value) IGNORED_FILTER => ("ID", null);
+		public static (string Key, object Value) IGNORED_FILTER => ("ID", null);
 
 		/// <summary>
 		/// Get all records of specific type from OrderCloud by requesting all list pages and combining the results.

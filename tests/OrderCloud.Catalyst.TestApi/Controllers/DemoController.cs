@@ -61,12 +61,6 @@ namespace OrderCloud.Catalyst.TestApi
 		[HttpGet("listall")]
 		public async Task<object> ListALl()
 		{
-			//List<Address> list = new List<Address>();
-			//await _oc.Addresses.ListAllAsync((page) =>
-			//{
-
-			//	return Task.Run(() => list.AddRange(page.Items));
-			//}, "0005");
 			var list = await _oc.Products.ListAllAsync();
 			var c = list.Count;
 			return list;

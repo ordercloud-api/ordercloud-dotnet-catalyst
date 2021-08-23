@@ -48,10 +48,11 @@ namespace OrderCloud.Catalyst.Tests
 		[Test, AutoNSubstituteData]
 		public async Task ListAll_Batched_Working()
 		{
-			var mockResponse = BuildListPage<Shipment>(5);
-			mockOrderCloudClient.Shipments.ListAsync().ReturnsForAnyArgs(mockResponse);
-			var shipments = new List<Shipment>();
-			await mockOrderCloudClient.Shipments.ListAllAsync(page => {
+			var mockResponse = BuildListPage<ProductAssignment>(5);
+			mockOrderCloudClient.Products.ListAssignmentsAsync().ReturnsForAnyArgs(mockResponse);
+			var shipments = new List<ProductAssignment>();
+			await mockOrderCloudClient.Products.ListAllAssignmentsAsync(page =>
+			{
 				shipments.AddRange(page.Items);
 				return Task.CompletedTask;
 			});
@@ -65,13 +66,19 @@ namespace OrderCloud.Catalyst.Tests
 		[TestCase("something=!else")]
 		[TestCase("something=>else")]
 		[TestCase("something=<else")]
-		public async Task AND_filter_should_not_change_user_supplied_filters(string userFilters)
+		public void AND_filter_should_not_change_user_supplied_filters(string userFilters)
 		{
 			var result = userFilters.AndFilter(("ID", null));
 			Assert.AreEqual(userFilters, result);
 		}
 
-		public async Task AND_filter_should_not_change_user_supplied_filters_2()
+		public void AND_filter_should_return_null_if_no_filters(string userFilters)
+		{
+			var result = "".AndFilter(("ID", null));
+			Assert.AreEqual(null, result);
+		}
+
+		public void AND_filter_should_not_change_user_supplied_filters_2()
 		{
 			var existingFilter = new { OrderCheckoutIntegrationEventID = "*" };
 			var result = existingFilter.AndFilter(("ID", null));

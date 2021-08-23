@@ -101,6 +101,7 @@ namespace OrderCloud.Catalyst
 					qp.Add(kv.Key, kv.Value);
 				}
 			}
+			if (qp.Count == 0) { return null; }
 			return string.Join("&", qp.Select(x => $"{x.Name}={x.Value}"));
 		}
 	}

@@ -25,6 +25,7 @@ namespace OrderCloud.Catalyst
 		public const int PAGE_THRESHOLD_FOR_PAGING_TECHNIQUE = 30;
 		// Will be ignored by the SDK and have no effect on the request because Value is null;
 		public static (string Key, object Value) IGNORED_FILTER => ("ID", null);
+		public static RetryPolicy RetryPolicy = new RetryPolicy(new List<int> { 0, 1000, 2000, 4000 });
 
 		/// <summary>
 		/// Get all records of specific type from OrderCloud by requesting all list pages and combining the results.
@@ -52,7 +53,10 @@ namespace OrderCloud.Catalyst
 			{
 				await ListBatchedByPageAsync(filter => processPage(IGNORED_FILTER));
 			}
-			await ListBatchedByFilterAsync(id, filter => processPage(filter));
+			else
+			{
+				await ListBatchedByFilterAsync(id, filter => processPage(filter));
+			}
 		}
 
 
@@ -62,7 +66,7 @@ namespace OrderCloud.Catalyst
 			var totalPages = 1; // placeholder until we get data
 			while (page <= totalPages)
 			{
-				var result = await processPage(page);
+				var result = await RetryPolicy.RunWithRetries(() => processPage(page));
 				totalPages = result.Meta.TotalPages;
 				page++;
 			}
@@ -74,7 +78,7 @@ namespace OrderCloud.Catalyst
 			var lastResponse = new ListPage<T> { Meta = new ListPageMeta() { TotalPages = 2 } }; // placeholder until we get data
 			while (lastResponse.Meta.TotalPages > 1)
 			{
-				lastResponse = await processPage(filter);
+				lastResponse = await RetryPolicy.RunWithRetries(() => processPage(filter));
 				var lastID = id.GetValue(lastResponse.Items.Last()) as string;
 				filter = ("ID", $">{lastID}");
 			}
@@ -87,7 +91,8 @@ namespace OrderCloud.Catalyst
 			var page = 2;
 			while (page <= totalPages)
 			{
-				pageTasks.Add(listFunc(page++));
+				var pageTask = RetryPolicy.RunWithRetries(() => listFunc(page++));
+				pageTasks.Add(pageTask);
 				var running = pageTasks.Where(t => !t.IsCompleted && !t.IsFaulted).ToList();
 				if (!running.Any()) { continue; }
 				if (totalPages == 0 || running.Count >= MAX_NUM_PARALLEL_REQUESTS) // throttle parallel tasks
@@ -109,17 +114,17 @@ namespace OrderCloud.Catalyst
 			{
 				var lastID = id.GetValue(lastResponse.Items.Last()) as string;
 				var filter = ("ID", $">{lastID}");
-				lastResponse = await listFunc(filter);
+				lastResponse = await RetryPolicy.RunWithRetries(() => listFunc(filter));
 				toReturn.AddRange(lastResponse.Items);
 			}
 			return toReturn;
 		}
 
 		public static async Task ListBatchedWithFacetsAsync<T>(Func<(string Key, object Value), Task<ListPageWithFacets<T>>> processPage)
-			=> await ListBatchedAsync(async x => DropFacets(await processPage(x)));
+			=> await ListBatchedAsync(async filter => DropFacets(await processPage(filter)));
 
 		public static async Task<List<T>> ListAllWithFacetsAsync<T>(Func<int, (string Key, object Value), Task<ListPageWithFacets<T>>> listFunc)
-			=> await ListAllAsync(async (x, y) => DropFacets(await listFunc(x, y)));
+			=> await ListAllAsync(async (page, filter) => DropFacets(await listFunc(page, filter)));
 
 		/// <summary>
 		/// Helper for converting ListPageWithFacets to ListPage. Loses facet data.

@@ -67,7 +67,7 @@ namespace OrderCloud.Catalyst.TestApi
 
 			//	return Task.Run(() => list.AddRange(page.Items));
 			//}, "0005");
-			var list = await _oc.XpIndices.ListAllAsync();
+			var list = await _oc.Products.ListAllAsync();
 			var c = list.Count;
 			return list;
 		}

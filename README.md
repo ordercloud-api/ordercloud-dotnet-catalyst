@@ -113,8 +113,8 @@ if (UserContext.CommerceRole != UserContext.Supplier) {
 Take advantage of DataAnnotation attributes to specify validation requirements for your own custom models.
 
 ```c#
-	[Required(ErrorMessage = "This field is required, please try again.")]
-    public string RequiredField { get; set; }
+[Required(ErrorMessage = "This field is required, please try again.")]
+public string RequiredField { get; set; }
 ```
 
 ### Testing helpers

@@ -8,7 +8,10 @@ namespace OrderCloud.Catalyst
 {
 	public static class ListAllExtensions
 	{
-		private const int MAX_PAGE_SIZE = 100;
+        private const int MAX_PAGE_SIZE = ListAllHelper.MAX_PAGE_SIZE;
+        private const int PAGE_ONE = ListAllHelper.PAGE_ONE;
+        private const string SORT_BY = ListAllHelper.SORT_BY;
+
         {{#resources}}{{#with this as | resource |}}{{#operations}}{{#with this as | operation |}}{{#if isList}}       
         public static async Task<List<{{operation.returnType}}>> {{operation.listAllName}}Async(this I{{resource.id}}Resource resource, {{#listAllParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listAllParams}}string accessToken = null) 
         {
@@ -29,7 +32,7 @@ namespace OrderCloud.Catalyst
 
         public static async Task {{operation.listAllName}}Async(this I{{resource.id}}Resource resource, Func<{{#if isFacetList}}ListPageWithFacets{{else}}ListPage{{/if}}<{{operation.returnType}}>, Task> action, {{#listAllParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listAllParams}}string accessToken = null) 
         {
-            await ListAllHelper.{{#if isFacetList}}ListBatchedWithFacetsAsync{{else}}ListBatchedAsync{{/if}}(async (page) =>
+            await ListAllHelper.{{#if isFacetList}}ListBatchedWithFacetsAsync{{else}}ListBatchedAsync{{/if}}(async (filter) =>
 			{
 				var result = await resource.{{operation.name}}Async({{#allParams}}{{listAllBatchedValue}}, {{/allParams}}accessToken);
                 await action(result);
@@ -40,7 +43,7 @@ namespace OrderCloud.Catalyst
         {{#if operation.hasXP}}public static async Task {{operation.listAllName}}Async<T>(this I{{resource.id}}Resource resource, Func<{{#if isFacetList}}ListPageWithFacets{{else}}ListPage{{/if}}<T>, Task> action, {{#listAllParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listAllParams}}string accessToken = null) 
             where T : {{operation.returnType}}
         {
-            await ListAllHelper.{{#if isFacetList}}ListBatchedWithFacetsAsync{{else}}ListBatchedAsync{{/if}}(async (page) =>
+            await ListAllHelper.{{#if isFacetList}}ListBatchedWithFacetsAsync{{else}}ListBatchedAsync{{/if}}(async (filter) =>
 			{
 				var result = await resource.{{operation.name}}Async<T>({{#allParams}}{{listAllBatchedValue}}, {{/allParams}}accessToken);
                 await action(result);

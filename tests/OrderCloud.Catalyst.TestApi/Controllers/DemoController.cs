@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrderCloud.SDK;
+using OrderCloud.Catalyst;
 using RequiredAttribute = System.ComponentModel.DataAnnotations.RequiredAttribute;
 
 namespace OrderCloud.Catalyst.TestApi
@@ -13,13 +14,15 @@ namespace OrderCloud.Catalyst.TestApi
 	[Route("demo")]
 	public class DemoController : CatalystController
 	{
-		private static RequestAuthenticationService _tokenProvider;
-		private static ExampleCommand _exampleCommand;
+		private readonly RequestAuthenticationService _tokenProvider;
+		private readonly ExampleCommand _exampleCommand;
+		private readonly IOrderCloudClient _oc; 
 
-		public DemoController(RequestAuthenticationService tokenProvider, ExampleCommand exampleCommand)
+		public DemoController(RequestAuthenticationService tokenProvider, ExampleCommand exampleCommand, IOrderCloudClient oc)
 		{
 			_tokenProvider = tokenProvider;
 			_exampleCommand = exampleCommand;
+			_oc = oc;
 		}
 
 		[HttpGet("shop"), OrderCloudUserAuth(ApiRole.Shopper)]
@@ -54,6 +57,14 @@ namespace OrderCloud.Catalyst.TestApi
 
 		[HttpGet("anon")]
 		public object Anon() => "hello anon!";
+
+		[HttpGet("listall")]
+		public async Task<object> ListALl()
+		{
+			var list = await _oc.Products.ListAllAsync();
+			var c = list.Count;
+			return list;
+		}
 
 		[HttpGet("usercontext"), OrderCloudUserAuth]
 		public SimplifiedUser Username()

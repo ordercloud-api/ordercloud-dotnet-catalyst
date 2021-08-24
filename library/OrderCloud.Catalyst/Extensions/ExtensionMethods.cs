@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Flurl;
+using Flurl.Util;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using OrderCloud.SDK;
@@ -78,6 +80,29 @@ namespace OrderCloud.Catalyst
 			return attributes
 				.SelectMany(x => (x as UserTypeRestrictedToAttribute).AllowedUserTypes)
 				.ToList();
+		}
+
+		// See https://github.com/tmenier/Flurl/blob/ce480aa1aa8ce1f2ff4ebce9f1d6eaf30b7d6d8c/src/Flurl.Http/Configuration/DefaultUrlEncodedSerializer.cs
+		/// <summary>
+		/// Add a new filter to an existing set of filters. All must evaluate to true.
+		/// </summary>
+		/// <param name="filters">An existing set of filters.</param>
+		/// <param name="listFunc">A new filter that must also evaluate to true.</param>
+		/// <returns></returns>
+		public static string AndFilter(this object filters, (string Key, object Value) filter)
+		{
+			var filterList = filters?.ToKeyValuePairs()?.ToList() ?? new List<(string Key, object Value)>();
+			filterList.Add(filter);
+			var qp = new QueryParamCollection();
+			foreach (var kv in filterList)
+			{
+				if (kv.Value != null)
+				{
+					qp.Add(kv.Key, kv.Value);
+				}
+			}
+			if (qp.Count == 0) { return null; }
+			return string.Join("&", qp.Select(x => $"{x.Name}={x.Value}"));
 		}
 	}
 }

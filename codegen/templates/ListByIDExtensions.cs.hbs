@@ -1,0 +1,33 @@
+// This file is generated automatically, do not edit directly. See codegen/templates/ListByIDExtensions.cs.hbs
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using OrderCloud.SDK;
+
+namespace OrderCloud.Catalyst
+{
+	public static class ListByIDExtensions
+	{
+        private const int MAX_PAGE_SIZE = ListAllHelper.MAX_PAGE_SIZE;
+        private const int PAGE_ONE = ListAllHelper.PAGE_ONE;
+
+        {{#resources}}{{#with this as | resource |}}{{#operations}}{{#with this as | operation |}}{{#if isList}}       
+        public static async Task<List<{{operation.returnType}}>> {{operation.listByIDName}}Async(this I{{resource.id}}Resource resource, List<string> ids, {{#listByIDParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listByIDParams}}string accessToken = null) 
+        {
+            return await ListAllHelper.{{#if isFacetList}}ListByIDWithFacetsAsync{{else}}ListByIDAsync{{/if}}(ids, (filterValue) =>
+			{
+				return resource.{{operation.name}}Async({{#allParams}}{{listByIDValue}}, {{/allParams}}accessToken);
+			});
+        }   
+    
+        {{#if operation.hasXP}}public static async Task<List<T>> {{operation.listByIDName}}Async<T>(this I{{resource.id}}Resource resource, List<string> ids, {{#listByIDParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listByIDParams}}string accessToken = null) 
+            where T : {{operation.returnType}}
+        {
+            return await ListAllHelper.{{#if isFacetList}}ListByIDWithFacetsAsync{{else}}ListByIDAsync{{/if}}(ids, (filterValue) =>
+			{
+				return resource.{{operation.name}}Async<T>({{#allParams}}{{listByIDValue}}, {{/allParams}}accessToken);
+			});
+        }{{/if}}
+        {{/if}}{{/with}}{{/operations}}{{/with}}{{/resources}}
+    }
+}

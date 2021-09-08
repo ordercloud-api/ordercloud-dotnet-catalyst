@@ -8,6 +8,7 @@ import {
 
 const postFormatOperation: PostFormatOperationHook = function(operation: Operation) {
   var notValidListAllParams = ["searchType", "search", "searchOn", "sortBy", "page", "pageSize", "accessToken"];
+  var notValidListByIDParams = ["searchType", "search", "searchOn", "sortBy", "page", "pageSize", "filters", "accessToken"];
   var listArgsParams = ["searchType", "search", "searchOn", "sortBy", "page", "pageSize", "filters", "accessToken"];
 
   var listArgsParamMapping = {
@@ -29,6 +30,16 @@ const postFormatOperation: PostFormatOperationHook = function(operation: Operati
     searchType: "SearchType.AnyTerm"
   }
 
+  var listByIDParamMapping = {
+    search: "null",
+    searchOn: "null",
+    sortBy: "null",
+    pageSize: "MAX_PAGE_SIZE",
+    page: "PAGE_ONE",
+    filters: "$\"ID={filterValue}\"",
+    searchType: "SearchType.AnyTerm"
+  }
+
   var listAllBatchedParamMapping = {
     search: "null",
     searchOn: "null",
@@ -46,13 +57,17 @@ const postFormatOperation: PostFormatOperationHook = function(operation: Operati
   }
 
   operation["listAllName"] = operation.name.replace("List", "ListAll");
+  operation["listByIDName"] = operation.name.concat("ByID");
+
   operation["listAllParams"] = operation.allParams.filter(param => !notValidListAllParams.includes(param.name))
+  operation["listByIDParams"] = operation.allParams.filter(param => !notValidListByIDParams.includes(param.name))
   operation["listArgsParams"] = operation.allParams.filter(param => !listArgsParams.includes(param.name))
 
   operation["hasXP"] = !operation.name.includes("Assignment") && !["ImpersonationConfig", "OpenIdConnect", "Incrementor", "SecurityProfile", "XpIndex", "Webhook", "IntegrationEvent", "SupplierBuyer", "BuyerSupplier"].includes(operation.returnType ?? "")
 
   operation.allParams.forEach(param => {
     param["listAllValue"] = listAllParamMapping[param.name] ?? param.name
+    param["listByIDValue"] = listByIDParamMapping[param.name] ?? param.name
     param["listAllBatchedValue"] = listAllBatchedParamMapping[param.name] ?? param.name
     param["listArgsValue"] = listArgsParamMapping[param.name] ?? param.name
     param.type = csharpTypeMapping[param.type] ?? param.type

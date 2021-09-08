@@ -40,7 +40,7 @@ namespace OrderCloud.Catalyst
                     return context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorList(intException.Errors)));
                 case OrderCloudException ocException:
                     context.Response.StatusCode = (int)ocException.HttpStatus;
-                    return context.Response.WriteAsync(JsonConvert.SerializeObject(ocException.Errors[0]));
+                    return context.Response.WriteAsync(JsonConvert.SerializeObject(ocException.Errors));
             }
 
             // this is only to be hit IF it's not handled properly in the stack. It's considered a bug if ever hits this. that's why it's a 500

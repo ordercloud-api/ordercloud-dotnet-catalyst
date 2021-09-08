@@ -2,6 +2,7 @@
 using Flurl.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using OrderCloud.SDK;
 using System;
@@ -47,6 +48,18 @@ namespace OrderCloud.Catalyst
 			services.AddAuthentication()
 				.AddScheme<OrderCloudWebhookAuthOptions, OrderCloudWebhookAuthHandler>("OrderCloudWebhook", null, configureOptions);
 			return services;
+		}
+
+		/// <summary>
+		/// Chain to AddMvc() (typically in Startup.ConfigureServices) if you want to respond to multiple webhooks from a single URL.
+		/// This allows you to add the same [Route] attribute to several action methods, and it will will choose the correct one
+		/// based on payload type. For example, if you have an action method with a [FromBody] parameter of type WebhookPayloads.Orders.Submit,
+		/// then order submit webhooks will be correctly routed to this method.
+		/// </summary>
+		public static IMvcBuilder DisambiguateWebhooks(this IMvcBuilder builder)
+		{
+			builder.Services.AddSingleton<IActionSelector, WebhookActionSelector>();
+			return builder;
 		}
 
 		/// <summary>

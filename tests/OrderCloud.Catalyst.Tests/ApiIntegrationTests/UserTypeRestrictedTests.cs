@@ -43,7 +43,7 @@ namespace OrderCloud.Catalyst.Tests
 			{
 				var response = await request.GetAsync();
 				var json = await request.GetJsonAsync();
-				response.ShouldHaveFirstApiError("InvalidUserType", 403, $"Users of type {role} do not have permission to perform this action.");
+				await response.ShouldHaveFirstApiError("InvalidUserType", 403, $"Users of type {role} do not have permission to perform this action.");
 				Assert.AreEqual(role.ToString(), json.Errors[0].Data.ThisUserType);
 				Assert.AreEqual("Supplier", json.Errors[0].Data.UserTypesThatCanAccess[0]);
 			}
@@ -68,7 +68,7 @@ namespace OrderCloud.Catalyst.Tests
 			{
 				var response = await request.GetAsync();
 				var json = await request.GetJsonAsync();
-				response.ShouldHaveFirstApiError("InvalidUserType", 403, $"Users of type {role} do not have permission to perform this action.");
+				await response.ShouldHaveFirstApiError("InvalidUserType", 403, $"Users of type {role} do not have permission to perform this action.");
 				Assert.AreEqual(role.ToString(), json.Errors[0].Data.ThisUserType);
 				Assert.AreEqual("Supplier", json.Errors[0].Data.UserTypesThatCanAccess[0]);
 				Assert.AreEqual("Seller", json.Errors[0].Data.UserTypesThatCanAccess[1]);
@@ -85,7 +85,7 @@ namespace OrderCloud.Catalyst.Tests
 
 				var response = await request.GetAsync();
 				var json = await request.GetJsonAsync();
-				response.ShouldHaveFirstApiError("InvalidUserType", 403, $"Users of type Buyer do not have permission to perform this action.");
+				await response.ShouldHaveFirstApiError("InvalidUserType", 403, $"Users of type Buyer do not have permission to perform this action.");
 		}
 	}
 }

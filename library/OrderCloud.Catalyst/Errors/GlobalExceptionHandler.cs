@@ -40,21 +40,23 @@ namespace OrderCloud.Catalyst
                     return context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorList(intException.Errors)));
                 case OrderCloudException ocException:
                     context.Response.StatusCode = (int)ocException.HttpStatus;
-                    return context.Response.WriteAsync(JsonConvert.SerializeObject(ocException.Errors));
+                    return context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorList(ocException.Errors)));
             }
 
             // this is only to be hit IF it's not handled properly in the stack. It's considered a bug if ever hits this. that's why it's a 500
-            var result = JsonConvert.SerializeObject(new ApiError()
+            var result = JsonConvert.SerializeObject(new ErrorList( new List<ApiError>() { new ApiError()
             {
                 Data = ex.Message,
                 ErrorCode = code.ToString(),
                 Message = $"Unknown error has occured."
-            });
+            } } ));
             context.Response.StatusCode = (int)code;
             return context.Response.WriteAsync(result);
         }
     }
-    public class ErrorList {
+
+    public class ErrorList 
+    {
         public IList<ApiError> Errors { get; set; }
         public ErrorList(IList<ApiError> errors)
         {

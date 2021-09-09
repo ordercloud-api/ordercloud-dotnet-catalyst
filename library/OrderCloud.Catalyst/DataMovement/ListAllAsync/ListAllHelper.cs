@@ -130,6 +130,7 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public static async Task<List<T>> ListByIDAsync<T>(List<string> ids, Func<string, Task<ListPage<T>>> listFunc)
 		{
+			if (ids.Count == 0) { return new List<T>(); }
 			var records = new List<T>();
 			// We must break the request into chunks to avoid putting too many chars in a url.
 			var idChunks = new List<List<string>> { new List<string> { } };
@@ -145,7 +146,7 @@ namespace OrderCloud.Catalyst
 						// Start a new chunk
 						currentChunkIndex++;
 						idChunks.Add(new List<string> { id });
-						return 0; // reset character count to 0
+						return id.Length + CHARS_IN_AN_OR; // reset character count to 0
 					}
 					// Add the id to the old chunk
 					idChunks[currentChunkIndex].Add(id);
@@ -156,7 +157,10 @@ namespace OrderCloud.Catalyst
 			foreach (var idChunk in idChunks)
 			{
 				var filterValue = string.Join("|", idChunk);
-				var response = await RetryPolicy.RunWithRetries(() => listFunc(filterValue));
+				var response = await RetryPolicy.RunWithRetries(() =>
+				{
+					return listFunc(filterValue);
+				});
 				records.AddRange(response.Items);
 			}
 			return records;

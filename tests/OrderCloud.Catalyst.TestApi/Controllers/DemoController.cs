@@ -66,6 +66,19 @@ namespace OrderCloud.Catalyst.TestApi
 			return list;
 		}
 
+		[HttpGet("listbyid")]
+		public async Task<object> ListById()
+		{
+			var ids = new List<string>();
+			for (var i = 0; i < 1500; i++)
+			{
+				ids.Add(i.ToString());
+			}
+
+			var list = await _oc.Suppliers.ListByIDAsync(ids);
+			return list;
+		}
+
 		[HttpGet("usercontext"), OrderCloudUserAuth]
 		public SimplifiedUser Username()
 		{

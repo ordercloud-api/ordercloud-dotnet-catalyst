@@ -178,7 +178,7 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Helper for converting ListPageWithFacets to ListPage. Drops facet data.
 		/// </summary>
-		public static ListPage<T> DropFacets<T>(ListPageWithFacets<T> page) => new ListPage<T>()
+		private static ListPage<T> DropFacets<T>(ListPageWithFacets<T> page) => new ListPage<T>()
 		{
 			Items = page.Items,
 			Meta = page.Meta

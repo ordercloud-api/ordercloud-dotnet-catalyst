@@ -59,4 +59,4 @@ Console.log(products.Count); // 3 if all ids are found. 0 if none are found.
 ## Best Practices
 
 These are not methods to throw around lightly! If there are many records, they can be very "expensive" both in time and memory. Avoid listing all records when you can.
-Be aware of roughly how many records you expect. Over 3000, these methods are less recomended. For larger data sets and for applications where speed is not critical like a nightly sync, we recomend a batch approach where you repeatedly list one page of data, apply it somewhere, and then allow it to be garbage collected.  
+Be aware of roughly how many records you expect. Over 3000, list all is less recomended. For larger data sets and for applications where speed is not critical like a nightly sync, we recomend a batch approach where you repeatedly list one page of data, apply it somewhere, and then allow it to be garbage collected.  

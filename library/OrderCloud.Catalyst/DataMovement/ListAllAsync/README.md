@@ -16,15 +16,18 @@ However, all other inputs should remain unchanged, including [filters](https://o
 ```c#
 // get all products visible to the user
 var products = _oc.Me.ListAllProductsAsync();
-
+```
+```c#
 // function-specific inputs are the same as ListAsync().
 var orderID = "xxxxxxxx";
 var lineItems = _oc.LineItems.ListAllAsync(OrderDirection.Incomming, orderID);
 Console.Log(lineItems.Count)
-
+```
+```c#
 // optionally, apply filters
 var expensiveLineItems = _oc.LineItems.ListAllAsync(OrderDirection.Incomming, orderID, filters: "LineTotal=>100");
-
+```
+```c#
 // Imagine you want to write line items to a comma separated value file.
 // use a call-back function that will be triggered for each list page that's found. This saves memory because only one list page is stored at a given time. 
 CloudAppendBlob csvFile = client.GetContainerReference("...").GetAppendBlobReference("..."); // A reference to an append blob in Azure storage

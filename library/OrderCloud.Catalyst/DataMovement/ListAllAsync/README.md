@@ -42,6 +42,19 @@ _oc.LineItems.ListAllAsync(OrderDirection.Incomming, orderID, listPage => {
 });
 ```
 
+## Get multiple resources By ID 
+
+#### Details 
+There is a fairly efficient technique for getting mulitple resources by ID from OrderCloud. It uses an ID filter like so `/products?ID=my-product-id|my-2-product-id|my-3-product-id`. There are some minor gotchas with using this method directly, what if the list contains more that 100 ids and paging is necessary? Or, what if the ids have many characters and exceeds the OrderCloud limit of 2086 chars in a url? Catalyst includes helper methods to abstract out these concerns. Just provide a list of ids. 
+
+Note that this method will not error if an id doesn't exist. It will simply omit it from the results.   
+
+```c#
+// get all products visible to the user
+var ids = new List<string> { "my-product-id", "my-2-product-id", "my-3-product-id" };
+var products = _oc.Me.ListProductsByIDAsync(ids);
+```
+
 #### Best Practices
 
 These are not methods to throw around lightly! If there are many records, they can be very "expensive" both in time and memory. Avoid listing all records when you can.

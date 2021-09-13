@@ -31,13 +31,14 @@ namespace OrderCloud.Catalyst.TestApi
 				{
 					options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
 				});
-			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-			services.AddMvc().AddNewtonsoftJson(options => options.SerializerSettings.Converters.Add(new StringEnumConverter()));
 			services.AddMvc(o =>
 				{
 					o.Filters.Add(new ValidateModelAttribute());
 					o.EnableEndpointRouting = false;
-				});
+				})
+				.SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+				.AddNewtonsoftJson(options => options.SerializerSettings.Converters.Add(new StringEnumConverter()));
+
 			services.AddCors(o => o.AddPolicy("integrationcors",
 				builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }));
 			services

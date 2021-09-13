@@ -27,6 +27,11 @@ namespace OrderCloud.Catalyst
 		public static (string Key, object Value) IGNORED_FILTER => ("ID", null);
 		public static RetryPolicy RetryPolicy = new RetryPolicy(new List<int> { 0, 1000, 2000, 4000 });
 
+		// Technically, OrderCloud can field requests successfully with up to 2086 chars in the url. Some padding seemed safer though.
+		public const int MAX_CHARS_IN_URL = 2000;
+		// The "|" OR character is url encoded as "%7C", which is 3 characters. 
+		public const int CHARS_IN_AN_OR = 3;
+
 		/// <summary>
 		/// Get all records of specific type from OrderCloud by requesting all list pages and combining the results.
 		/// </summary>
@@ -120,14 +125,58 @@ namespace OrderCloud.Catalyst
 			return toReturn;
 		}
 
+		/// <summary>
+		/// Get mulitple records by providing a list of IDs. Duplicates or Not Founds will be omitted from the results without error. 
+		/// </summary>
+		public static async Task<List<T>> ListByIDAsync<T>(List<string> ids, Func<string, Task<ListPage<T>>> listFunc)
+		{
+			if (ids.Count == 0) { return new List<T>(); }
+			var records = new List<T>();
+			// We must break the request into chunks to avoid putting too many chars in a url.
+			var idChunks = new List<List<string>> { new List<string> { } };
+			var currentChunkIndex = 0;
+			ids
+				.Distinct() // remove duplicates
+				.Aggregate(0, (charCount, id) =>
+				{
+					var charCountInCurrentChunk = charCount + id.Length + CHARS_IN_AN_OR;
+					var idCountInCurrentChunk = idChunks[currentChunkIndex].Count + 1;
+					if (charCountInCurrentChunk > MAX_CHARS_IN_URL || idCountInCurrentChunk > MAX_PAGE_SIZE)
+					{
+						// Start a new chunk
+						currentChunkIndex++;
+						idChunks.Add(new List<string> { id });
+						return id.Length + CHARS_IN_AN_OR; // reset character count to 0
+					}
+					// Add the id to the old chunk
+					idChunks[currentChunkIndex].Add(id);
+					return charCountInCurrentChunk;
+				});
+
+			// Make a request for each chunk
+			foreach (var idChunk in idChunks)
+			{
+				var filterValue = string.Join("|", idChunk);
+				var response = await RetryPolicy.RunWithRetries(() =>
+				{
+					return listFunc(filterValue);
+				});
+				records.AddRange(response.Items);
+			}
+			return records;
+		}
+
 		public static async Task ListBatchedWithFacetsAsync<T>(Func<(string Key, object Value), Task<ListPageWithFacets<T>>> processPage)
 			=> await ListBatchedAsync(async filter => DropFacets(await processPage(filter)));
 
 		public static async Task<List<T>> ListAllWithFacetsAsync<T>(Func<int, (string Key, object Value), Task<ListPageWithFacets<T>>> listFunc)
 			=> await ListAllAsync(async (page, filter) => DropFacets(await listFunc(page, filter)));
 
+		public static async Task<List<T>> ListByIDWithFacetsAsync<T>(List<string> ids, Func<string, Task<ListPageWithFacets<T>>> listFunc)
+			=> await ListByIDAsync(ids, async filterValue => DropFacets(await listFunc(filterValue)));
+
 		/// <summary>
-		/// Helper for converting ListPageWithFacets to ListPage. Loses facet data.
+		/// Helper for converting ListPageWithFacets to ListPage. Drops facet data.
 		/// </summary>
 		private static ListPage<T> DropFacets<T>(ListPageWithFacets<T> page) => new ListPage<T>()
 		{

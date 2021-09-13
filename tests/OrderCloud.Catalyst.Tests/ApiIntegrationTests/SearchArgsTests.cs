@@ -37,7 +37,7 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task search_type_should_throw_error_if_not_valid(string randomString)
 		{
 			var response = await QuerySearchArgsRoute($"searchType={randomString}");
-			response.ShouldHaveFirstApiError("InvalidRequest", 400, "searchType must be one of: AnyTerm, AllTermsAnyField, AllTermsSameField, ExactPhrase, ExactPhrasePrefix");
+			await response.ShouldHaveFirstApiError("InvalidRequest", 400, "searchType must be one of: AnyTerm, AllTermsAnyField, AllTermsSameField, ExactPhrase, ExactPhrasePrefix");
 		}
 	}
 }

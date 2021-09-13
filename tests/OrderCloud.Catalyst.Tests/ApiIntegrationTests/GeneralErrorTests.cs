@@ -14,14 +14,14 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task not_found_error()
 		{
 			var result = await TestFramework.Client.Request("demo/notfound").GetAsync();
-			result.ShouldHaveFirstApiError("NotFound", 404, "Not found.");
+			await result.ShouldHaveFirstApiError("NotFound", 404, "Not found.");
 		}
 
 		[Test]
 		public async Task internal_server_error()
 		{
 			var result = await TestFramework.Client.Request("demo/internalerror").GetAsync();
-			result.ShouldHaveFirstApiError("InternalServerError", 500, "Unknown error has occured.");
+			await result.ShouldHaveFirstApiError("InternalServerError", 500, "Unknown error has occured.");
 		}
 
         [Test]

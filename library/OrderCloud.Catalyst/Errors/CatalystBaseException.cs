@@ -44,5 +44,17 @@ namespace OrderCloud.Catalyst
 				}
 			};
 		}
+
+		public CatalystBaseException(ErrorCode errorCode, object data = null)
+		{
+			HttpStatus = errorCode.HttpStatus;
+			Errors = new[] {
+				new ApiError {
+					ErrorCode = errorCode.Code,
+					Message = errorCode.DefaultMessage,
+					Data = data
+				}
+			};
+		}
 	}
 }

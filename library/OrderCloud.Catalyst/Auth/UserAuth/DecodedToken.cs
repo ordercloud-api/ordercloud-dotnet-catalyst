@@ -84,7 +84,7 @@ namespace OrderCloud.Catalyst
 			ApiUrl = lookup["aud"].FirstOrDefault();
 			var type = lookup["usrtype"].FirstOrDefault();
 			CommerceRole = GetCommerceRole(type);
-			ClientID = lookup["cid"].FirstOrDefault() ?? throw new ArgumentNullException("Token must contain \"cid\" claim");
+			ClientID = lookup["cid"].FirstOrDefault();
 			ExpiresUTC = UnixToUTCDateTime(lookup["exp"].FirstOrDefault()) ?? throw new ArgumentNullException("Token must contain \"exp\" claim");
 			NotValidBeforeUTC = UnixToUTCDateTime(lookup["nbf"].FirstOrDefault()) ?? throw new ArgumentNullException("Token must contain \"nbf\" claim"); ;
 			UserDatabaseID = lookup["u"].FirstOrDefault() ?? lookup["uid"].FirstOrDefault();

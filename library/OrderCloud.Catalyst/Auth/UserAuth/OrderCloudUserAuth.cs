@@ -29,16 +29,18 @@ namespace OrderCloud.Catalyst
 		public OrderCloudUserAuthAttribute(params ApiRole[] roles)
 		{
 			AuthenticationSchemes = "OrderCloudUser";
-			if (roles.Any())
-				Roles = string.Join(",", roles);
+			var rolesList = roles.ToList();
+			rolesList.Add(ApiRole.FullAccess); 
+			Roles = string.Join(",", rolesList);
 		}
 
 		/// <param name="roles">Optional list of roles. If provided, user must have just one of them, otherwise authorization fails.</param>
 		public OrderCloudUserAuthAttribute(params string[] roles)
 		{
 			AuthenticationSchemes = "OrderCloudUser";
-			if (roles.Any())
-				Roles = string.Join(",", roles);
+			var rolesList = roles.ToList();
+			rolesList.Add("FullAccess");
+			Roles = string.Join(",", rolesList);
 		}
 	}
 

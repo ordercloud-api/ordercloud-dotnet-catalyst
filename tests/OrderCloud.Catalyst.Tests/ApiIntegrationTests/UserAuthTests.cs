@@ -67,6 +67,19 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
+		public async Task should_succeed_with_with_full_access()
+		{
+			var token = FakeOrderCloudToken.Create("mYcLiEnTiD", new List<string> { "FullAccess" });
+			var request = TestFramework.Client
+				.WithOAuthBearerToken(token)
+				.Request("demo/admin");
+
+			var result = await request.GetStringAsync();
+
+			result.Should().Be("\"hello admin!\"");
+		}
+
+		[Test]
 		public async Task should_error_without_custom_role()
 		{
 			var token = FakeOrderCloudToken.Create("mYcLiEnTiD");
@@ -136,16 +149,16 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
-		public async Task should_deny_access_if_no_client_id()
+		public async Task should_allow_access_if_no_client_id()
 		{
 			var token = FakeOrderCloudToken.Create(null, new List<string> { "Shopper" });
 
-			var resp = await TestFramework.Client
+			var result = await TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/shop")
-				.GetAsync();
+				.GetStringAsync();
 
-			await resp.ShouldHaveFirstApiError("InvalidToken", 401, "Access token is invalid or expired.");
+			result.Should().Be("\"hello shopper!\"");
 		}
 
 		[Test]

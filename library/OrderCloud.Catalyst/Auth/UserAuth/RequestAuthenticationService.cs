@@ -79,10 +79,9 @@ namespace OrderCloud.Catalyst
 		{
 			Require.That(!string.IsNullOrEmpty(token), new UnAuthorizedException());
 
-
 			var decodedToken = new DecodedToken(token);
 
-			Require.That(decodedToken.ClientID != null && decodedToken.NotValidBeforeUTC < DateTime.UtcNow && decodedToken.ExpiresUTC > DateTime.UtcNow,
+			Require.That(decodedToken.NotValidBeforeUTC < DateTime.UtcNow && decodedToken.ExpiresUTC > DateTime.UtcNow,
 				new UnAuthorizedException());
 
 			// we've validated the token as much as we can on this end, go make sure it's ok on OC	
@@ -106,7 +105,6 @@ namespace OrderCloud.Catalyst
 					UserTypesThatCanAccess = allowedUserTypes?.Select(x => x.ToString())?.ToList()
 				})
 			);
-
 
 			Require.That(requiredRoles == null || requiredRoles.Count == 0 || requiredRoles.Any(role => decodedToken.Roles.Contains(role)),
 				new InsufficientRolesException(new InsufficientRolesError()

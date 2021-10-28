@@ -96,6 +96,17 @@ namespace OrderCloud.Catalyst
 				isValid = await VerifyTokenWithKeyID(decodedToken);
 			}
 
+			if (!isValid)
+			{
+				Require.That(decodedToken.ApiUrl == _oc?.Config?.ApiUrl, 
+					new WrongEnvironmentException(new WrongEnvironmentError()
+					{
+						ExpectedEnvironment = _oc?.Config?.ApiUrl,
+						TokenIssuerEnvironment = decodedToken.ApiUrl
+					}
+				));
+			}
+
 			Require.That(isValid, new UnAuthorizedException());
 
 			Require.That(allowedUserTypes.IsNullOrEmpty() || allowedUserTypes.Contains(decodedToken.CommerceRole),
@@ -203,12 +214,12 @@ namespace OrderCloud.Catalyst
 			{
 				try
 				{
-					var meUser = await _oc.Me.GetAsync();
+					var meUser = await _oc.Me.GetAsync(jwt.AccessToken);
 					return meUser != null && meUser.Active;
 				}
 				catch (OrderCloudException ex)
 				{
-					throw ex;
+					return false;
 				}
 				catch (Exception ex)
 				{

@@ -107,7 +107,6 @@ namespace OrderCloud.Catalyst.Tests
 			Assert.AreEqual(username, result.Username);
 			Assert.AreEqual(clientID, result.TokenClientID);
 			Assert.AreEqual("Shopper", result.AvailableRoles[0]);
-
 		}
 
 		[Test]
@@ -179,6 +178,28 @@ namespace OrderCloud.Catalyst.Tests
 				.GetAsync();
 
 			await resp.ShouldHaveFirstApiError("InvalidToken", 401, "Access token is invalid or expired.");
+		}
+
+		[Test]
+		public async Task should_have_specific_error_for_wrong_env()
+		{
+			var fixture = new Fixture();
+
+			var token = FakeOrderCloudToken.Create(
+				clientID: fixture.Create<string>(),
+				apiUrl: "https://api.ordercloud.io"
+			);
+
+			var request =  TestFramework.Client
+				.WithOAuthBearerToken(token)
+				.Request("demo/anybody");
+
+			// Auth validation fails
+			TestStartup.oc.Me.GetAsync(Arg.Any<string>()).Returns<MeUser>(x => { throw new Exception(); });
+
+			var response = await request.GetAsync();
+
+			await response.ShouldHaveFirstApiError("InvalidToken", 401, "Environment mismatch. Token gives access to https://api.ordercloud.io while this API expects ");
 		}
 
 		[Test]

@@ -53,6 +53,18 @@ namespace OrderCloud.Catalyst
 		public UserContextException(string message) : base("UserContextError", message, null, 400) { }
 	}
 
+	public class WrongEnvironmentException : CatalystBaseException
+	{
+		public WrongEnvironmentException(WrongEnvironmentError data) : base("InvalidToken", $"Environment mismatch. Token gives access to {data.TokenIssuerEnvironment} while this API expects {data.ExpectedEnvironment}", data, 401) { }
+	}
+
+	public class WrongEnvironmentError
+	{
+		public string TokenIssuerEnvironment { get; set; }
+		public string ExpectedEnvironment { get; set; }
+
+	}
+
 	public class InsufficientRolesError
 	{
 		public IList<string> SufficientRoles { get; set; }

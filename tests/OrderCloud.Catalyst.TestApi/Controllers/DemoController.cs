@@ -79,6 +79,12 @@ namespace OrderCloud.Catalyst.TestApi
 			return list;
 		}
 
+		[HttpGet("deserializationerror/{message}/{innerMessage}")]
+		public object ThrowOCDeserializationError(string message, string innerMessage)
+		{
+			throw new OrderCloudException(message, new Exception(message, new Exception(innerMessage)));
+		}
+
 		[HttpGet("usercontext"), OrderCloudUserAuth]
 		public SimplifiedUser Username()
 		{

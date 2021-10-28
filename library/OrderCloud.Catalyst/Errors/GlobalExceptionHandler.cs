@@ -30,28 +30,48 @@ namespace OrderCloud.Catalyst
 
         private static Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
-            const HttpStatusCode code = HttpStatusCode.InternalServerError; // 500 if unexpected
-            context.Response.ContentType = "application/json";
+            IList<ApiError> body;
+            int status = (int) HttpStatusCode.InternalServerError; // 500 if unexpected
 
-            switch (ex)
+			switch (ex)
             {
                 case CatalystBaseException intException:
-                    context.Response.StatusCode = intException.HttpStatus;
-                    return context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorList(intException.Errors)));
+                    status = intException.HttpStatus;
+                    body = intException.Errors;
+                    break;
                 case OrderCloudException ocException:
-                    context.Response.StatusCode = (int)ocException.HttpStatus;
-                    return context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorList(ocException.Errors)));
+                    var isClientSerializationError = ocException.Errors == null;
+					if (isClientSerializationError) // 500 error with interal error message, this is a bug in the client API
+					{
+                        body = new List<ApiError>() {
+                            new ApiError() {
+                                Data = ocException.InnerException.InnerException.Message, // "Response could not be deserialized...."
+                                ErrorCode = "OrderCloudSDKDeserializationError",
+                                Message = ocException.Message // Specific path and value of error
+                            }
+                        };
+					}
+					else // forward status code and errors from OrderCloud API
+					{
+						status = (int) ocException.HttpStatus;
+						body = ocException.Errors;
+					}
+                    break;
+                default:
+                    // this is only to be hit IF it's not handled properly in the stack. It's considered a bug if ever hits this. that's why it's a 500
+                    body = new List<ApiError>() {
+                        new ApiError() {
+                            Data = ex.Message,
+                            ErrorCode = "InternalServerError",
+                            Message = $"Unknown error has occured."
+                        }
+                    };
+                    break;
             }
 
-            // this is only to be hit IF it's not handled properly in the stack. It's considered a bug if ever hits this. that's why it's a 500
-            var result = JsonConvert.SerializeObject(new ErrorList( new List<ApiError>() { new ApiError()
-            {
-                Data = ex.Message,
-                ErrorCode = code.ToString(),
-                Message = $"Unknown error has occured."
-            } } ));
-            context.Response.StatusCode = (int)code;
-            return context.Response.WriteAsync(result);
+            context.Response.StatusCode = status;
+            context.Response.ContentType = "application/json";
+            return context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorList(body)));
         }
     }
 

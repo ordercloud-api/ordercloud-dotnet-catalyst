@@ -1,4 +1,5 @@
-﻿using AutoFixture.NUnit3;
+﻿using AutoFixture;
+using AutoFixture.NUnit3;
 using Flurl.Http;
 using NUnit.Framework;
 using OrderCloud.SDK;
@@ -24,7 +25,21 @@ namespace OrderCloud.Catalyst.Tests
 			await result.ShouldHaveFirstApiError("InternalServerError", 500, "Unknown error has occured.");
 		}
 
-        [Test]
+		[Test]
+		public async Task ordercloud_deserialization_error()
+		{
+			var fixture = new Fixture();
+			var m1 = fixture.Create<string>();
+			var m2 = fixture.Create<string>();
+			var response = await TestFramework.Client.Request($"demo/deserializationerror/{m1}/{m2}").GetAsync();
+			Assert.AreEqual(500, response.StatusCode);
+			var json = await response.GetJsonAsync();
+			Assert.AreEqual("OrderCloudSDKDeserializationError", json.Errors[0].ErrorCode);
+			Assert.AreEqual(m1, json.Errors[0].Message);
+			Assert.AreEqual(m2, json.Errors[0].Data);
+		}
+
+		[Test]
         [AutoData]
         public void catalsyst_exception_should_have_message(ApiError error)
         {

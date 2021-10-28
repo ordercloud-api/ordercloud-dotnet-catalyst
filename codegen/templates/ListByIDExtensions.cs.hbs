@@ -12,7 +12,7 @@ namespace OrderCloud.Catalyst
         private const int PAGE_ONE = ListAllHelper.PAGE_ONE;
 
         {{#resources}}{{#with this as | resource |}}{{#operations}}{{#with this as | operation |}}{{#if isList}}       
-        public static async Task<List<{{operation.returnType}}>> {{operation.listByIDName}}Async(this I{{resource.id}}Resource resource, List<string> ids, {{#listByIDParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listByIDParams}}string accessToken = null) 
+        public static async Task<List<{{operation.returnType}}>> {{operation.listByIDName}}Async(this I{{resource.id}}Resource resource, IEnumerable<string> ids, {{#listByIDParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listByIDParams}}string accessToken = null) 
         {
             return await ListAllHelper.{{#if isFacetList}}ListByIDWithFacetsAsync{{else}}ListByIDAsync{{/if}}(ids, (filterValue) =>
 			{
@@ -20,7 +20,7 @@ namespace OrderCloud.Catalyst
 			});
         }   
     
-        {{#if operation.hasXP}}public static async Task<List<T>> {{operation.listByIDName}}Async<T>(this I{{resource.id}}Resource resource, List<string> ids, {{#listByIDParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listByIDParams}}string accessToken = null) 
+        {{#if operation.hasXP}}public static async Task<List<T>> {{operation.listByIDName}}Async<T>(this I{{resource.id}}Resource resource, IEnumerable<string> ids, {{#listByIDParams}}{{type}} {{name}}{{#unless isRequired}} = null{{/unless}}, {{/listByIDParams}}string accessToken = null) 
             where T : {{operation.returnType}}
         {
             return await ListAllHelper.{{#if isFacetList}}ListByIDWithFacetsAsync{{else}}ListByIDAsync{{/if}}(ids, (filterValue) =>

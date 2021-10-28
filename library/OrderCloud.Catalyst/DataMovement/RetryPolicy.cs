@@ -1,6 +1,7 @@
 ﻿using Flurl.Http;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst
@@ -16,9 +17,9 @@ namespace OrderCloud.Catalyst
 		/// Stores info about how many retries to attempt and how long to pause before each.
 		/// <param name="retryBackoffScheduleInMS">A list with an entry for each retry attempt. Value is the pause time in milliseconds.</param>
 		/// </summary>	
-		public RetryPolicy(List<int> retryBackoffScheduleInMS)
+		public RetryPolicy(IEnumerable<int> retryBackoffScheduleInMS)
 		{
-			_retryBackoffScheduleInMS = retryBackoffScheduleInMS;
+			_retryBackoffScheduleInMS = retryBackoffScheduleInMS.ToList();
 		}
 
 		/// <summary>

@@ -18,14 +18,14 @@ namespace OrderCloud.Catalyst
 		public const int PAGE_ONE = 1;
 		public const int MAX_PAGE_SIZE = 100;
 		// Always sort by ID to enable id-filter paging technique 
-		public const string SORT_BY = "ID";
+		public const string SORT_BY_ID = "ID";
 		// Only relevant to the concurrent paging technique
 		public const int MAX_NUM_PARALLEL_REQUESTS = 16;
 		// For record sizes above 300 (30 pages), use last ID filter paging. Below 30 pages, use the page parameter concurrently. 
 		public const int PAGE_THRESHOLD_FOR_PAGING_TECHNIQUE = 30;
 		// Will be ignored by the SDK and have no effect on the request because Value is null;
 		public static (string Key, object Value) IGNORED_FILTER => ("ID", null);
-		public static RetryPolicy RetryPolicy = new RetryPolicy(new List<int> { 0, 1000, 2000, 4000 });
+		public static RetryPolicy RETRY_POLICY = new RetryPolicy(new [] { 0, 1000, 2000, 4000 });
 
 		// Technically, OrderCloud can field requests successfully with up to 2086 chars in the url. Some padding seemed safer though.
 		public const int MAX_CHARS_IN_URL = 2000;
@@ -71,7 +71,7 @@ namespace OrderCloud.Catalyst
 			var totalPages = 1; // placeholder until we get data
 			while (page <= totalPages)
 			{
-				var result = await RetryPolicy.RunWithRetries(() => processPage(page));
+				var result = await RETRY_POLICY.RunWithRetries(() => processPage(page));
 				totalPages = result.Meta.TotalPages;
 				page++;
 			}
@@ -83,7 +83,7 @@ namespace OrderCloud.Catalyst
 			var lastResponse = new ListPage<T> { Meta = new ListPageMeta() { TotalPages = 2 } }; // placeholder until we get data
 			while (lastResponse.Meta.TotalPages > 1)
 			{
-				lastResponse = await RetryPolicy.RunWithRetries(() => processPage(filter));
+				lastResponse = await RETRY_POLICY.RunWithRetries(() => processPage(filter));
 				var lastID = id.GetValue(lastResponse.Items.Last()) as string;
 				filter = ("ID", $">{lastID}");
 			}
@@ -96,7 +96,7 @@ namespace OrderCloud.Catalyst
 			var page = 2;
 			while (page <= totalPages)
 			{
-				var pageTask = RetryPolicy.RunWithRetries(() => listFunc(page++));
+				var pageTask = RETRY_POLICY.RunWithRetries(() => listFunc(page++));
 				pageTasks.Add(pageTask);
 				var running = pageTasks.Where(t => !t.IsCompleted && !t.IsFaulted).ToList();
 				if (!running.Any()) { continue; }
@@ -119,7 +119,7 @@ namespace OrderCloud.Catalyst
 			{
 				var lastID = id.GetValue(lastResponse.Items.Last()) as string;
 				var filter = ("ID", $">{lastID}");
-				lastResponse = await RetryPolicy.RunWithRetries(() => listFunc(filter));
+				lastResponse = await RETRY_POLICY.RunWithRetries(() => listFunc(filter));
 				toReturn.AddRange(lastResponse.Items);
 			}
 			return toReturn;
@@ -128,9 +128,9 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Get mulitple records by providing a list of IDs. Duplicates or Not Founds will be omitted from the results without error. 
 		/// </summary>
-		public static async Task<List<T>> ListByIDAsync<T>(List<string> ids, Func<string, Task<ListPage<T>>> listFunc)
+		public static async Task<List<T>> ListByIDAsync<T>(IEnumerable<string> ids, Func<string, Task<ListPage<T>>> listFunc)
 		{
-			if (ids.Count == 0) { return new List<T>(); }
+			if (!ids.Any()) { return new List<T>(); }
 			var records = new List<T>();
 			// We must break the request into chunks to avoid putting too many chars in a url.
 			var idChunks = new List<List<string>> { new List<string> { } };
@@ -157,7 +157,7 @@ namespace OrderCloud.Catalyst
 			foreach (var idChunk in idChunks)
 			{
 				var filterValue = string.Join("|", idChunk);
-				var response = await RetryPolicy.RunWithRetries(() =>
+				var response = await RETRY_POLICY.RunWithRetries(() =>
 				{
 					return listFunc(filterValue);
 				});
@@ -172,7 +172,7 @@ namespace OrderCloud.Catalyst
 		public static async Task<List<T>> ListAllWithFacetsAsync<T>(Func<int, (string Key, object Value), Task<ListPageWithFacets<T>>> listFunc)
 			=> await ListAllAsync(async (page, filter) => DropFacets(await listFunc(page, filter)));
 
-		public static async Task<List<T>> ListByIDWithFacetsAsync<T>(List<string> ids, Func<string, Task<ListPageWithFacets<T>>> listFunc)
+		public static async Task<List<T>> ListByIDWithFacetsAsync<T>(IEnumerable<string> ids, Func<string, Task<ListPageWithFacets<T>>> listFunc)
 			=> await ListByIDAsync(ids, async filterValue => DropFacets(await listFunc(filterValue)));
 
 		/// <summary>

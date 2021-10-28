@@ -172,6 +172,14 @@ namespace OrderCloud.Catalyst.Tests
 			}}}
 		};
 
+		[Test]
+		public void ToFilterString_should_return_empty_string_if_no_filters()
+		{
+			var args = new ListArgs<ExampleModel>();
+			Assert.AreEqual("", args.ToFilterString());
+		}
+
+
 		[TestCaseSource(nameof(FilterCases))]
 		public async Task filters_should_deserialize(string query, List<ListFilter> expectedFilters)
 		{

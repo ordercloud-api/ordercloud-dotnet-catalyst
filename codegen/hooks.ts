@@ -7,6 +7,8 @@ import {
 
 
 const postFormatOperation: PostFormatOperationHook = function(operation: Operation) {
+  var canSortByID = operation.allParams.find(p => p.name === "sortBy")?.enumValues?.includes("ID");
+
   var notValidListAllParams = ["searchType", "search", "searchOn", "sortBy", "page", "pageSize", "accessToken"];
   var notValidListByIDParams = ["searchType", "search", "searchOn", "sortBy", "page", "pageSize", "filters", "accessToken"];
   var listArgsParams = ["searchType", "search", "searchOn", "sortBy", "page", "pageSize", "filters", "accessToken"];
@@ -24,7 +26,7 @@ const postFormatOperation: PostFormatOperationHook = function(operation: Operati
   var listAllParamMapping = {
     search: "null",
     searchOn: "null",
-    sortBy: "SORT_BY",
+    sortBy: canSortByID ? "SORT_BY_ID": "null",
     pageSize: "MAX_PAGE_SIZE",
     filters: "filters.AndFilter(filter)",
     searchType: "SearchType.AnyTerm"
@@ -43,7 +45,7 @@ const postFormatOperation: PostFormatOperationHook = function(operation: Operati
   var listAllBatchedParamMapping = {
     search: "null",
     searchOn: "null",
-    sortBy: "SORT_BY",
+    sortBy: canSortByID ? "SORT_BY_ID": "null",
     filters: "filters.AndFilter(filter)",
     page: "PAGE_ONE",
     pageSize: "MAX_PAGE_SIZE",

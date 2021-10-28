@@ -1,5 +1,6 @@
 var postFormatOperation = function (operation) {
-    var _a;
+    var _a, _b, _c;
+    var canSortByID = (_b = (_a = operation.allParams.find(function (p) { return p.name === "sortBy"; })) === null || _a === void 0 ? void 0 : _a.enumValues) === null || _b === void 0 ? void 0 : _b.includes("ID");
     var notValidListAllParams = ["searchType", "search", "searchOn", "sortBy", "page", "pageSize", "accessToken"];
     var notValidListByIDParams = ["searchType", "search", "searchOn", "sortBy", "page", "pageSize", "filters", "accessToken"];
     var listArgsParams = ["searchType", "search", "searchOn", "sortBy", "page", "pageSize", "filters", "accessToken"];
@@ -15,7 +16,7 @@ var postFormatOperation = function (operation) {
     var listAllParamMapping = {
         search: "null",
         searchOn: "null",
-        sortBy: "SORT_BY",
+        sortBy: canSortByID ? "SORT_BY_ID" : "null",
         pageSize: "MAX_PAGE_SIZE",
         filters: "filters.AndFilter(filter)",
         searchType: "SearchType.AnyTerm"
@@ -32,7 +33,7 @@ var postFormatOperation = function (operation) {
     var listAllBatchedParamMapping = {
         search: "null",
         searchOn: "null",
-        sortBy: "SORT_BY",
+        sortBy: canSortByID ? "SORT_BY_ID" : "null",
         filters: "filters.AndFilter(filter)",
         page: "PAGE_ONE",
         pageSize: "MAX_PAGE_SIZE",
@@ -48,7 +49,7 @@ var postFormatOperation = function (operation) {
     operation["listAllParams"] = operation.allParams.filter(function (param) { return !notValidListAllParams.includes(param.name); });
     operation["listByIDParams"] = operation.allParams.filter(function (param) { return !notValidListByIDParams.includes(param.name); });
     operation["listArgsParams"] = operation.allParams.filter(function (param) { return !listArgsParams.includes(param.name); });
-    operation["hasXP"] = !operation.name.includes("Assignment") && !["ImpersonationConfig", "OpenIdConnect", "Incrementor", "SecurityProfile", "XpIndex", "Webhook", "IntegrationEvent", "SupplierBuyer", "BuyerSupplier"].includes((_a = operation.returnType) !== null && _a !== void 0 ? _a : "");
+    operation["hasXP"] = !operation.name.includes("Assignment") && !["ImpersonationConfig", "OpenIdConnect", "Incrementor", "SecurityProfile", "XpIndex", "Webhook", "IntegrationEvent", "SupplierBuyer", "BuyerSupplier"].includes((_c = operation.returnType) !== null && _c !== void 0 ? _c : "");
     operation.allParams.forEach(function (param) {
         var _a, _b, _c, _d, _e;
         param["listAllValue"] = (_a = listAllParamMapping[param.name]) !== null && _a !== void 0 ? _a : param.name;

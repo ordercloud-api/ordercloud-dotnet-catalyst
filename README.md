@@ -96,16 +96,14 @@ var carOwners = await Throttler.RunAsync(cars, minPause, maxConcurency, car => a
 Handle API errors, including unexpected ones, with a standard JSON response structure. Define your own errors.
 
 ```c#
-public class SupplierOnlyException : CatalystBaseException
+public class AgeLimit21Exception : CatalystBaseException
 {
-    public SupplierOnlyException() : base("SupplierOnly", 403, "Only Supplier users may perform this action.") { }
+    public AgeLimit21Exception() : base("AgeLimit21", 403, "You must be 21 years of age or older to buy this product.") { }
 }
 
 ....
 
-if (UserContext.CommerceRole != UserContext.Supplier) {
-    throw new SupplierOnlyException();
-}
+Require.That(user.xp.Age >= 21, new AgeLimit21Exception());
 ```
 
 ### [Model Validation](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/tests/OrderCloud.Catalyst.TestApi/Controllers/ModelValidation)

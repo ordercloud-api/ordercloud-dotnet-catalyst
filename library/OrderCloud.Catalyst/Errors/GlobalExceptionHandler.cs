@@ -23,6 +23,7 @@ namespace OrderCloud.Catalyst
                 catch (Exception ex)
                 {
                     await HandleExceptionAsync(context, ex);
+                    throw;
                 }
             });
             return builder;

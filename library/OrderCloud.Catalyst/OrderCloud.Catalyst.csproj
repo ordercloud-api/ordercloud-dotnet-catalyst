@@ -7,7 +7,7 @@
     <PackageId>ordercloud-dotnet-catalyst</PackageId>
     <Title>OrderCloud SDK Extensions for Azure App Services</Title>
     <Authors>Oliver Heywood</Authors>
-    <Description>Extensions and helpers for building ASP.NET Core 3.1 API apps and WebJobs, typically hosted in Azure App Services, that integrate with the OrderCloud.io e-commerce platform.</Description>
+    <Description>Extensions and helpers for building .NET APIs and Serverless Functions, typically hosted in Azure App Services, that integrate with the OrderCloud.io e-commerce platform.</Description>
     <Copyright>Copyright 2021 Four51, Inc.</Copyright>
     <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
     <PackageIconUrl></PackageIconUrl>

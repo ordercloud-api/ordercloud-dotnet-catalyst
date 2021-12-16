@@ -41,12 +41,12 @@ namespace OrderCloud.Catalyst
                     body = intException.Errors;
                     break;
                 case OrderCloudException ocException:
-                    var isClientSerializationError = ocException.Errors == null;
+                    var isClientSerializationError = ocException?.Errors == null;
 					if (isClientSerializationError) // 500 error with interal error message, this is a bug in the client API
 					{
                         body = new List<ApiError>() {
                             new ApiError() {
-                                Data = ocException.InnerException.InnerException.Message, // "Response could not be deserialized...."
+                                Data = ocException?.InnerException?.InnerException?.Message, // "Response could not be deserialized...."
                                 ErrorCode = "OrderCloudSDKDeserializationError",
                                 Message = ocException.Message // Specific path and value of error
                             }

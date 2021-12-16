@@ -52,8 +52,8 @@ namespace OrderCloud.Catalyst.Auth.UserAuth
 				issuer: authUrl ?? "mockdomain.com",
 				audience: apiUrl ?? "mockdomain.com",
 				claims: claims,
-				expires: expiresUTC ?? DateTime.UtcNow.AddMinutes(30),
-				notBefore: notValidBeforeUTC ?? DateTime.UtcNow
+				expires: expiresUTC ?? DateTime.Now.AddMinutes(30),
+				notBefore: notValidBeforeUTC ?? DateTime.Now
 			);
 
 			var token = new JwtSecurityToken(header, payload);

@@ -234,7 +234,8 @@ namespace OrderCloud.Catalyst.Tests
 			var token = FakeOrderCloudToken.Create(
 				clientID: fixture.Create<string>(),
 				roles: new List<string> { "Shopper" },
-				expiresUTC: DateTime.UtcNow - TimeSpan.FromHours(1)
+				expiresUTC: DateTime.UtcNow,
+				notValidBeforeUTC: DateTime.UtcNow - TimeSpan.FromHours(1)
 			);
 
 			var resp = await TestFramework.Client

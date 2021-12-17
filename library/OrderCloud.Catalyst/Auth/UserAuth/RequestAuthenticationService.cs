@@ -219,7 +219,7 @@ namespace OrderCloud.Catalyst
 				}
 				catch (OrderCloudException ex)
 				{
-					return false;
+					throw ex;
 				}
 				catch (Exception ex)
 				{

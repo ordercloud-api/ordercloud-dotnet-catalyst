@@ -258,9 +258,10 @@ namespace OrderCloud.Catalyst.Tests
 			var fixture = new Fixture();
 			var errorCode = fixture.Create<string>();
 			var message = fixture.Create<string>();
+			var clientID = fixture.Create<string>();
 
 			var keyID = useKid ? "something" : null;
-			var token = FakeOrderCloudToken.Create("mYcLiEnTiD", new List<string> { "Shopper" }, keyID: keyID); // token has the role
+			var token = FakeOrderCloudToken.Create(clientID, new List<string> { "Shopper" }, keyID: keyID); // token has the role
 
 			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)

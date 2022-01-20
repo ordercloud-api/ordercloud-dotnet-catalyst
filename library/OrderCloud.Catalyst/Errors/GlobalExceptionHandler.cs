@@ -12,7 +12,7 @@ namespace OrderCloud.Catalyst
 {
     public static class GlobalExceptionHandler
     {
-        public static IApplicationBuilder UseCatalystExceptionHandler(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseCatalystExceptionHandler(this IApplicationBuilder builder, bool reThrowError = true)
         {
             builder.Use(async (context, next) =>
             {
@@ -23,7 +23,10 @@ namespace OrderCloud.Catalyst
                 catch (Exception ex)
                 {
                     await HandleExceptionAsync(context, ex);
-                    throw;
+                    if (reThrowError)
+                    {
+                        throw;
+                    }
                 }
             });
             return builder;

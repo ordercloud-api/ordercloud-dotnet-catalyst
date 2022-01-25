@@ -197,6 +197,26 @@ namespace OrderCloud.Catalyst
     
         
                
+        public static async Task<List<Locale>> ListByIDAsync(this ILocalesResource resource, IEnumerable<string> ids, string accessToken = null) 
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListAsync(null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }   
+    
+        
+               
+        public static async Task<List<LocaleAssignment>> ListAssignmentsByIDAsync(this ILocalesResource resource, IEnumerable<string> ids, string buyerID = null, string localeID = null, string userID = null, string userGroupID = null, PartyType? level = null, string accessToken = null) 
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListAssignmentsAsync(buyerID, localeID, userID, userGroupID, level, PAGE_ONE, MAX_PAGE_SIZE, accessToken);
+			});
+        }   
+    
+        
+               
         public static async Task<List<Webhook>> ListByIDAsync(this IWebhooksResource resource, IEnumerable<string> ids, string accessToken = null) 
         {
             return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
@@ -233,6 +253,16 @@ namespace OrderCloud.Catalyst
 				return resource.ListAsync<T>(null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
 			});
         }
+               
+        public static async Task<List<BuyerSupplier>> ListBuyerSellersByIDAsync(this IBuyersResource resource, IEnumerable<string> ids, string buyerID, string accessToken = null) 
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListBuyerSellersAsync(buyerID, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }   
+    
+        
                
         public static async Task<List<User>> ListByIDAsync(this IUsersResource resource, IEnumerable<string> ids, string buyerID, string userGroupID = null, string accessToken = null) 
         {
@@ -721,11 +751,45 @@ namespace OrderCloud.Catalyst
 			});
         }
                
+        public static async Task<List<InventoryRecord>> ListByIDAsync(this IInventoryRecordsResource resource, IEnumerable<string> ids, string productID, string accessToken = null) 
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListAsync(productID, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListByIDAsync<T>(this IInventoryRecordsResource resource, IEnumerable<string> ids, string productID, string accessToken = null) 
+            where T : InventoryRecord
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListAsync<T>(productID, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }
+               
+        public static async Task<List<InventoryRecord>> ListVariantByIDAsync(this IInventoryRecordsResource resource, IEnumerable<string> ids, string productID, string variantID, string accessToken = null) 
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListVariantAsync(productID, variantID, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListVariantByIDAsync<T>(this IInventoryRecordsResource resource, IEnumerable<string> ids, string productID, string variantID, string accessToken = null) 
+            where T : InventoryRecord
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListVariantAsync<T>(productID, variantID, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }
+               
         public static async Task<List<Order>> ListByIDAsync(this IOrdersResource resource, IEnumerable<string> ids, OrderDirection direction, string buyerID = null, string supplierID = null, DateTimeOffset? from = null, DateTimeOffset? to = null, string accessToken = null) 
         {
             return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
 			{
-				return resource.ListAsync(direction, buyerID, supplierID, from, to, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+				return resource.ListAsync(direction, buyerID, supplierID, from, to, null, null, SearchType.AnyTerm, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
 			});
         }   
     
@@ -734,7 +798,7 @@ namespace OrderCloud.Catalyst
         {
             return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
 			{
-				return resource.ListAsync<T>(direction, buyerID, supplierID, from, to, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+				return resource.ListAsync<T>(direction, buyerID, supplierID, from, to, null, null, SearchType.AnyTerm, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
 			});
         }
                
@@ -990,7 +1054,7 @@ namespace OrderCloud.Catalyst
         {
             return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
 			{
-				return resource.ListOrdersAsync(from, to, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+				return resource.ListOrdersAsync(from, to, null, null, SearchType.AnyTerm, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
 			});
         }   
     
@@ -999,7 +1063,7 @@ namespace OrderCloud.Catalyst
         {
             return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
 			{
-				return resource.ListOrdersAsync<T>(from, to, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+				return resource.ListOrdersAsync<T>(from, to, null, null, SearchType.AnyTerm, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
 			});
         }
                

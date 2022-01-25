@@ -49,7 +49,8 @@ var postFormatOperation = function (operation) {
     operation["listAllParams"] = operation.allParams.filter(function (param) { return !notValidListAllParams.includes(param.name); });
     operation["listByIDParams"] = operation.allParams.filter(function (param) { return !notValidListByIDParams.includes(param.name); });
     operation["listArgsParams"] = operation.allParams.filter(function (param) { return !listArgsParams.includes(param.name); });
-    operation["hasXP"] = !operation.name.includes("Assignment") && !["ImpersonationConfig", "OpenIdConnect", "Incrementor", "SecurityProfile", "XpIndex", "Webhook", "IntegrationEvent", "SupplierBuyer", "BuyerSupplier"].includes((_c = operation.returnType) !== null && _c !== void 0 ? _c : "");
+    operation["hasXP"] = !operation.name.includes("Assignment") && !["ImpersonationConfig", "Locale", "OpenIdConnect", "Incrementor", "SecurityProfile", "XpIndex", "Webhook", "IntegrationEvent", "SupplierBuyer", "BuyerSupplier"].includes((_c = operation.returnType) !== null && _c !== void 0 ? _c : "");
+    operation["isAdvancedSearch"] = operation.allParams.some(function (param) { return param.name === "searchType"; });
     operation.allParams.forEach(function (param) {
         var _a, _b, _c, _d, _e;
         param["listAllValue"] = (_a = listAllParamMapping[param.name]) !== null && _a !== void 0 ? _a : param.name;

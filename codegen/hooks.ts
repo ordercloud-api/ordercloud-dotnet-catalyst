@@ -65,7 +65,9 @@ const postFormatOperation: PostFormatOperationHook = function(operation: Operati
   operation["listByIDParams"] = operation.allParams.filter(param => !notValidListByIDParams.includes(param.name))
   operation["listArgsParams"] = operation.allParams.filter(param => !listArgsParams.includes(param.name))
 
-  operation["hasXP"] = !operation.name.includes("Assignment") && !["ImpersonationConfig", "OpenIdConnect", "Incrementor", "SecurityProfile", "XpIndex", "Webhook", "IntegrationEvent", "SupplierBuyer", "BuyerSupplier"].includes(operation.returnType ?? "")
+  operation["hasXP"] = !operation.name.includes("Assignment") && !["ImpersonationConfig", "Locale", "OpenIdConnect", "Incrementor", "SecurityProfile", "XpIndex", "Webhook", "IntegrationEvent", "SupplierBuyer", "BuyerSupplier"].includes(operation.returnType ?? "")
+  operation["isAdvancedSearch"] = operation.allParams.some(param => param.name === "searchType");
+
 
   operation.allParams.forEach(param => {
     param["listAllValue"] = listAllParamMapping[param.name] ?? param.name

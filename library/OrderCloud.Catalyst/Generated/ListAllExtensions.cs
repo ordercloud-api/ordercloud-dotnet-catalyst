@@ -423,6 +423,50 @@ namespace OrderCloud.Catalyst
 
         
                
+        public static async Task<List<Locale>> ListAllAsync(this ILocalesResource resource, object filters = null, string accessToken = null) 
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListAsync(null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }   
+    
+        
+
+        public static async Task ListAllAsync(this ILocalesResource resource, Func<ListPage<Locale>, Task> action, object filters = null, string accessToken = null) 
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListAsync(null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+
+        
+               
+        public static async Task<List<LocaleAssignment>> ListAllAssignmentsAsync(this ILocalesResource resource, string buyerID = null, string localeID = null, string userID = null, string userGroupID = null, PartyType? level = null, string accessToken = null) 
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListAssignmentsAsync(buyerID, localeID, userID, userGroupID, level, page, MAX_PAGE_SIZE, accessToken);
+			});
+        }   
+    
+        
+
+        public static async Task ListAllAssignmentsAsync(this ILocalesResource resource, Func<ListPage<LocaleAssignment>, Task> action, string buyerID = null, string localeID = null, string userID = null, string userGroupID = null, PartyType? level = null, string accessToken = null) 
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListAssignmentsAsync(buyerID, localeID, userID, userGroupID, level, PAGE_ONE, MAX_PAGE_SIZE, accessToken);
+                await action(result);
+                return result;
+			});
+        }
+
+        
+               
         public static async Task<List<Webhook>> ListAllAsync(this IWebhooksResource resource, object filters = null, string accessToken = null) 
         {
             return await ListAllHelper.ListAllAsync((page, filter) =>
@@ -504,6 +548,28 @@ namespace OrderCloud.Catalyst
                 return result;
 			});
         }
+               
+        public static async Task<List<BuyerSupplier>> ListAllBuyerSellersAsync(this IBuyersResource resource, string buyerID, object filters = null, string accessToken = null) 
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListBuyerSellersAsync(buyerID, null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }   
+    
+        
+
+        public static async Task ListAllBuyerSellersAsync(this IBuyersResource resource, Func<ListPage<BuyerSupplier>, Task> action, string buyerID, object filters = null, string accessToken = null) 
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListBuyerSellersAsync(buyerID, null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+
+        
                
         public static async Task<List<User>> ListAllAsync(this IUsersResource resource, string buyerID, string userGroupID = null, object filters = null, string accessToken = null) 
         {
@@ -1589,11 +1655,87 @@ namespace OrderCloud.Catalyst
 			});
         }
                
+        public static async Task<List<InventoryRecord>> ListAllAsync(this IInventoryRecordsResource resource, string productID, object filters = null, string accessToken = null) 
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListAsync(productID, null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListAllAsync<T>(this IInventoryRecordsResource resource, string productID, object filters = null, string accessToken = null) 
+            where T : InventoryRecord
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListAsync<T>(productID, null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }
+
+        public static async Task ListAllAsync(this IInventoryRecordsResource resource, Func<ListPage<InventoryRecord>, Task> action, string productID, object filters = null, string accessToken = null) 
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListAsync(productID, null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+
+        public static async Task ListAllAsync<T>(this IInventoryRecordsResource resource, Func<ListPage<T>, Task> action, string productID, object filters = null, string accessToken = null) 
+            where T : InventoryRecord
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListAsync<T>(productID, null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+               
+        public static async Task<List<InventoryRecord>> ListAllVariantAsync(this IInventoryRecordsResource resource, string productID, string variantID, object filters = null, string accessToken = null) 
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListVariantAsync(productID, variantID, null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListAllVariantAsync<T>(this IInventoryRecordsResource resource, string productID, string variantID, object filters = null, string accessToken = null) 
+            where T : InventoryRecord
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListVariantAsync<T>(productID, variantID, null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }
+
+        public static async Task ListAllVariantAsync(this IInventoryRecordsResource resource, Func<ListPage<InventoryRecord>, Task> action, string productID, string variantID, object filters = null, string accessToken = null) 
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListVariantAsync(productID, variantID, null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+
+        public static async Task ListAllVariantAsync<T>(this IInventoryRecordsResource resource, Func<ListPage<T>, Task> action, string productID, string variantID, object filters = null, string accessToken = null) 
+            where T : InventoryRecord
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListVariantAsync<T>(productID, variantID, null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+               
         public static async Task<List<Order>> ListAllAsync(this IOrdersResource resource, OrderDirection direction, string buyerID = null, string supplierID = null, DateTimeOffset? from = null, DateTimeOffset? to = null, object filters = null, string accessToken = null) 
         {
             return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync(direction, buyerID, supplierID, from, to, null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync(direction, buyerID, supplierID, from, to, null, null, SearchType.AnyTerm, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
         }   
     
@@ -1602,7 +1744,7 @@ namespace OrderCloud.Catalyst
         {
             return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListAsync<T>(direction, buyerID, supplierID, from, to, null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListAsync<T>(direction, buyerID, supplierID, from, to, null, null, SearchType.AnyTerm, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
         }
 
@@ -1610,7 +1752,7 @@ namespace OrderCloud.Catalyst
         {
             await ListAllHelper.ListBatchedAsync(async (filter) =>
 			{
-				var result = await resource.ListAsync(direction, buyerID, supplierID, from, to, null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				var result = await resource.ListAsync(direction, buyerID, supplierID, from, to, null, null, SearchType.AnyTerm, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
                 await action(result);
                 return result;
 			});
@@ -1621,7 +1763,7 @@ namespace OrderCloud.Catalyst
         {
             await ListAllHelper.ListBatchedAsync(async (filter) =>
 			{
-				var result = await resource.ListAsync<T>(direction, buyerID, supplierID, from, to, null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				var result = await resource.ListAsync<T>(direction, buyerID, supplierID, from, to, null, null, SearchType.AnyTerm, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
                 await action(result);
                 return result;
 			});
@@ -2185,7 +2327,7 @@ namespace OrderCloud.Catalyst
         {
             return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListOrdersAsync(from, to, null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListOrdersAsync(from, to, null, null, SearchType.AnyTerm, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
         }   
     
@@ -2194,7 +2336,7 @@ namespace OrderCloud.Catalyst
         {
             return await ListAllHelper.ListAllAsync((page, filter) =>
 			{
-				return resource.ListOrdersAsync<T>(from, to, null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				return resource.ListOrdersAsync<T>(from, to, null, null, SearchType.AnyTerm, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
 			});
         }
 
@@ -2202,7 +2344,7 @@ namespace OrderCloud.Catalyst
         {
             await ListAllHelper.ListBatchedAsync(async (filter) =>
 			{
-				var result = await resource.ListOrdersAsync(from, to, null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				var result = await resource.ListOrdersAsync(from, to, null, null, SearchType.AnyTerm, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
                 await action(result);
                 return result;
 			});
@@ -2213,7 +2355,7 @@ namespace OrderCloud.Catalyst
         {
             await ListAllHelper.ListBatchedAsync(async (filter) =>
 			{
-				var result = await resource.ListOrdersAsync<T>(from, to, null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+				var result = await resource.ListOrdersAsync<T>(from, to, null, null, SearchType.AnyTerm, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
                 await action(result);
                 return result;
 			});

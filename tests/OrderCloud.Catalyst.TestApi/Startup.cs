@@ -97,5 +97,27 @@ namespace OrderCloud.Catalyst.TestApi
 			oc.Me.GetAsync(Arg.Any<string>()).Returns(new MeUser { Username = "joe", Active = true, AvailableRoles = new[] { "Shopper" } });
 			services.AddSingleton(oc);
 		}
+
+		public override void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		{
+			// Same as real Startup above except for UseCatalystExceptionHandler(false)
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+			}
+
+			app.UseCatalystExceptionHandler(false);
+			app.UseHttpsRedirection();
+			app.UseRouting();
+			app.UseCors("integrationcors");
+			app.UseAuthorization();
+			app.UseEndpoints(endpoints => endpoints.MapControllers());
+			app.UseSwagger();
+			app.UseSwaggerUI(c =>
+			{
+				c.SwaggerEndpoint($"/swagger/v1/swagger.json", $"Catalyst Test API v1");
+				c.RoutePrefix = string.Empty;
+			});
+		}
 	}
 }

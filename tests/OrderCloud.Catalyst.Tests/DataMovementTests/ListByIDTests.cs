@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Catalyst.Tests.DataMovementTests
+namespace OrderCloud.Catalyst.Tests
 {
 	[TestFixture]
 	public class ListByIDTests

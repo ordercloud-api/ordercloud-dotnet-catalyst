@@ -4,7 +4,7 @@ Guidelines for adding a new integration to the Catalyst library.
 
 ## Basics 
 
-Creating integrations as part of this .NET Catalyst project means that they will be delivered as a code library through a Nuget package. Each integration should expose functionality to interact with 1 external service and should not depend any other integrations. There is a tension between providing too little functionality (creating a generic API client) and too much (limiting future flexibility). The key to this balance is the methods of the contract your integration exposes.
+Creating integrations as part of this .NET Catalyst project means that they will be delivered as Nuget library. Each integration should expose functionality to interact with 1 external service and should not depend any other integrations. There is a tension between providing too little functionality (creating a generic API client) and too much (limiting future flexibility). The key to this balance is the methods of the contract your integration exposes.
 
 ## Exposed Contracts 
 

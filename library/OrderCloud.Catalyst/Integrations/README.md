@@ -40,7 +40,7 @@ Your integration will likely contain other public classes but these two mandator
 
 ## Interfaces 
 
-A key goal of these integrations is *interoperability*. In other words, if two services solve roughly the same problem (e.g. calculating tax), they should expose the same contract. To facilitate that, there are interfaces like [ITaxCalculator](./Interfaces/ITaxCalculator.cs). Please check under [/Integrations/Interfaces](./Interfaces) to see if any apply to your integration's problem domain. If some do, make sure your OCIntegrationCommand implements those interfaces.
+A key goal is *interoperability*. In other words, if two services solve roughly the same problem (e.g. calculating tax), they should expose the same contract. To facilitate that, there are interfaces like [ITaxCalculator](./Interfaces/ITaxCalculator.cs). Please check under [/Integrations/Interfaces](./Interfaces) to see if any apply to your integration's problem domain. If some do, make sure your OCIntegrationCommand implements those interfaces.
 
 Feel free open issues recommending changes or additions to the interfaces. 
 

@@ -35,18 +35,18 @@ public class MississippiOCIntegrationCommand : OCIntegrationCommand, IRiver
 }
 ```
 
-Your integration can contain other classes, even public ones, but these two manditory classes form the exposed surface of your integration - designed for use in other projects. 
+Your integration will likely contain other public classes but these two mandatory classes form the exposed surface of your integration - designed for use in other projects. 
 
 ## Interfaces 
 
-A key goal of these integrations is interopability. In other words, if two services solve roughly the same problem (e.g. calculating tax), they should expose the same contract. To facilitate that, there are interfaces like ITaxCalculator. Please check the existing interfaces and see if any apply to your integration's problem domain. If they do, make sure your OCIntegrationCommand implements those interfaces. Feel free open issues recommending changes to the interfaces. 
+A key goal of these integrations is interoperability. In other words, if two services solve roughly the same problem (e.g. calculating tax), they should expose the same contract. To facilitate that, there are interfaces like ITaxCalculator. Please check under /Integrations/Interfaces to see if any apply to your integration's problem domain. If they do, make sure your OCIntegrationCommand implements those interfaces. Feel free open issues recommending changes to the interfaces. 
 
 ## Other Guidelines
 
  - Keep the number of properties and methods on your exposed contracts to the minimum required. Do a small amount well. 
+ - Under the folder `/Integrations/Implementations` create a folder with your service name to contain your files. At the root of your new folder include your Command, Config and a README.md. Copy the README format of existing integrations.
  - Handle error scenarios within your integration by throwing a CatalystBaseException.
  - Avoid adding a nuget package for your service's SDK. This will lead to bloat as many projects may use this library without using your service. Instead, use the Flurl library for RESTful requests. This will also keep testing consistient. 
  - Write unit tests against the Command methods. Mock API reponses from your service using Flurl (https://flurl.dev/docs/testable-http/) or something simuliar. 
- - Please make sure to include a README.md file with your integration. It should match the format of the existing integrations.
  - When you want to make methods or properties `private`, consider using `protected` instead so that client projects can extend your functionality. 
- - Generally follow the folder structure and code patterns of existing integrations. 
+ - Aim to follow the code patterns of existing integrations. 

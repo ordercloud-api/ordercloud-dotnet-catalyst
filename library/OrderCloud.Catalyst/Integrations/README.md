@@ -26,7 +26,7 @@ public class MississippiOCIntegrationCommand : OCIntegrationCommand, IRiver
 		_config = config; // used to auth to service
 	}
 
-	public async Task GetRiverLength() 
+	public async Task<decimal> GetRiverLength() 
 	{
 
 	}
@@ -39,7 +39,7 @@ Your integration will likely contain other public classes but these two mandator
 
 ## Interfaces 
 
-A key goal of these integrations is *interoperability*. In other words, if two services solve roughly the same problem (e.g. calculating tax), they should expose the same contract. To facilitate that, there are interfaces like [ITaxCalculator](./Interfaces/ITaxCalculator.cs). Please check under [/Integrations/Interfaces](./Interfaces) to see if any apply to your integration's problem domain. If some do, make sure your OCIntegrationCommand implements those interfaces. If none do, still create your integration but we aware we may look to standardize it in the future. Feel free open issues recommending changes or additions to the interfaces. 
+A key goal of these integrations is *interoperability*. In other words, if two services solve roughly the same problem (e.g. calculating tax), they should expose the same contract. To facilitate that, there are interfaces like [ITaxCalculator](./Interfaces/ITaxCalculator.cs). Please check under [/Integrations/Interfaces](./Interfaces) to see if any apply to your integration's problem domain. If some do, make sure your OCIntegrationCommand implements those interfaces. If none do, still create your integration but be aware we may look to standardize it in the future. Feel free open issues recommending changes or additions to the interfaces. 
 
 ## Other Guidelines
 
@@ -47,7 +47,7 @@ A key goal of these integrations is *interoperability*. In other words, if two s
  - Under [/Integrations/Implementations](./Implementations) create a folder with your service name (e.g. "Mississippi") to contain your files. At the root of your new folder include your Command, Config and a README.md. Copy the README format of existing integrations.
  - Handle error scenarios within your integration by throwing a CatalystBaseException.
  - Avoid adding a nuget package for your service's SDK. This will lead to bloat as many projects may use this library without using your service. Instead, use the Flurl library for RESTful requests. This will also keep testing consistient. 
- - Write unit tests against the Command methods. Mock API reponses from your service using [Flurl test practices](https://flurl.dev/docs/testable-http/) or something simuliar. 
+ - Write unit tests against the Command methods. Mock API reponses from your service using [Flurl test practices](https://flurl.dev/docs/testable-http/) or something similar. 
  - When you want to make methods or properties `private`, consider using `protected` instead so that client projects can extend your functionality. 
  - Aim to follow the code patterns of existing integrations. 
 

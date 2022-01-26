@@ -4,7 +4,7 @@ Guidelines for adding a new integration to the Catalyst library.
 
 ## Basics 
 
-Creating an integration in this project means it will be published as part of a [Nuget code library](https://www.nuget.org/packages/ordercloud-dotnet-catalyst/). Each integration should expose functionality to interact with 1 external service and should not depend any other integrations. There is a natural tension between providing too little "wrapper" functionality (creating a generic API client) and too much "wrapper" (an opinionated solution that limits use cases). The key to this balance are the details of the contract your integration exposes.
+Creating an integration in this project means it will be published as part of a [Nuget code library](https://www.nuget.org/packages/ordercloud-dotnet-catalyst/). Each integration should expose functionality to interact with 1 external service and should not depend on any other integrations. There is a natural tension between providing too little "wrapper" functionality (creating a generic API client) and too much "wrapper" (an opinionated solution that limits use cases). The key to this balance are the details of the contract your integration exposes.
 
 ## Exposed Contracts 
 
@@ -14,7 +14,7 @@ All integrations should include two classes designed to be exposed and consumed 
 public class MississippiOCIntegrationConfig : OCIntegrationConfig
 {
 	public string ApiKey { get; set;}
-	... ect.
+	... etc.
 }
 ```
 ```c#

@@ -20,7 +20,7 @@ public class MississippiOCIntegrationConfig : OCIntegrationConfig
 ```c#
 public class MississippiOCIntegrationCommand : OCIntegrationCommand, IRiver
 {
-	protected MississippiOCIntegrationConfig _config;
+	protected readonly MississippiOCIntegrationConfig _config;
 
 	public MississippiOCIntegrationCommand(MississippiOCIntegrationConfig config) 
 	{

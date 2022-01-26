@@ -16,7 +16,8 @@ public class MississippiOCIntegrationConfig : OCIntegrationConfig
 	public string ApiKey { get; set;}
 	... ect.
 }
-
+```
+```c#
 public class MississippiOCIntegrationCommand : OCIntegrationCommand, IRiver
 {
 	protected MississippiOCIntegrationConfig _config;

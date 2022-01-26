@@ -32,7 +32,7 @@ public class MississippiOCIntegrationCommand : OCIntegrationCommand
 
 	}
 
-	... ect.
+	... etc.
 }
 ```
 

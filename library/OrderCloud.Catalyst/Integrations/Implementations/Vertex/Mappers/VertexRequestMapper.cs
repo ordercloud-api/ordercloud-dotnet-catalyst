@@ -21,8 +21,8 @@ namespace OrderCloud.Catalyst
 			return new VertexCalculateTaxRequest()
 			{
 				postingDate = DateTime.Now.ToString("yyyy-MM-dd"),
-				saleMessageType = type,
-				transactionType = VertexTransactionType.SALE,
+				saleMessageType = type.ToString(),
+				transactionType = VertexTransactionType.SALE.ToString(),
 				transactionId = order.Order.ID,
 				seller = new VertexSeller()
 				{

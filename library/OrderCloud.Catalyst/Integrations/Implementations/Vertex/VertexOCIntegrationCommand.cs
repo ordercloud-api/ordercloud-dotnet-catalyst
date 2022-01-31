@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrderCloud.SDK;
 
-
 namespace OrderCloud.Catalyst
 {
-	public class VertexOCIntegrationCommand : ITaxCalculator
+	public class VertexOCIntegrationCommand : OCIntegrationCommand, ITaxCalculator
 	{
 		protected readonly VertexClient _client;
 		protected readonly VertexOCIntegrationConfig _config;
 
-		public VertexOCIntegrationCommand(VertexOCIntegrationConfig config) 
+		public VertexOCIntegrationCommand(VertexOCIntegrationConfig config) : base(config)
 		{
 			_config = config;
 			_client = new VertexClient(config);

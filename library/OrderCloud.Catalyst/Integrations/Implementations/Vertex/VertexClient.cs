@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using OrderCloud.Catalyst;
 
 namespace OrderCloud.Catalyst
 {
@@ -12,6 +11,7 @@ namespace OrderCloud.Catalyst
 	{
 		protected const string ApiUrl = "https://restconnect.vertexsmb.com";
 		protected const string AuthUrl = "https://auth.vertexsmb.com";
+		protected DateTimeOffset? CurrentTokenExpires = null;
 		protected readonly VertexOCIntegrationConfig _config;
 		protected VertexTokenResponse _token;
 
@@ -22,37 +22,40 @@ namespace OrderCloud.Catalyst
 
 		public async Task<VertexCalculateTaxResponse> CalculateTax(VertexCalculateTaxRequest request)
 		{
-			return await MakeRequest<VertexCalculateTaxResponse>(() => 
-				$"{ApiUrl}/vertex-restapi/v1/sale"
-					.WithOAuthBearerToken(_token.access_token)
-					.AllowAnyHttpStatus()
+			var token = await GetToken(_config);
+			var url = $"{ApiUrl}/vertex-restapi/v1/sale";
+			try
+			{
+				var response = await url
+					.WithOAuthBearerToken(token.access_token)
 					.PostJsonAsync(request)
-			);
+					.ReceiveJson<VertexResponse<VertexCalculateTaxResponse>>();
+				return response.data;
+			} catch (FlurlHttpTimeoutException ex)  // simulate with this https://stackoverflow.com/questions/100841/artificially-create-a-connection-timeout-error
+			{
+				// candidate for retry here?
+				throw new NoResponseException(_config, url);
+			}
+			catch (FlurlHttpException ex)
+			{
+				if (ex.Call.Response == null || ex.Call.Response.StatusCode > 500)  // simulate by putting laptop on airplane mode
+				{
+					// candidate for retry here?
+					throw new NoResponseException(_config, url);
+				}
+				var body = await ex.Call.Response.GetJsonAsync<VertexResponse<VertexCalculateTaxResponse>>();
+				throw new ErrorResponseException(_config, url, body.errors);
+			}
 		}
 
-		protected async Task<T> MakeRequest<T>(Func<Task<IFlurlResponse>> request)
-		{
-			if (_token?.access_token == null)
-			{
-				_token = await GetToken(_config);
-			}
-			var response = await (await request()).GetJsonAsync<VertexResponse<T>>();
-			if (response.errors.Exists(e => e.detail == "invalid access token"))
-			{
-				// refresh the token
-				_token = await GetToken(_config);
-				// try the request again
-				response = await (await request()).GetJsonAsync<VertexResponse<T>>();
-			}
-
-			// Catch and throw any api errors 
-			Require.That(response.errors.Count == 0, new VertexException(response.errors));
-
-			return response.data;
-		}
 
 		protected async Task<VertexTokenResponse> GetToken(VertexOCIntegrationConfig config)
 		{
+			if (_token?.access_token != null && CurrentTokenExpires != null && CurrentTokenExpires > DateTimeOffset.Now)
+			{
+				return _token;
+			}
+
 			var body = new
 			{
 				scope = "calc-rest-api",
@@ -62,9 +65,28 @@ namespace OrderCloud.Catalyst
 				username = config.Username,
 				password = config.Password
 			};
-			var response = await $"{AuthUrl}/identity/connect/token".PostUrlEncodedAsync(body);
-			var token = await response.GetJsonAsync<VertexTokenResponse>();
-			return token;
+			var url = $"{AuthUrl}/identity/connect/token";
+			try
+			{
+				var response = await url.PostUrlEncodedAsync(body);
+				var token = await response.GetJsonAsync<VertexTokenResponse>();
+				_token = token;
+				CurrentTokenExpires = DateTimeOffset.Now.AddSeconds(token.expires_in);
+				return token;
+			} catch (FlurlHttpTimeoutException ex)  // simulate with this https://stackoverflow.com/questions/100841/artificially-create-a-connection-timeout-error
+			{
+				// candidate for retry here?
+				throw new NoResponseException(_config, url);
+			}
+			catch (FlurlHttpException ex)
+			{
+				if (ex.Call.Response == null || ex.Call.Response.StatusCode > 500)  // simulate by putting laptop on airplane mode
+				{
+					// candidate for retry here?
+					throw new NoResponseException(_config, url);
+				}
+				throw new UnauthorizedResponseException(_config, url);
+			}
 		}
 	}
 }

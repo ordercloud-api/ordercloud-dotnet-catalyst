@@ -6,14 +6,14 @@ namespace OrderCloud.Catalyst
 {
 	public class VertexCalculateTaxRequest
 	{
-		public VertexSaleMessageType saleMessageType { get; set; }
+		public string saleMessageType { get; set; }
 		public VertexSeller seller { get; set; }
 		public VertexCustomer customer { get; set; }
 		public VertexDiscount discount { get; set; }
 		public List<VertexLineItem> lineItems { get; set; } = new List<VertexLineItem>();
 		public string postingDate { get; set; }
 		public string transactionId { get; set; }
-		public VertexTransactionType transactionType { get; set; }
+		public string transactionType { get; set; }
 	}
 
 	public class VertexSitusOverride

@@ -14,6 +14,5 @@ namespace OrderCloud.Catalyst.Tests
         public async Task Test()
         {
         }
-
     }
 }

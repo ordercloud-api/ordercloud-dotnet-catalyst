@@ -26,7 +26,7 @@ namespace OrderCloud.Catalyst
 			if (missing.Any())
 			{
 				var names = missing.Select(p => p.Name).ToList();
-				throw new MissingConfigException(this, names);
+				throw new IntegrationMissingConfigsException(this, names);
 			}
 		}
 	}

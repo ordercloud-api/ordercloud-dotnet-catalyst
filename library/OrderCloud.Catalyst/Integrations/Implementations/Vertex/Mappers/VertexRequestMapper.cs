@@ -14,7 +14,8 @@ namespace OrderCloud.Catalyst
 			var itemLines = order.LineItems.Select(li => ToVertexLineItem(li));
 			var shippingLines = order.ShipEstimateResponse.ShipEstimates.Select(se =>
 			{
-				var firstLi = order.LineItems.First(li => li.ID == se.ShipEstimateItems.First().LineItemID);
+				var firstLi = order.LineItems.FirstOrDefault(li => li.ID == se.ShipEstimateItems.First().LineItemID);
+				Require.That(firstLi != null, new CatalystBaseException("InvalidOrderWorksheet", $"Invalid OrderWorksheet. Based on ShipEstimateItems, expected to find a LineItem with ID {se.ShipEstimateItems.First().LineItemID}", null, 400));
 				return ToVertexLineItem(se, firstLi.ShippingAddress);
 			});
 
@@ -65,7 +66,8 @@ namespace OrderCloud.Catalyst
 
 		public static VertexLineItem ToVertexLineItem(ShipEstimate shipEstimate, Address shipTo)
 		{
-			var selectedMethod = shipEstimate.ShipMethods.First(m => m.ID == shipEstimate.SelectedShipMethodID);
+			var selectedMethod = shipEstimate.ShipMethods.FirstOrDefault(m => m.ID == shipEstimate.SelectedShipMethodID);
+			Require.That(selectedMethod != null, new CatalystBaseException("InvalidOrderWorksheet", $"Invalid OrderWorksheet. Based on SelectedShipMethodID, expected to find a ShipMethod with ID {shipEstimate.SelectedShipMethodID}", null, 400));
 			return new VertexLineItem()
 			{
 				customer = new VertexCustomer()

@@ -1,11 +1,7 @@
-﻿# Vertex Integration For OrderCloud Headstart
+﻿# Vertex Integration 
 
 ## Scope of this integration
-This integration calculates sales tax for an Order using the vertex cloud API. It is part of the open source Headstart project, which provides a complete, opinionated OrderCloud solution. It conforms to the [ITaxCalculator](../ordercloud.integrations.library/interfaces/ITaxCalculator.cs) interface. 
-
-Use Cases:
-- Sales Tax Estimate
-- Finalized Order Forwarding 
+This .NET integration calculates sales tax for an Order using the vertex cloud API. It can be used during checkout to provide a tax cost to the buyer or after submit to create a vertex transaction for filling. 
 
 ## Vertex Basics 
 [Vertex](https://www.vertexinc.com/) is a cloud or on premise **sales and use tax solution**. Vertex Cloud integrates with leading e-commerce platforms and mid-market ERP systems. Customers can use Vertex Cloud to manage complex sales and use tax across multiple jurisdictions. Vertex Cloud provides tax calculations and signature-ready PDF returns in one comprehensive solution.
@@ -24,19 +20,13 @@ A taxable transaction is committed to vertex asynchronously shortly following or
 
 **OrderCloud Side -** This integration should be triggered by the **`PostOrderSubmit`** Checkout Integration Event. Learn more about [checkout integration events](https://ordercloud.io/knowledge-base/order-checkout-integration); 
 
-## Steps to use
-- Set up the headstart application. This is process is throughly documented [here](https://github.com/ordercloud-api/headstart#initial-setup).
-- Sign up for vertex and login to the [Vertex Portal](https://portal.vertexsmb.com/Home) to get the credentials required in the next step.  
-- Set environment variables required for Vertex authentication. See the vertex [authentication guide](https://developer.vertexcloud.com/access-token/). If you follow the headstart set up process env vars are stored in an Azure Config.   
-```
-VertexSettings:CompanyName
-VertexSettings:ClientID
-VertexSettings:ClientSecret
-VertexSettings:Username    
-VertexSettings:Password
-```
-- Set an environment variable to indicate you want to use Vertex for tax calculation.
-```
-EnvironmentSettings:TaxProvider=Vertex
-```
-- Redeploy your middleware and on the storefront, go through checkout pausing before entering payment. You will see tax calculated by Vertex!
+## Set up steps
+
+- You should set up a .NET middleware project using the Catalyst library and starter project. [See guide](https://ordercloud.io/knowledge-base/start-dotnet-middleware-from-scratch).
+- Through the OrderCloud API configure an Order Chekout IntegrationEvent object to point to your new middleware. [See guide](https://ordercloud.io/knowledge-base/order-checkout-integration)
+- Create a vertex account online and retrieve all the configuration variables required in [VertexOCIntegrationConfig.cs](./VertexOCIntegrationConfig.cs); 
+- Within your .NET code project, create an instance of [VertexOCIntegrationCommand.cs](./VertexOCIntegrationCommand.cs). Use the method `CalculateEstimateAsync` within the **`OrderCalculate`** Checkout Integration Event.  Use the method `CommitTransactionAsync` within the **`PostOrderSubmit`** Checkout Integration Event. 
+
+## Interfaces
+
+- It conforms to the [ITaxCalculator](../../Interfaces/ITaxCalculator.cs) interface.

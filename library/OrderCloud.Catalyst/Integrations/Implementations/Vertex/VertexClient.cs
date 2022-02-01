@@ -34,17 +34,17 @@ namespace OrderCloud.Catalyst
 			} catch (FlurlHttpTimeoutException ex)  // simulate with this https://stackoverflow.com/questions/100841/artificially-create-a-connection-timeout-error
 			{
 				// candidate for retry here?
-				throw new NoResponseException(_config, url);
+				throw new IntegrationNoResponseException(_config, url);
 			}
 			catch (FlurlHttpException ex)
 			{
 				if (ex.Call.Response == null || ex.Call.Response.StatusCode > 500)  // simulate by putting laptop on airplane mode
 				{
 					// candidate for retry here?
-					throw new NoResponseException(_config, url);
+					throw new IntegrationNoResponseException(_config, url);
 				}
 				var body = await ex.Call.Response.GetJsonAsync<VertexResponse<VertexCalculateTaxResponse>>();
-				throw new ErrorResponseException(_config, url, body.errors);
+				throw new IntegrationErrorResponseException(_config, url, body.errors);
 			}
 		}
 
@@ -76,16 +76,16 @@ namespace OrderCloud.Catalyst
 			} catch (FlurlHttpTimeoutException ex)  // simulate with this https://stackoverflow.com/questions/100841/artificially-create-a-connection-timeout-error
 			{
 				// candidate for retry here?
-				throw new NoResponseException(_config, url);
+				throw new IntegrationNoResponseException(_config, url);
 			}
 			catch (FlurlHttpException ex)
 			{
 				if (ex.Call.Response == null || ex.Call.Response.StatusCode > 500)  // simulate by putting laptop on airplane mode
 				{
 					// candidate for retry here?
-					throw new NoResponseException(_config, url);
+					throw new IntegrationNoResponseException(_config, url);
 				}
-				throw new UnauthorizedResponseException(_config, url);
+				throw new IntegrationAuthFailedException(_config, url);
 			}
 		}
 	}

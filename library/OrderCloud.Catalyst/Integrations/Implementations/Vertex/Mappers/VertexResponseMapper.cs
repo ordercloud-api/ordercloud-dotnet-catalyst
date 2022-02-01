@@ -7,10 +7,12 @@ namespace OrderCloud.Catalyst
 {
 	public static class VertexResponseMapper
 	{
+		public static bool IsShippingLineItem(this VertexResponseLineItem li) => li.product.productClass == "shipping_code";
+
 		public static OrderTaxCalculation ToOrderTaxCalculation(this VertexCalculateTaxResponse response)
 		{
-			var shippingLines = response.lineItems?.Where(line => line.product.productClass == "shipping_code") ?? new List<VertexResponseLineItem>();
-			var itemLines = response.lineItems?.Where(line => line.product.productClass != "shipping_code") ?? new List<VertexResponseLineItem>();
+			var shippingLines = response.lineItems?.Where(li => li.IsShippingLineItem()) ?? new List<VertexResponseLineItem>();
+			var itemLines = response.lineItems?.Where(li => !li.IsShippingLineItem()) ?? new List<VertexResponseLineItem>();
 
 			return new OrderTaxCalculation()
 			{

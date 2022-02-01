@@ -84,7 +84,7 @@ namespace OrderCloud.Catalyst.TestApi
 		{
 			throw new OrderCloudException(message, new Exception(message, new Exception(innerMessage)));
 		}
-
+	
 		[HttpGet("usercontext"), OrderCloudUserAuth]
 		public SimplifiedUser Username()
 		{

@@ -44,7 +44,59 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
-		public async Task ResponseShouldBeMappedCorrectly()
+		public void ShouldThrowErrorIfAuthorizationFails()
+		{
+			// Arrange
+			_httpTest.RespondWith("{\"error\":\"invalid_client\"}", 400); // real vertex response
+			
+			var ex = Assert.ThrowsAsync<IntegrationAuthFailedException>(async () =>
+				// Act 
+				await _command.CalculateEstimateAsync(_worksheetBuilder.Build(), new List<OrderPromotion> { })
+			);
+
+			var data = (IntegrationAuthFailedError) ex.Errors[0].Data;
+			Assert.AreEqual(data.ServiceName, "Vertex");
+			Assert.AreEqual(data.RequestUrl, "https://auth.vertexsmb.com/identity/connect/token");
+		}
+
+		[Test]
+		public void ShouldThrowErrorIfNoResponse()
+		{
+			// Arrange
+			_httpTest.SimulateTimeout();
+
+			var ex = Assert.ThrowsAsync<IntegrationNoResponseException>(async () =>
+				// Act 
+				await _command.CalculateEstimateAsync(_worksheetBuilder.Build(), new List<OrderPromotion> { })
+			);
+
+			var data = (IntegrationNoResponseError) ex.Errors[0].Data;
+			Assert.AreEqual(data.ServiceName, "Vertex");
+		}
+
+		[Test]
+		public void ShouldThrowVertexErrorForBadRequest()
+		{
+			// Arrange
+			_httpTest
+				// real vertex response
+				.RespondWith("{\"access_token\":\"fakee1cf7e06bc50f1a884dd0fffake\",\"expires_in\":1200,\"token_type\":\"Bearer\"}", 200)
+				// real vertex response
+				.RespondWith("{\"meta\":{\"app\":\"Vertex REST API v2.0.0\",\"timeReceived\":\"2022-02-01T19: 04:12.751Z\",\"timeElapsed(ms)\":31},\"errors\":[{\"status\":\"400\",\"code\":\"VertexApplicationException\",\"title\":\"Bad Request\",\"detail\":\"The LocationRole being added is invalid.This might be due to an invalid location or an invalid address field.Make sure that the locationRole is valid, and try again.\n\"}]}", 400);
+
+			var ex = Assert.ThrowsAsync<IntegrationErrorResponseException>(async () =>
+				// Act 
+				await _command.CalculateEstimateAsync(_worksheetBuilder.Build(), new List<OrderPromotion> { })
+			);
+
+			var data = (IntegrationErrorResponseError)ex.Errors[0].Data;
+			Assert.AreEqual(data.ServiceName, "Vertex");
+			Assert.AreEqual(data.RequestUrl, "https://restconnect.vertexsmb.com/vertex-restapi/v1/sale");
+			Assert.AreEqual(((List<VertexResponseError>) data.ResponseBody)[0].detail, "The LocationRole being added is invalid.This might be due to an invalid location or an invalid address field.Make sure that the locationRole is valid, and try again.\n");
+		}
+
+		[Test]
+		public async Task SuccessResponseShouldBeMappedCorrectly()
 		{
 			// Arrange
 			var response = _fixture.Create<VertexResponse<VertexCalculateTaxResponse>>();

@@ -20,7 +20,7 @@ namespace OrderCloud.Catalyst
 				{
 					var value = (string)prop.GetValue(this);
 					var isRequired = Attribute.IsDefined(prop, typeof(RequiredIntegrationFieldAttribute));
-					return isRequired && (value == null || value == "");
+					return isRequired && value.IsNullOrEmpty();
 				});
 
 			if (missing.Any())

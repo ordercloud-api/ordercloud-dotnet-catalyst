@@ -10,6 +10,8 @@ namespace OrderCloud.Catalyst
 {
 	public static class VertexRequestMapper
 	{
+		public const string ShippingLineCode = "shipping_code";
+
 		public static VertexCalculateTaxRequest ToVertexCalculateTaxRequest(this OrderWorksheet order, List<OrderPromotion> promosOnOrder, string companyCode, VertexSaleMessageType type)
 		{
 			var itemLines = order.LineItems.Select(li => ToVertexLineItem(li));
@@ -77,7 +79,7 @@ namespace OrderCloud.Catalyst
 				},
 				product = new VertexProduct()
 				{
-					productClass = "shipping_code",
+					productClass = ShippingLineCode,
 					value = selectedMethod.Name
 				},
 				quantity = new VertexMeasure()

@@ -9,31 +9,22 @@ namespace OrderCloud.Catalyst
 	public class CatalystBaseException : Exception
 	{
 		public override string Message => Errors?.FirstOrDefault()?.Message ?? "";
-		public int HttpStatus { get; set; }
+		public HttpStatusCode HttpStatus { get; set; }
 
 		public IList<ApiError> Errors { get; }
 
-		public CatalystBaseException(ApiError apiError, int httpStatus = 400) : base(apiError.Message)
-		{
-			HttpStatus = httpStatus;
-			Errors = new[] {
-				new ApiError
-				{
-					ErrorCode = apiError.ErrorCode,
-					Message = apiError.Message,
-					Data = apiError.Data
-				}
-			};
-		}
+		public CatalystBaseException(ApiError apiError, HttpStatusCode httpStatus = HttpStatusCode.BadRequest)
+			: this(apiError.ErrorCode, apiError.Message, apiError.Data, httpStatus) { }
 
-		public CatalystBaseException(IList<ApiError> errors, int httpStatus = 400)
+
+		public CatalystBaseException(IList<ApiError> errors, HttpStatusCode httpStatus = HttpStatusCode.BadRequest)
 		{
 			HttpStatus = httpStatus;
 			Require.That(!errors.IsNullOrEmpty(), new Exception("errors collection must contain at least one item."));
 			Errors = errors;
 		}
 
-		public  CatalystBaseException(string errorCode, string message, object data = null, int httpStatus = 400)
+		public CatalystBaseException(string errorCode, string message, object data = null, HttpStatusCode httpStatus = HttpStatusCode.BadRequest)
 		{
 			HttpStatus = httpStatus;
 			Errors = new[] {
@@ -46,15 +37,18 @@ namespace OrderCloud.Catalyst
 		}
 
 		public CatalystBaseException(ErrorCode errorCode, object data = null)
-		{
-			HttpStatus = errorCode.HttpStatus;
-			Errors = new[] {
-				new ApiError {
-					ErrorCode = errorCode.Code,
-					Message = errorCode.DefaultMessage,
-					Data = data
-				}
-			};
-		}
+			: this(errorCode.Code, errorCode.DefaultMessage, data, errorCode.HttpStatus) { }
+
+
+
+		// Keeping these depreacated constructors that take an Int for backwards compatibility.
+		//public CatalystBaseException(ApiError apiError, int httpStatus) : this(apiError, (HttpStatusCode)httpStatus) { }
+
+		//public CatalystBaseException(IList<ApiError> errors, int httpStatus): this(errors, (HttpStatusCode)httpStatus) { }
+
+		//public CatalystBaseException(string errorCode, string message, object data, int httpStatus)
+		//	: this(errorCode, message, data, (HttpStatusCode)httpStatus) { }
+
+
 	}
 }

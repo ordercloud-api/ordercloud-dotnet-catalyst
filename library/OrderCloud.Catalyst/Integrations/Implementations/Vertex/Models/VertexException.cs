@@ -12,8 +12,7 @@ namespace OrderCloud.Catalyst
 			base(
 				"VertexTaxCalculationError", 
 				"The vertex api returned an error: https://restconnect.vertexsmb.com/vertex-restapi/v1/sale", 
-				errors, 
-				int.Parse(errors.First().status
-			)) { }
+				errors
+			) { }
 	}
 }

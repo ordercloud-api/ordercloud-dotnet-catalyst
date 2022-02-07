@@ -9,53 +9,53 @@ namespace OrderCloud.Catalyst
 {
 	public class UnAuthorizedException : CatalystBaseException
 	{
-		public UnAuthorizedException() : base("InvalidToken", "Access token is invalid or expired.", null, 401) { }
+		public UnAuthorizedException() : base("InvalidToken", "Access token is invalid or expired.", null, HttpStatusCode.Unauthorized) { }
 	}
 	public class WebhookUnauthorizedException : CatalystBaseException
 	{
-		public WebhookUnauthorizedException() : base("Unauthorized", "X-oc-hash header does not match. Endpoint can only be hit from a valid OrderCloud webhook.", null, 401) { }
+		public WebhookUnauthorizedException() : base("Unauthorized", "X-oc-hash header does not match. Endpoint can only be hit from a valid OrderCloud webhook.", null, HttpStatusCode.Unauthorized) { }
 	}
 
 	public class InsufficientRolesException : CatalystBaseException
 	{
-		public InsufficientRolesException(InsufficientRolesError data) : base("InsufficientRoles", "User does not have role(s) required to perform this action.", data, 403) { }
+		public InsufficientRolesException(InsufficientRolesError data) : base("InsufficientRoles", "User does not have role(s) required to perform this action.", data, HttpStatusCode.Forbidden) { }
 	}
 
 	public class InvalidUserTypeException : CatalystBaseException
 	{
-		public InvalidUserTypeException(InvalidUserTypeError data) : base("InvalidUserType", $"Users of type {data.ThisUserType} do not have permission to perform this action.", data, 403) { }
+		public InvalidUserTypeException(InvalidUserTypeError data) : base("InvalidUserType", $"Users of type {data.ThisUserType} do not have permission to perform this action.", data, HttpStatusCode.Forbidden) { }
 	}
 
 	public class RequiredFieldException : CatalystBaseException
 	{
-		public RequiredFieldException(string fieldName) : base("RequiredField", $"Field {fieldName} is required", null, 400) { }
+		public RequiredFieldException(string fieldName) : base("RequiredField", $"Field {fieldName} is required", null, HttpStatusCode.BadRequest) { }
 	}
 
 	public class NotFoundException : CatalystBaseException
 	{
-		public NotFoundException() : base("NotFound", $"Not found.", null, 404) { }
+		public NotFoundException() : base("NotFound", $"Not found.", null, HttpStatusCode.NotFound) { }
 
-		public NotFoundException(string thingName, string thingID) : base("NotFound", "Not Found.", new { ObjectType = thingName, ObjectID = thingID }, 404) { }
+		public NotFoundException(string thingName, string thingID) : base("NotFound", "Not Found.", new { ObjectType = thingName, ObjectID = thingID }, HttpStatusCode.NotFound) { }
 	}
 
 	public class InvalidPropertyException : CatalystBaseException
 	{
-		public InvalidPropertyException(Type type, string name) : base("InvalidProperty", $"{type.Name}.{name}", null, 400) { }
+		public InvalidPropertyException(Type type, string name) : base("InvalidProperty", $"{type.Name}.{name}", null, HttpStatusCode.BadRequest) { }
 	}
 
 	public class UserErrorException : CatalystBaseException
 	{
-		public UserErrorException(string message) : base("InvalidRequest", message, null, 400) { }
+		public UserErrorException(string message) : base("InvalidRequest", message, null, HttpStatusCode.BadRequest) { }
 	}
 
 	public class UserContextException : CatalystBaseException
 	{
-		public UserContextException(string message) : base("UserContextError", message, null, 400) { }
+		public UserContextException(string message) : base("UserContextError", message, null, HttpStatusCode.BadRequest) { }
 	}
 
 	public class WrongEnvironmentException : CatalystBaseException
 	{
-		public WrongEnvironmentException(WrongEnvironmentError data) : base("InvalidToken", $"Environment mismatch. Token gives access to {data.TokenIssuerEnvironment} while this API expects {data.ExpectedEnvironment}", data, 401) { }
+		public WrongEnvironmentException(WrongEnvironmentError data) : base("InvalidToken", $"Environment mismatch. Token gives access to {data.TokenIssuerEnvironment} while this API expects {data.ExpectedEnvironment}", data, HttpStatusCode.Unauthorized) { }
 	}
 
 	public class WrongEnvironmentError

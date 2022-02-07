@@ -35,7 +35,7 @@ namespace OrderCloud.Catalyst
         private static Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
             IList<ApiError> body;
-            int status = (int) HttpStatusCode.InternalServerError; // 500 if unexpected
+            var status = HttpStatusCode.InternalServerError; // 500 if unexpected
 
 			switch (ex)
             {
@@ -57,7 +57,7 @@ namespace OrderCloud.Catalyst
 					}
 					else // forward status code and errors from OrderCloud API
 					{
-						status = (int) ocException.HttpStatus;
+						status = ocException.HttpStatus ?? HttpStatusCode.BadRequest;
 						body = ocException.Errors;
 					}
                     break;
@@ -73,7 +73,7 @@ namespace OrderCloud.Catalyst
                     break;
             }
 
-            context.Response.StatusCode = status;
+            context.Response.StatusCode = (int) status;
             context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorList(body)));
         }

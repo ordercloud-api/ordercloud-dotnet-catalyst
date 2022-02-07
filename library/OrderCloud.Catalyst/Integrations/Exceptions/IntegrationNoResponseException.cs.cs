@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 
 namespace OrderCloud.Catalyst
@@ -14,7 +15,7 @@ namespace OrderCloud.Catalyst
 					ServiceName = config.ServiceName,
 					RequestUrl = requestUrl,
 				}
-				, 400)
+				, HttpStatusCode.BadRequest)
 			{ }
 	}
 

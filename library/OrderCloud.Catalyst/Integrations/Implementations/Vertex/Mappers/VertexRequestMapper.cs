@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 namespace OrderCloud.Catalyst
@@ -15,7 +16,7 @@ namespace OrderCloud.Catalyst
 			var shippingLines = order.ShipEstimateResponse.ShipEstimates.Select(se =>
 			{
 				var firstLi = order.LineItems.FirstOrDefault(li => li.ID == se.ShipEstimateItems.First().LineItemID);
-				Require.That(firstLi != null, new CatalystBaseException("InvalidOrderWorksheet", $"Invalid OrderWorksheet. Based on ShipEstimateItems, expected to find a LineItem with ID {se.ShipEstimateItems.First().LineItemID}", null, 400));
+				Require.That(firstLi != null, new CatalystBaseException("InvalidOrderWorksheet", $"Invalid OrderWorksheet. Based on ShipEstimateItems, expected to find a LineItem with ID {se.ShipEstimateItems.First().LineItemID}", null, HttpStatusCode.BadRequest));
 				return ToVertexLineItem(se, firstLi.ShippingAddress);
 			});
 
@@ -67,7 +68,7 @@ namespace OrderCloud.Catalyst
 		public static VertexLineItem ToVertexLineItem(ShipEstimate shipEstimate, Address shipTo)
 		{
 			var selectedMethod = shipEstimate.ShipMethods.FirstOrDefault(m => m.ID == shipEstimate.SelectedShipMethodID);
-			Require.That(selectedMethod != null, new CatalystBaseException("InvalidOrderWorksheet", $"Invalid OrderWorksheet. Based on SelectedShipMethodID, expected to find a ShipMethod with ID {shipEstimate.SelectedShipMethodID}", null, 400));
+			Require.That(selectedMethod != null, new CatalystBaseException("InvalidOrderWorksheet", $"Invalid OrderWorksheet. Based on SelectedShipMethodID, expected to find a ShipMethod with ID {shipEstimate.SelectedShipMethodID}", null, HttpStatusCode.BadRequest));
 			return new VertexLineItem()
 			{
 				customer = new VertexCustomer()

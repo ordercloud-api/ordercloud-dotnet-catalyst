@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 
 namespace OrderCloud.Catalyst
 {
 	public class ErrorCode
 	{
-		public ErrorCode(string code, string defaultMessage, int httpStatus = 400)
+		public ErrorCode(string code, string defaultMessage, HttpStatusCode httpStatus = HttpStatusCode.BadRequest)
 		{
 			Code = code;
 			DefaultMessage = defaultMessage;
@@ -14,12 +15,12 @@ namespace OrderCloud.Catalyst
 		}
 
 		public string Code { get; set; }
-		public int HttpStatus { get; set; }
+		public HttpStatusCode HttpStatus { get; set; }
 		public string DefaultMessage { get; set; }
 	}
 
 	public class ErrorCode<TData> : ErrorCode
 	{
-		public ErrorCode(string code, int httpStatus, string defaultMessage) : base(code, defaultMessage, httpStatus) { }
+		public ErrorCode(string code, HttpStatusCode httpStatus, string defaultMessage) : base(code, defaultMessage, httpStatus) { }
 	}
 }

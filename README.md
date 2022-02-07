@@ -14,7 +14,7 @@ If you're building solutions for OrderCloud using .NET and find a particular tas
 
 Interact with popular 3rd party APIs that provide functionality useful for commerce. Integrations within a category are made interoperable with an interface. 
 
-[Guide to adding an Integration](./library/OrderCLoud.Catalyst/Integrations/README.md)
+[Guide to adding an Integration](./library/OrderCLoud.Catalyst/Integrations/CONTRIBUTING.md)
 
 ### [User Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Auth/UserAuth)
 

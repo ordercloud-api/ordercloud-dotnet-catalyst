@@ -15,8 +15,8 @@ namespace OrderCloud.Catalyst
 		/// A standardized, unique code for the product or service.
 		/// </summary>
 		public VertexMeasure quantity { get; set; }
-		public double unitPrice { get; set; }
-		public double extendedPrice { get; set; }
+		public decimal unitPrice { get; set; }
+		public decimal extendedPrice { get; set; }
 		public VertexDiscount discount { get; set; }
 		/// <summary>
 		/// An identifier that further defines the line item and corresponds to the transaction stored in the host system. This parameter is needed to perform synchronization services, but it is not used for reporting purposes.
@@ -26,7 +26,7 @@ namespace OrderCloud.Catalyst
 
 	public class VertexMeasure
 	{
-		public double value { get; set; }
+		public decimal value { get; set; }
 	}
 
 	public class VertexProduct

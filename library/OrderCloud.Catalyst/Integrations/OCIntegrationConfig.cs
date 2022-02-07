@@ -30,6 +30,4 @@ namespace OrderCloud.Catalyst
 			}
 		}
 	}
-
-
 }

@@ -6,7 +6,7 @@ namespace OrderCloud.Catalyst
 {
 	public class VertexResponseLineItem : VertexLineItem
 	{
-		public double totalTax { get; set; }
+		public decimal totalTax { get; set; }
 		public List<VertexTax> taxes { get; set; } = new List<VertexTax>();
 	}
 
@@ -19,23 +19,23 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Amount of tax calculated by the calculation engine.
 		/// </summary>
-		public double calculatedTax { get; set; }
+		public decimal calculatedTax { get; set; }
 		/// <summary>
 		/// For Buyer Input tax and Seller Import tax, this rate is calculated based on the Extended Price and Tax Amount (Import or Input) passed in the Request message. If you total the Extended Price and Tax Amounts before passing them in, this rate is an average.
 		/// </summary>
-		public double effectiveRate { get; set; }
+		public decimal effectiveRate { get; set; }
 		/// <summary>
 		/// Amount of the line item not subject to tax due to exempt status.
 		/// </summary>
-		public double exempt { get; set; }
+		public decimal exempt { get; set; }
 		/// <summary>
 		/// Amount of the line item not subject to tax due to nontaxable status.
 		/// </summary>
-		public double nonTaxable { get; set; }
+		public decimal nonTaxable { get; set; }
 		/// <summary>
 		/// Amount of the line item subject to tax.
 		/// </summary>
-		public double taxable { get; set; }
+		public decimal taxable { get; set; }
 		/// <summary>
 		/// The name of the imposition to which the relevant tax rule belongs. This is assigned either by Vertex or by the user when setting up a user-defined imposition in the Vertex Central user interface.
 		/// </summary>

@@ -29,9 +29,9 @@ namespace OrderCloud.Catalyst
 	public class VertexCalculateTaxResponse : VertexCalculateTaxRequest
 	{
 
-		public double subTotal { get; set; }
-		public double total { get; set; }
-		public double totalTax { get; set; }
+		public decimal subTotal { get; set; }
+		public decimal total { get; set; }
+		public decimal totalTax { get; set; }
 		public new List<VertexResponseLineItem> lineItems { get; set; } = new List<VertexResponseLineItem>();
 	}
 }

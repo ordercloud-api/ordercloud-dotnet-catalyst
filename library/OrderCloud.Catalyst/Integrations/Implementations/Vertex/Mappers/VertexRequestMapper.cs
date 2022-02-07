@@ -22,7 +22,7 @@ namespace OrderCloud.Catalyst
 
 			return new VertexCalculateTaxRequest()
 			{
-				postingDate = DateTime.Now.ToString("yyyy-MM-dd"),
+				postingDate = DateTime.UtcNow.ToString("yyyy-MM-dd"),
 				saleMessageType = type.ToString(),
 				transactionType = VertexTransactionType.SALE.ToString(),
 				transactionId = order.Order.ID,
@@ -59,9 +59,9 @@ namespace OrderCloud.Catalyst
 				{
 					value = lineItem.Quantity
 				},
-				unitPrice = (double) lineItem.UnitPrice,
+				unitPrice = lineItem.UnitPrice ?? 0,
 				lineItemId = lineItem.ID,
-				extendedPrice = (double) lineItem.LineTotal // this takes precedence over quanitity and unit price in determining tax cost
+				extendedPrice = lineItem.LineTotal // this takes precedence over quanitity and unit price in determining tax cost
 			};
 		}
 
@@ -84,7 +84,7 @@ namespace OrderCloud.Catalyst
 				{
 					value = 1
 				},
-				unitPrice = (double) selectedMethod.Cost,
+				unitPrice = selectedMethod.Cost,
 				lineItemId = shipEstimate.ID,
 			};
 		}

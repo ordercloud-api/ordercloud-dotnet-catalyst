@@ -42,7 +42,7 @@ namespace OrderCloud.Catalyst
 
 	public class VertexRateOverride
 	{
-		public double value { get; set; }
+		public decimal value { get; set; }
 	}
 
 	public class VertexDeductionOverride

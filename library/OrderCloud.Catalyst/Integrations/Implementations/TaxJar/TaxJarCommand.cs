@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst
 {
-	public class TaxJarOCIntegrationCommand : OCIntegrationCommand, ITaxCalculator, ITaxCodesProvider
+	public class TaxJarCommand : OCIntegrationCommand, ITaxCalculator, ITaxCodesProvider
 	{
-		protected readonly TaxJarOCIntegrationConfig _config;
+		protected readonly TaxJarConfig _config;
 		protected readonly TaxJarClient _client;
 
-		public TaxJarOCIntegrationCommand(TaxJarOCIntegrationConfig config) : base(config)
+		public TaxJarCommand(TaxJarConfig config) : base(config)
 		{
 			_config = config;
 			_client = new TaxJarClient(config);
@@ -24,16 +24,16 @@ namespace OrderCloud.Catalyst
 			return TaxJarCategoryMapper.ToTaxCategorization(categories, filterTerm);
 		}
 
-		public async Task<OrderTaxCalculation> CalculateEstimateAsync(OrderWorksheet orderWorksheet, List<OrderPromotion> promotions)
+		public async Task<OrderTaxCalculation> CalculateEstimateAsync(OrderSummaryForTax orderSummary)
 		{
-			var orders = await CalculateTax(orderWorksheet);
+			var orders = await CalculateTax(orderSummary);
 			var orderTaxCalculation = TaxJarResponseMapper.ToOrderTaxCalculation(orders);
 			return orderTaxCalculation;
 		}
 
-		public async Task<OrderTaxCalculation> CommitTransactionAsync(OrderWorksheet orderWorksheet, List<OrderPromotion> promotions)
+		public async Task<OrderTaxCalculation> CommitTransactionAsync(OrderSummaryForTax orderSummary)
 		{
-			var orders = await CalculateTax(orderWorksheet);
+			var orders = await CalculateTax(orderSummary);
 			foreach (var response in orders)
 			{
 				response.request.transaction_date = DateTime.UtcNow.ToString("yyyy/MM/dd");
@@ -46,9 +46,9 @@ namespace OrderCloud.Catalyst
 			return orderTaxCalculation;
 		}
 
-		protected async Task<IEnumerable<(TaxJarOrder request, TaxJarCalcResponse response)>> CalculateTax(OrderWorksheet orderWorksheet)
+		protected async Task<IEnumerable<(TaxJarOrder request, TaxJarCalcResponse response)>> CalculateTax(OrderSummaryForTax orderSummary)
 		{
-			var orders = TaxJarRequestMapper.ToOrders(orderWorksheet);
+			var orders = TaxJarRequestMapper.ToOrders(orderSummary);
 			return await Throttler.RunAsync(orders, 100, 8, async order =>
 			{
 				var tax = await _client.CalcTaxForOrderAsync(order);

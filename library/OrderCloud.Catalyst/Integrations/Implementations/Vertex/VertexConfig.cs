@@ -2,7 +2,7 @@
 
 namespace OrderCloud.Catalyst
 {
-	public class VertexOCIntegrationConfig : OCIntegrationConfig
+	public class VertexConfig : OCIntegrationConfig
 	{
 		public override string ServiceName { get; } = "Vertex";
 		[RequiredIntegrationField]

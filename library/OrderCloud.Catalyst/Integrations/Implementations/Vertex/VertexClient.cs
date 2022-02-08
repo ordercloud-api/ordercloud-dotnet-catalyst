@@ -12,10 +12,10 @@ namespace OrderCloud.Catalyst
 		protected const string ApiUrl = "https://restconnect.vertexsmb.com";
 		protected const string AuthUrl = "https://auth.vertexsmb.com";
 		protected DateTimeOffset? CurrentTokenExpires = null;
-		protected readonly VertexOCIntegrationConfig _config;
+		protected readonly VertexConfig _config;
 		protected VertexTokenResponse _token;
 
-		public VertexClient(VertexOCIntegrationConfig config)
+		public VertexClient(VertexConfig config)
 		{
 			_config = config;
 		}
@@ -49,7 +49,7 @@ namespace OrderCloud.Catalyst
 		}
 
 
-		protected async Task<VertexTokenResponse> GetToken(VertexOCIntegrationConfig config)
+		protected async Task<VertexTokenResponse> GetToken(VertexConfig config)
 		{
 			if (_token?.access_token != null && CurrentTokenExpires != null && CurrentTokenExpires > DateTimeOffset.Now)
 			{

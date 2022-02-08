@@ -14,9 +14,9 @@ namespace OrderCloud.Catalyst.Tests
     {
         private static Fixture _fixture = new Fixture();
         private HttpTest _httpTest;
-        private static VertexOCIntegrationConfig _config = _fixture.Create<VertexOCIntegrationConfig>();
-        private VertexOCIntegrationCommand _command = new VertexOCIntegrationCommand(_config);
-		private OrderWorksheetBuilder _worksheetBuilder = new OrderWorksheetBuilder();
+        private static VertexConfig _config = _fixture.Create<VertexConfig>();
+        private VertexCommand _command = new VertexCommand(_config);
+		private OrderSummaryForTax _order = new OrderSummaryForTax();
 
 		[SetUp]
         public void CreateHttpTest()
@@ -34,9 +34,9 @@ namespace OrderCloud.Catalyst.Tests
 		public void ShouldThrowErrorIfMissingRequiredConfigs()
 		{
 			// Arrange
-			var config = new VertexOCIntegrationConfig();
+			var config = new VertexConfig();
 			// Act 
-			var ex = Assert.Throws<IntegrationMissingConfigsException>(() => new VertexOCIntegrationCommand(config));
+			var ex = Assert.Throws<IntegrationMissingConfigsException>(() => new VertexCommand(config));
 			// Assert
 			var data = (IntegrationMissingConfigs) ex.Errors[0].Data;
 			Assert.AreEqual(data.ServiceName, "Vertex");
@@ -51,7 +51,7 @@ namespace OrderCloud.Catalyst.Tests
 			
 			var ex = Assert.ThrowsAsync<IntegrationAuthFailedException>(async () =>
 				// Act 
-				await _command.CalculateEstimateAsync(_worksheetBuilder.Build(), new List<OrderPromotion> { })
+				await _command.CalculateEstimateAsync(_order)
 			);
 
 			var data = (IntegrationAuthFailedError) ex.Errors[0].Data;
@@ -67,7 +67,7 @@ namespace OrderCloud.Catalyst.Tests
 
 			var ex = Assert.ThrowsAsync<IntegrationNoResponseException>(async () =>
 				// Act 
-				await _command.CalculateEstimateAsync(_worksheetBuilder.Build(), new List<OrderPromotion> { })
+				await _command.CalculateEstimateAsync(_order)
 			);
 
 			var data = (IntegrationNoResponseError) ex.Errors[0].Data;
@@ -86,7 +86,7 @@ namespace OrderCloud.Catalyst.Tests
 
 			var ex = Assert.ThrowsAsync<IntegrationErrorResponseException>(async () =>
 				// Act 
-				await _command.CalculateEstimateAsync(_worksheetBuilder.Build(), new List<OrderPromotion> { })
+				await _command.CalculateEstimateAsync(_order)
 			);
 
 			var data = (IntegrationErrorResponseError)ex.Errors[0].Data;
@@ -102,7 +102,7 @@ namespace OrderCloud.Catalyst.Tests
 			var response = _fixture.Create<VertexResponse<VertexCalculateTaxResponse>>();
 			_httpTest.RespondWithJson(response);
 			// Act
-			var result = await _command.CalculateEstimateAsync(_worksheetBuilder.Build(), new List<OrderPromotion> { });
+			var result = await _command.CalculateEstimateAsync(_order);
 			// Assert
 			Assert.AreEqual(response.data.transactionId, result.OrderID);
 			Assert.AreEqual(response.data.transactionId, result.ExternalTransactionID);

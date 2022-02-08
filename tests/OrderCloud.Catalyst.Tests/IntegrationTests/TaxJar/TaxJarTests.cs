@@ -14,13 +14,13 @@ namespace OrderCloud.Catalyst.Tests
 	{
 		private static Fixture _fixture = new Fixture();
 		private HttpTest _httpTest;
-		private static TaxJarOCIntegrationConfig _config = new TaxJarOCIntegrationConfig()
+		private static TaxJarConfig _config = new TaxJarConfig()
 		{
 			APIToken = _fixture.Create<string>(),
 			BaseUrl = "https://api.fake.com"
 		};
-		private TaxJarOCIntegrationCommand _command = new TaxJarOCIntegrationCommand(_config);
-		private OrderWorksheetBuilder _worksheetBuilder = new OrderWorksheetBuilder();
+		private TaxJarCommand _command = new TaxJarCommand(_config);
+		private OrderSummaryForTax _order = new OrderSummaryForTax();
 
 		[SetUp]
 		public void CreateHttpTest()
@@ -38,9 +38,9 @@ namespace OrderCloud.Catalyst.Tests
 		public void ShouldThrowErrorIfMissingRequiredConfigs()
 		{
 			// Arrange
-			var config = new TaxJarOCIntegrationConfig();
+			var config = new TaxJarConfig();
 			// Act 
-			var ex = Assert.Throws<IntegrationMissingConfigsException>(() => new TaxJarOCIntegrationCommand(config));
+			var ex = Assert.Throws<IntegrationMissingConfigsException>(() => new TaxJarCommand(config));
 			// Assert
 			var data = (IntegrationMissingConfigs)ex.Errors[0].Data;
 			Assert.AreEqual(data.ServiceName, "TaxJar");
@@ -55,7 +55,7 @@ namespace OrderCloud.Catalyst.Tests
 
 			var ex = Assert.ThrowsAsync<IntegrationAuthFailedException>(async () =>
 				// Act 
-				await _command.CalculateEstimateAsync(_worksheetBuilder.Build(), new List<OrderPromotion> { })
+				await _command.CalculateEstimateAsync(_order)
 			);
 
 			var data = (IntegrationAuthFailedError)ex.Errors[0].Data;
@@ -71,7 +71,7 @@ namespace OrderCloud.Catalyst.Tests
 
 			var ex = Assert.ThrowsAsync<IntegrationNoResponseException>(async () =>
 				// Act 
-				await _command.CalculateEstimateAsync(_worksheetBuilder.Build(), new List<OrderPromotion> { })
+				await _command.CalculateEstimateAsync(_order)
 			);
 
 			var data = (IntegrationNoResponseError)ex.Errors[0].Data;
@@ -88,7 +88,7 @@ namespace OrderCloud.Catalyst.Tests
 
 			var ex = Assert.ThrowsAsync<IntegrationErrorResponseException>(async () =>
 				// Act 
-				await _command.CalculateEstimateAsync(_worksheetBuilder.Build(), new List<OrderPromotion> { })
+				await _command.CalculateEstimateAsync(_order)
 			);
 
 			var data = (IntegrationErrorResponseError)ex.Errors[0].Data;
@@ -101,13 +101,12 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task ShouldCalculateTotalTaxAsSum()
 		{
 			// Arrange
-			var order = _worksheetBuilder.Build();
-			var lineItems = order.LineItems;
-			var shipEstimates = order.ShipEstimateResponse.ShipEstimates;
+			var lineItems = _order.LineItems;
+			var shipEstimates = _order.ShipEstimates;
 			var response = _fixture.Create<TaxJarCalcResponse>();
 			_httpTest.RespondWithJson(response);
 			// Act
-			var result = await _command.CalculateEstimateAsync(order, new List<OrderPromotion> { });
+			var result = await _command.CalculateEstimateAsync(_order);
 			// Assert
 			Assert.AreEqual(((lineItems.Count + shipEstimates.Count) * response.tax.amount_to_collect), result.TotalTax);
 		}
@@ -116,13 +115,12 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task EstimateShouldMakeCalculateRequests()
 		{
 			// Arrange
-			var order = _worksheetBuilder.Build();
-			var lineItems = order.LineItems;
-			var shipEstimates = order.ShipEstimateResponse.ShipEstimates;
+			var lineItems = _order.LineItems;
+			var shipEstimates = _order.ShipEstimates;
 			var response = _fixture.Create<TaxJarCalcResponse>();
 			_httpTest.RespondWithJson(response);
 			// Act
-			var result = await _command.CalculateEstimateAsync(order, new List<OrderPromotion> { });
+			var result = await _command.CalculateEstimateAsync(_order);
 			// Assert
 			_httpTest.ShouldHaveCalled($"{_config.BaseUrl}/v2/taxes").Times((lineItems.Count + shipEstimates.Count));
 			_httpTest.ShouldNotHaveCalled($"{_config.BaseUrl}/v2/taxes/orders");
@@ -132,13 +130,12 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task CommitShouldMakeBothRequests()
 		{
 			// Arrange
-			var order = _worksheetBuilder.Build();
-			var lineItems = order.LineItems;
-			var shipEstimates = order.ShipEstimateResponse.ShipEstimates;
+			var lineItems = _order.LineItems;
+			var shipEstimates = _order.ShipEstimates;
 			var response = _fixture.Create<TaxJarCalcResponse>();
 			_httpTest.RespondWithJson(response);
 			// Act
-			var result = await _command.CommitTransactionAsync(order, new List<OrderPromotion> { });
+			var result = await _command.CommitTransactionAsync(_order);
 			// Assert
 			_httpTest.ShouldHaveCalled($"{_config.BaseUrl}/v2/taxes").Times((lineItems.Count + shipEstimates.Count));
 			_httpTest.ShouldHaveCalled($"{_config.BaseUrl}/v2/taxes/orders").Times((lineItems.Count + shipEstimates.Count));

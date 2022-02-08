@@ -2,7 +2,7 @@
 
 namespace OrderCloud.Catalyst
 {
-	public class TaxJarOCIntegrationConfig : OCIntegrationConfig
+	public class TaxJarConfig : OCIntegrationConfig
 	{
 		public override string ServiceName { get; } = "TaxJar";
 		[RequiredIntegrationField]

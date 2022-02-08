@@ -6,44 +6,39 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst
 {
-	public class TaxJarClient
+	public class AvalaraClient
 	{
 		protected readonly FlurlClient _flurl;
-		protected readonly TaxJarConfig _config;
+		protected readonly AvalaraConfig _config;
 
-		public TaxJarClient(TaxJarConfig config)
+		public AvalaraClient(AvalaraConfig config)
 		{
 			_config = config;
-			_flurl = new FlurlClient(config.BaseUrl).WithOAuthBearerToken(config.APIToken);
+			_flurl = new FlurlClient(config.BaseUrl).WithBasicAuth(config.AccountID.ToString(), config.LicenseKey);
 		}
 
 		/// <summary>
-		/// https://developers.taxjar.com/api/reference/#post-create-an-order-transaction
+		/// https://developer.avalara.com/api-reference/avatax/rest/v2/methods/Definitions/ListTaxCodes/
 		/// </summary>
-		public async Task<TaxJarOrder> CreateOrderAsync(TaxJarOrder order)
+		public async Task<List<AvalaraTaxCode>> ListTaxCodesAsync(string filterParam)
 		{
-			var tax = await _flurl.Request("v2", "taxes", "orders").PostJsonAsync(order).ReceiveJson<TaxJarOrder>();
-			return tax;
-		}
-
-		/// <summary>
-		/// https://developers.taxjar.com/api/reference/#get-list-tax-categories
-		/// </summary>
-		public async Task<TaxJarCategories> ListCategoriesAsync()
-		{
-			var categories = await _flurl.Request("v2", "categories").GetJsonAsync<TaxJarCategories>();
-			return categories;
-		}
-
-		/// <summary>
-		/// https://developers.taxjar.com/api/reference/#post-calculate-sales-tax-for-an-order
-		/// </summary>
-		public async Task<TaxJarCalcResponse> CalcTaxForOrderAsync(TaxJarOrder order)
-		{
-			var request = _flurl.Request("v2", "taxes");
+			var request = _flurl.Request("api", "v2", "definitions", "taxcodes");
 			return await TryCatchRequestAsync(request, async () =>
 			{
-				var tax = await request.PostJsonAsync(order).ReceiveJson<TaxJarCalcResponse>();
+				var tax = await request.SetQueryParam("$filter", filterParam).GetJsonAsync();
+				return tax;
+			});
+		}
+
+		/// <summary>
+		/// https://developer.avalara.com/api-reference/avatax/rest/v2/methods/Transactions/CreateTransaction/
+		/// </summary>
+		public async Task<AvalaraTransactionModel> CreateTransaction(AvalaraCreateTransactionModel transaction)
+		{
+			var request = _flurl.Request("api", "v2", "transactions", "create");
+			return await TryCatchRequestAsync(request, async () =>
+			{
+				var tax = await request.PostJsonAsync(transaction).ReceiveJson<AvalaraTransactionModel>();
 				return tax;
 			});
 		}
@@ -70,7 +65,7 @@ namespace OrderCloud.Catalyst
 				{
 					throw new IntegrationAuthFailedException(_config, request.Url);
 				}
-				var body = await ex.Call.Response.GetJsonAsync<TaxJarError>();
+				var body = await ex.Call.Response.GetJsonAsync();
 				throw new IntegrationErrorResponseException(_config, request.Url, body);
 			}
 		}

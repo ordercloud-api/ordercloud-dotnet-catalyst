@@ -11,7 +11,7 @@ Creating an integration in this project means it will be published as part of a 
 All integrations should include two classes designed to be exposed and consumed by solutions - an `OCIntegrationConfig` and an `OCIntegrationCommand`. The config is a POCO which contains properties for all the environment variables and secrets needed to authenticate to the service. The command exposes the functionality of your integration through methods. For an example service called "Mississippi" you would create the classes below. 
 
 ```c#
-public class MississippiOCIntegrationConfig : OCIntegrationConfig
+public class MississippiConfig : OCIntegrationConfig
 {
     public override string ServiceName { get; } = "Mississippi";
 
@@ -22,11 +22,11 @@ public class MississippiOCIntegrationConfig : OCIntegrationConfig
 }
 ```
 ```c#
-public class MississippiOCIntegrationCommand : OCIntegrationCommand
+public class MississippiCommand : OCIntegrationCommand
 {
-	protected readonly MississippiOCIntegrationConfig _config;
+	protected readonly MississippiConfig _config;
 
-	public MississippiOCIntegrationCommand(MississippiOCIntegrationConfig config) : base(config)
+	public MississippiOCIntegrationCommand(MississippiConfig config) : base(config)
 	{
 		_config = config; // used to auth to service
 	}
@@ -56,6 +56,8 @@ Feel free open issues recommending changes or additions to the interfaces.
  - Folders and files	
 	- Under [/Integrations/Implementations](./Implementations) create a folder with your service name (e.g. "Mississippi") to contain your files. 
 	- At the root of your new folder include your Command, Config and a README.md. Copy the README format of existing integrations.
+	- All files and class names should begin with your service name.
+	- Many of the existing integrations also have a Client class. For these integrations the Client class is a pure API wrapper, handling HTTP requests and exceptions. This leaves mapping as the responsibility of the Command class. 
  - Errors 
 	- Handle error scenarios within your integration by throwing one of the exceptions in [/Integrations/Exceptions](./Exceptions). 
 	- Every integration should handle cases like missing configs, invalid authentication, error response, and no response.

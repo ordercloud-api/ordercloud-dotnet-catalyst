@@ -12,21 +12,17 @@ namespace OrderCloud.Catalyst
 	{
 		public const string ShippingLineCode = "shipping_code";
 
-		public static VertexCalculateTaxRequest ToVertexCalculateTaxRequest(this OrderWorksheet order, List<OrderPromotion> promosOnOrder, string companyCode, VertexSaleMessageType type)
+		public static VertexCalculateTaxRequest ToVertexCalculateTaxRequest(OrderSummaryForTax order, string companyCode, VertexSaleMessageType type)
 		{
-			var itemLines = order.LineItems.Select(li => ToVertexLineItem(li));
-			var shippingLines = order.ShipEstimateResponse.ShipEstimates.Select(se =>
-			{
-				var firstLi = order.GetShipEstimateLineItems(se.ID).First().LineItem;
-				return ToVertexShipLineItem(se, firstLi.ShippingAddress);
-			});
+			var itemLines = order.LineItems.Select(ToVertexLineItem);
+			var shippingLines = order.ShipEstimates.Select(ToVertexShipLineItem);
 
 			return new VertexCalculateTaxRequest()
 			{
 				postingDate = DateTime.UtcNow.ToString("yyyy-MM-dd"),
 				saleMessageType = type.ToString(),
 				transactionType = VertexTransactionType.SALE.ToString(),
-				transactionId = order.Order.ID,
+				transactionId = order.OrderID,
 				seller = new VertexSeller()
 				{
 					company = companyCode
@@ -35,61 +31,63 @@ namespace OrderCloud.Catalyst
 				{
 					customerCode = new VertexCustomerCode()
 					{
-						classCode = order.Order.FromUserID,
-						value = order.Order.FromUser.Email
+						value = order.CustomerCode
 					},
 				},
 				lineItems = itemLines.Concat(shippingLines).ToList()
 			};
 		}
 
-		public static VertexLineItem ToVertexLineItem(LineItem lineItem)
+		public static VertexLineItem ToVertexLineItem(LineItemSummaryForTax lineItem)
 		{
 			return new VertexLineItem()
 			{
 				customer = new VertexCustomer()
 				{
-					destination = lineItem.ShippingAddress.ToVertexLocation(),
+					destination = ToVertexLocation(lineItem.ShipTo),
 				},
 				product = new VertexProduct()
 				{
-					productClass = lineItem.Product.ID,
-					value = lineItem.Product.Name
+					productClass = lineItem.ProductID,
+					value = lineItem.ProductName
 				},
 				quantity = new VertexMeasure()
 				{
 					value = lineItem.Quantity
 				},
-				unitPrice = lineItem.UnitPrice ?? 0,
-				lineItemId = lineItem.ID,
+				unitPrice = lineItem.UnitPrice,
+				lineItemId = lineItem.LineItemID,
+				discount = new VertexDiscount()
+				{
+
+				},
 				extendedPrice = lineItem.LineTotal // this takes precedence over quanitity and unit price in determining tax cost
 			};
 		}
 
-		public static VertexLineItem ToVertexShipLineItem(ShipEstimate shipEstimate, Address shipTo)
+		public static VertexLineItem ToVertexShipLineItem(ShipEstimateSummaryForTax shipEstimate)
 		{
-			var selectedMethod = shipEstimate.GetSelectedShipMethod();
 			return new VertexLineItem()
 			{
 				customer = new VertexCustomer()
 				{
-					destination = shipTo.ToVertexLocation(),
+					destination = ToVertexLocation(shipEstimate.ShipTo),
 				},
 				product = new VertexProduct()
 				{
 					productClass = ShippingLineCode,
-					value = selectedMethod.Name
+					value = shipEstimate.Description
 				},
 				quantity = new VertexMeasure()
 				{
 					value = 1
 				},
-				unitPrice = selectedMethod.Cost,
-				lineItemId = shipEstimate.ID,
+				unitPrice = shipEstimate.Cost,
+				lineItemId = shipEstimate.ShipEstimateID,
 			};
 		}
 
-		public static VertexLocation ToVertexLocation(this Address address)
+		public static VertexLocation ToVertexLocation(Address address)
 		{
 			return new VertexLocation()
 			{

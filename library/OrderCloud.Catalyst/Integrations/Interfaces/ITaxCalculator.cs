@@ -14,11 +14,11 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Calculates tax for an order without creating any records. Use this to display tax amount to user prior to order submit.
 		/// </summary>
-		Task<OrderTaxCalculation> CalculateEstimateAsync(OrderWorksheet orderWorksheet, List<OrderPromotion> promotions);
+		Task<OrderTaxCalculation> CalculateEstimateAsync(OrderSummaryForTax orderSummary);
 		/// <summary>
 		/// Creates a tax transaction record in the calculating system. Use this once per order - on order submit, payment capture, or fulfillment.
 		/// </summary>
-		Task<OrderTaxCalculation> CommitTransactionAsync(OrderWorksheet orderWorksheet, List<OrderPromotion> promotions);
+		Task<OrderTaxCalculation> CommitTransactionAsync(OrderSummaryForTax orderSummary);
 	}
 
 	/// <summary>
@@ -100,5 +100,46 @@ namespace OrderCloud.Catalyst
 		/// ID of the ship estimate this tax applies to. Null if not a shipping tax.
 		/// </summary>
 		public string ShipEstimateID { get; set; }
+	}
+
+	public class OrderSummaryForTax
+	{
+		public string OrderID { get; set; }
+		public string CustomerCode { get; set; }
+		/// <summary>
+		///  Sum of the LineItem-level PromotionDiscounts plus the discount from all Order-level promotions.
+		/// </summary>
+		public decimal PromotionDiscount { get; set; }
+		public List<LineItemSummaryForTax> LineItems { get; set; }
+		public List<ShipEstimateSummaryForTax> ShipEstimates { get; set; }
+	}
+
+	public class LineItemSummaryForTax
+	{
+		public string LineItemID { get; set; }
+		public string ProductID { get; set; }
+		public string ProductName { get; set; }
+		public int Quantity { get; set; }
+		public decimal UnitPrice { get; set; }
+		public decimal PromotionDiscount { get; set; }
+		/// <summary>
+		/// (UnitPrice * Quantity) - PromotionDiscount
+		/// </summary>
+		public decimal LineTotal { get; set; }
+		public string TaxCode { get; set; }
+		public Address ShipTo { get; set; }
+		public Address ShipFrom { get; set; }
+	}
+
+	public class ShipEstimateSummaryForTax
+	{
+		public string ShipEstimateID { get; set; }
+		/// <summary>
+		/// E.G. "Fedex 2-day priority" 
+		/// </summary>
+		public string Description { get; set; }
+		public decimal Cost { get; set; }
+		public Address ShipTo { get; set; }
+		public Address ShipFrom { get; set; }
 	}
 }

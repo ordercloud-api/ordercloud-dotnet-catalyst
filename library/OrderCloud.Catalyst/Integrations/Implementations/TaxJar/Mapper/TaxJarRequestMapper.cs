@@ -15,77 +15,70 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		///	Returns a list of TaxJarOrders because each order has a single to and from address. They coorespond to OrderCloud LineItems. 
 		/// </summary>
-		public static List<TaxJarOrder> ToOrders(OrderWorksheet order)
+		public static List<TaxJarOrder> ToOrders(OrderSummaryForTax order)
 		{
-			var itemLines = order.LineItems.Select(li => ToTaxJarLineOrder(li, order.Order.ID));
-			var shippingLines = order.ShipEstimateResponse.ShipEstimates.Select(se =>
-			{
-				var firstLineItem = order.GetShipEstimateLineItems(se.ID).First().LineItem;
-				return ToTaxJarShipOrder(se, firstLineItem, order.Order.ID);
-			});
+			var itemLines = order.LineItems.Select(li => ToTaxJarLineOrder(li, order.OrderID));
+			var shippingLines = order.ShipEstimates.Select(se => ToTaxJarShipOrder(se, order.OrderID));
 			return itemLines.Concat(shippingLines).ToList();
 		}
 
-		private  static TaxJarOrder ToTaxJarShipOrder(ShipEstimate shipEstimate, LineItem lineItem, string orderID)
+		private  static TaxJarOrder ToTaxJarShipOrder(ShipEstimateSummaryForTax shipEstimate, string orderID)
 		{
-			var selectedShipMethod = shipEstimate.GetSelectedShipMethod();
 			return new TaxJarOrder()
 			{
-				transaction_id = CreateShipTransactionID(orderID, shipEstimate.ID),
+				transaction_id = CreateShipTransactionID(orderID, shipEstimate.ShipEstimateID),
 				shipping = 0, // will create separate lines for shipping
 
-				from_city = lineItem.ShipFromAddress.City,
-				from_zip = lineItem.ShipFromAddress.Zip,
-				from_state = lineItem.ShipFromAddress.State,
-				from_country = lineItem.ShipFromAddress.Country,
-				from_street = lineItem.ShipFromAddress.Street1,
+				from_city = shipEstimate.ShipFrom.Zip,
+				from_state = shipEstimate.ShipFrom.State,
+				from_country = shipEstimate.ShipFrom.Country,
+				from_street = shipEstimate.ShipFrom.Street1,
 
-				to_city = lineItem.ShippingAddress.City,
-				to_zip = lineItem.ShippingAddress.Zip,
-				to_state = lineItem.ShippingAddress.State,
-				to_country = lineItem.ShippingAddress.Country,
-				to_street = lineItem.ShippingAddress.Street1,
+				to_city = shipEstimate.ShipTo.City,
+				to_zip = shipEstimate.ShipTo.Zip,
+				to_state = shipEstimate.ShipTo.State,
+				to_country = shipEstimate.ShipTo.Country,
+				to_street = shipEstimate.ShipTo.Street1,
 
 				line_items = new List<TaxJarLineItem> {
 					new TaxJarLineItem()
 					{
-						id = shipEstimate.ID,
+						id = shipEstimate.ShipEstimateID,
 						quantity = 1,
-						unit_price = selectedShipMethod.Cost,
-						description = selectedShipMethod.Name,
+						unit_price = shipEstimate.Cost,
+						description = shipEstimate.Description,
 						product_identifier = ShippingLineCode,
 					}
 				}
 			};
 		}
 
-		private static TaxJarOrder ToTaxJarLineOrder(LineItem lineItem, string orderID)
+		private static TaxJarOrder ToTaxJarLineOrder(LineItemSummaryForTax lineItem, string orderID)
 		{
 			return new TaxJarOrder()
 			{
-				transaction_id = CreateLineTransactionID(orderID, lineItem.ID),
+				transaction_id = CreateLineTransactionID(orderID, lineItem.LineItemID),
 				shipping = 0, // will create separate lines for shipping
 
-				from_city = lineItem.ShipFromAddress.City,
-				from_zip = lineItem.ShipFromAddress.Zip,
-				from_state = lineItem.ShipFromAddress.State,
-				from_country = lineItem.ShipFromAddress.Country,
-				from_street = lineItem.ShipFromAddress.Street1,
+				from_city = lineItem.ShipFrom.Zip,
+				from_state = lineItem.ShipFrom.State,
+				from_country = lineItem.ShipFrom.Country,
+				from_street = lineItem.ShipFrom.Street1,
 
-				to_city = lineItem.ShippingAddress.City,
-				to_zip = lineItem.ShippingAddress.Zip,
-				to_state = lineItem.ShippingAddress.State,
-				to_country = lineItem.ShippingAddress.Country,
-				to_street = lineItem.ShippingAddress.Street1,
+				to_city = lineItem.ShipTo.City,
+				to_zip = lineItem.ShipTo.Zip,
+				to_state = lineItem.ShipTo.State,
+				to_country = lineItem.ShipTo.Country,
+				to_street = lineItem.ShipTo.Street1,
 
 				line_items = new List<TaxJarLineItem> {
 					new TaxJarLineItem()
 					{
-						id = lineItem.ID,
+						id = lineItem.LineItemID,
 						quantity = lineItem.Quantity,
-						unit_price = lineItem.UnitPrice ?? 0,
-						description = lineItem.Product.Name,
-						product_identifier = lineItem.Product.ID,
+						unit_price = lineItem.UnitPrice,
+						description = lineItem.ProductName,
+						product_identifier = lineItem.ProductID,
 					}
 				}
 			};

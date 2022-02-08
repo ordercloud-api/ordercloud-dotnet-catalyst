@@ -17,9 +17,8 @@ namespace OrderCloud.Catalyst
 			var itemLines = order.LineItems.Select(li => ToVertexLineItem(li));
 			var shippingLines = order.ShipEstimateResponse.ShipEstimates.Select(se =>
 			{
-				var firstLi = order.LineItems.FirstOrDefault(li => li.ID == se.ShipEstimateItems.First().LineItemID);
-				Require.That(firstLi != null, new CatalystBaseException("InvalidOrderWorksheet", $"Invalid OrderWorksheet. Based on ShipEstimateItems, expected to find a LineItem with ID {se.ShipEstimateItems.First().LineItemID}", null, HttpStatusCode.BadRequest));
-				return ToVertexLineItem(se, firstLi.ShippingAddress);
+				var firstLi = order.GetShipEstimateLineItems(se.ID).First().LineItem;
+				return ToVertexShipLineItem(se, firstLi.ShippingAddress);
 			});
 
 			return new VertexCalculateTaxRequest()
@@ -67,10 +66,9 @@ namespace OrderCloud.Catalyst
 			};
 		}
 
-		public static VertexLineItem ToVertexLineItem(ShipEstimate shipEstimate, Address shipTo)
+		public static VertexLineItem ToVertexShipLineItem(ShipEstimate shipEstimate, Address shipTo)
 		{
-			var selectedMethod = shipEstimate.ShipMethods.FirstOrDefault(m => m.ID == shipEstimate.SelectedShipMethodID);
-			Require.That(selectedMethod != null, new CatalystBaseException("InvalidOrderWorksheet", $"Invalid OrderWorksheet. Based on SelectedShipMethodID, expected to find a ShipMethod with ID {shipEstimate.SelectedShipMethodID}", null, HttpStatusCode.BadRequest));
+			var selectedMethod = shipEstimate.GetSelectedShipMethod();
 			return new VertexLineItem()
 			{
 				customer = new VertexCustomer()

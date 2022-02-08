@@ -9,7 +9,7 @@ namespace OrderCloud.Catalyst
 	{
 		public IntegrationNoResponseException(OCIntegrationConfig config, string requestUrl) : base(
 				"IntegrationNoResponse",
-				$"Request to 3rd party service \"{config.ServiceName}\" returned no response.",
+				$"A request to 3rd party service {config.ServiceName} returned no response.",
 				new IntegrationNoResponseError()
 				{
 					ServiceName = config.ServiceName,

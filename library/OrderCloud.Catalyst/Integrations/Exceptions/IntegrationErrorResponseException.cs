@@ -9,7 +9,7 @@ namespace OrderCloud.Catalyst
 	{
 		public IntegrationErrorResponseException(OCIntegrationConfig config, string requestUrl, object responseBody) : base(
 			"IntegrationErrorResponse",
-			$"Request to 3rd party service \"{config.ServiceName}\" resulted in an error. See body for details.",
+			$"A request to 3rd party service {config.ServiceName} resulted in an error. See ResponseBody for details.",
 			new IntegrationErrorResponseError()
 			{
 				ServiceName = config.ServiceName,

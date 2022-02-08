@@ -9,7 +9,7 @@ namespace OrderCloud.Catalyst
 	{
 		public IntegrationAuthFailedException(OCIntegrationConfig config, string requestUrl) : base(
 			"IntegrationAuthorizationFailed",
-			$"Authentication to 3rd party service \"{config.ServiceName}\" failed. Check your config credentials.",
+			$"A request to 3rd party service {config.ServiceName} resulted in an Unauthorized error. Check your config credentials.",
 			new IntegrationAuthFailedError() 
 			{
 				ServiceName = config.ServiceName,

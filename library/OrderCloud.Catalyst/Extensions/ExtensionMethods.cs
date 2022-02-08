@@ -105,5 +105,36 @@ namespace OrderCloud.Catalyst
 			if (qp.Count == 0) { return null; }
 			return string.Join("&", qp.Select(x => $"{x.Name}={x.Value}"));
 		}
+
+		/// <summary>
+		/// Helper method for dealing with the ShipEstimate model. 
+		/// </summary>
+		/// <returns>The selected ShipMethod</returns>
+		public static ShipMethod GetSelectedShipMethod(this ShipEstimate shipEstimate)
+		{
+			var selectedMethod = shipEstimate.ShipMethods.FirstOrDefault(m => m.ID == shipEstimate.SelectedShipMethodID);
+			Require.That(selectedMethod != null, new InvalidOperationException($"SelectedShipMethodID is ${shipEstimate.SelectedShipMethodID} but no matching object was found in ShipMethods List."));
+			return selectedMethod;
+		}
+
+		/// <summary>
+		/// Helper method for dealing with the ShipEstimate model. Maps ShipEstimateItems from lineItem IDs to full LineItems.
+		/// </summary>
+		/// <returns>Full model of all LineItems on the specified ShipEstimate</returns>
+		public static List<(int Quantity, LineItem LineItem)> GetShipEstimateLineItems(this OrderWorksheet order, string shipEstimateID)
+		{
+			var shipEstimate = order.ShipEstimateResponse.ShipEstimates.FirstOrDefault(se => se.ID == shipEstimateID);
+			Require.That(shipEstimate != null, new ArgumentException($"No matching ship estimate found with ID {shipEstimateID}"));
+
+			var lineItems = new List<(int quantity, LineItem lineItem)> { };
+			foreach (var shipEstimateItem in shipEstimate.ShipEstimateItems)
+			{
+				var lineItem = order.LineItems.FirstOrDefault(li => li.ID == shipEstimateItem.LineItemID);
+				Require.That(lineItem != null, new InvalidOperationException($"ShipEstimateItem.LineItemID is ${shipEstimateItem.LineItemID} but no matching object was was found in OrderWorksheet.LineItems."));
+				lineItems.Add((shipEstimateItem.Quantity, lineItem));
+			}
+
+			return lineItems;
+		}
 	}
 }

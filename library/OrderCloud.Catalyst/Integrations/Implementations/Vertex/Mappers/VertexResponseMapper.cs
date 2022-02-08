@@ -18,7 +18,7 @@ namespace OrderCloud.Catalyst
 			{
 				OrderID = response.transactionId,
 				ExternalTransactionID = response.transactionId,
-				TotalTax = (decimal) response.totalTax,
+				TotalTax = response.totalTax,
 				LineItems = itemLines.Select(ToItemTaxDetails).ToList(),
 				OrderLevelTaxes = shippingLines.SelectMany(ToShippingTaxDetails).ToList()
 			};
@@ -34,7 +34,7 @@ namespace OrderCloud.Catalyst
 			return new LineItemTaxCalculation()
 			{
 				LineItemID = transactionLineModel.lineItemId,
-				LineItemTotalTax = (decimal) transactionLineModel.totalTax,
+				LineItemTotalTax = transactionLineModel.totalTax,
 				LineItemLevelTaxes = transactionLineModel.taxes?.Select(detail => detail.ToTaxDetails(null)).ToList() ?? new List<TaxDetails>()
 			};
 		}
@@ -43,8 +43,8 @@ namespace OrderCloud.Catalyst
 		{
 			return new TaxDetails()
 			{
-				Tax = (decimal) detail.calculatedTax,
-				Taxable = (decimal) detail.taxable,
+				Tax = detail.calculatedTax,
+				Taxable = detail.taxable,
 				Exempt = 0, // we don't get a property back for exempt
 				TaxDescription = detail.impositionType.value,
 				JurisdictionLevel = detail.jurisdiction.jurisdictionLevel.ToString(),

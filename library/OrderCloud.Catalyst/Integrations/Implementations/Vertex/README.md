@@ -23,7 +23,7 @@ A taxable transaction is committed to vertex asynchronously shortly following or
 ## Set up steps
 
 - You should set up a .NET middleware project using the Catalyst library and starter project. [See guide](https://ordercloud.io/knowledge-base/start-dotnet-middleware-from-scratch).
-- Through the OrderCloud API configure an Order Chekout IntegrationEvent object to point to your new middleware. [See guide](https://ordercloud.io/knowledge-base/order-checkout-integration)
+- Using the OrderCloud API Portal, configure an Order Chekout IntegrationEvent object to point to your new middleware. [See guide](https://ordercloud.io/knowledge-base/order-checkout-integration)
 - Create a vertex account online and retrieve all the configuration variables required in [VertexOCIntegrationConfig.cs](./VertexOCIntegrationConfig.cs); 
 	- CompanyName
 	- ClientID

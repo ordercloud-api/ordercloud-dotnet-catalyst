@@ -13,14 +13,14 @@ namespace OrderCloud.Catalyst
 		private static string CreateShipTransactionID(string orderID, string shipEstimateID) => $"OrderID:|{orderID}|ShippingEstimateID:|{shipEstimateID}";
 
 		/// <summary>
-		///	Returns a list of TaxJarOrders because each order has a single to and from address. They therefor coorespond to OrderCloud LineItems. 
+		///	Returns a list of TaxJarOrders because each order has a single to and from address. They coorespond to OrderCloud LineItems. 
 		/// </summary>
 		public static List<TaxJarOrder> ToOrders(OrderWorksheet order)
 		{
 			var itemLines = order.LineItems.Select(li => ToTaxJarLineOrder(li, order.Order.ID));
 			var shippingLines = order.ShipEstimateResponse.ShipEstimates.Select(se =>
 			{
-				var firstLineItem = order.LineItems.First(li => li.ID == se.ShipEstimateItems.First().LineItemID);
+				var firstLineItem = order.GetShipEstimateLineItems(se.ID).First().LineItem;
 				return ToTaxJarShipOrder(se, firstLineItem, order.Order.ID);
 			});
 			return itemLines.Concat(shippingLines).ToList();
@@ -28,7 +28,7 @@ namespace OrderCloud.Catalyst
 
 		private  static TaxJarOrder ToTaxJarShipOrder(ShipEstimate shipEstimate, LineItem lineItem, string orderID)
 		{
-			var selectedShipMethod = shipEstimate.ShipMethods.First(x => x.ID == shipEstimate.SelectedShipMethodID);
+			var selectedShipMethod = shipEstimate.GetSelectedShipMethod();
 			return new TaxJarOrder()
 			{
 				transaction_id = CreateShipTransactionID(orderID, shipEstimate.ID),

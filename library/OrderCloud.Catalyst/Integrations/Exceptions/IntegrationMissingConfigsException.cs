@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
 
 namespace OrderCloud.Catalyst
 {
@@ -9,7 +8,7 @@ namespace OrderCloud.Catalyst
 	{
 		public IntegrationMissingConfigsException(OCIntegrationConfig config, List<string> missingFields) : base(
 			"IntegrationMissingConfigs",
-			$"Configuration field(s) for 3rd party service \"{config.ServiceName}\" are null or empty. Check fields on class {config.GetType().Name}.",
+			$"One or more configuration fields for 3rd party service {config.ServiceName} are null or empty. Requests to the service were not attempted.",
 			new IntegrationMissingConfigs()
 			{
 				ServiceName = config.ServiceName,

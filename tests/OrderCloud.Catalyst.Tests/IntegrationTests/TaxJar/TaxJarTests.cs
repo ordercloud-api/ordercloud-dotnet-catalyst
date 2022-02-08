@@ -20,7 +20,7 @@ namespace OrderCloud.Catalyst.Tests
 			BaseUrl = "https://api.fake.com"
 		};
 		private TaxJarCommand _command = new TaxJarCommand(_config);
-		private OrderSummaryForTax _order = new OrderSummaryForTax();
+		private OrderSummaryForTax _order = _fixture.Create<OrderSummaryForTax>();
 
 		[SetUp]
 		public void CreateHttpTest()

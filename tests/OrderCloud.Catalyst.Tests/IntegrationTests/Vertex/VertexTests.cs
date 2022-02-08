@@ -16,7 +16,7 @@ namespace OrderCloud.Catalyst.Tests
         private HttpTest _httpTest;
         private static VertexConfig _config = _fixture.Create<VertexConfig>();
         private VertexCommand _command = new VertexCommand(_config);
-		private OrderSummaryForTax _order = new OrderSummaryForTax();
+		private OrderSummaryForTax _order = _fixture.Create<OrderSummaryForTax>();
 
 		[SetUp]
         public void CreateHttpTest()

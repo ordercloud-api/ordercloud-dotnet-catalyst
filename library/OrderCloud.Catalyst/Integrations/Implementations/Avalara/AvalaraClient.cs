@@ -1,6 +1,7 @@
 ﻿using Flurl.Http;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace OrderCloud.Catalyst
 		public AvalaraClient(AvalaraConfig config)
 		{
 			_config = config;
-			_flurl = new FlurlClient(config.BaseUrl).WithBasicAuth(config.AccountID.ToString(), config.LicenseKey);
+			_flurl = new FlurlClient(config.BaseUrl).WithBasicAuth(config.AccountID, config.LicenseKey);
 		}
 
 		/// <summary>
@@ -25,8 +26,8 @@ namespace OrderCloud.Catalyst
 			var request = _flurl.Request("api", "v2", "definitions", "taxcodes");
 			return await TryCatchRequestAsync(request, async () =>
 			{
-				var tax = await request.SetQueryParam("$filter", filterParam).GetJsonAsync();
-				return tax;
+				var tax = await request.SetQueryParam("$filter", filterParam).GetJsonAsync<AvalaraFetchResult<AvalaraTaxCode>>();
+				return tax.value;
 			});
 		}
 
@@ -56,17 +57,17 @@ namespace OrderCloud.Catalyst
 			}
 			catch (FlurlHttpException ex)
 			{
-				if (ex.Call.Response == null || ex.Call.Response.StatusCode > 500)  // simulate by putting laptop on airplane mode
+				var status = ex?.Call?.Response?.StatusCode;
+				if (status == null) // simulate by putting laptop on airplane mode
 				{
-					// candidate for retry here?
 					throw new IntegrationNoResponseException(_config, request.Url);
 				}
-				if (ex.Call.Response.StatusCode == 401)
+				if (status == 401)
 				{
-					throw new IntegrationAuthFailedException(_config, request.Url);
+					throw new IntegrationAuthFailedException(_config, request.Url, (int)status);
 				}
 				var body = await ex.Call.Response.GetJsonAsync();
-				throw new IntegrationErrorResponseException(_config, request.Url, body);
+				throw new IntegrationErrorResponseException(_config, request.Url, (int)status, body);
 			}
 		}
 	}

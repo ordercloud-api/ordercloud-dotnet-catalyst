@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace OrderCloud.Catalyst
 {
@@ -38,13 +39,13 @@ namespace OrderCloud.Catalyst
 			}
 			catch (FlurlHttpException ex)
 			{
-				if (ex.Call.Response == null || ex.Call.Response.StatusCode > 500)  // simulate by putting laptop on airplane mode
+				var status = ex?.Call?.Response?.StatusCode;
+				if (status == null) // simulate by putting laptop on airplane mode
 				{
-					// candidate for retry here?
 					throw new IntegrationNoResponseException(_config, url);
 				}
 				var body = await ex.Call.Response.GetJsonAsync<VertexResponse<VertexCalculateTaxResponse>>();
-				throw new IntegrationErrorResponseException(_config, url, body.errors);
+				throw new IntegrationErrorResponseException(_config, url, ex.Call.Response.StatusCode, body.errors);
 			}
 		}
 
@@ -80,12 +81,12 @@ namespace OrderCloud.Catalyst
 			}
 			catch (FlurlHttpException ex)
 			{
-				if (ex.Call.Response == null || ex.Call.Response.StatusCode > 500)  // simulate by putting laptop on airplane mode
+				var status = ex?.Call?.Response?.StatusCode;
+				if (status == null) // simulate by putting laptop on airplane mode
 				{
-					// candidate for retry here?
 					throw new IntegrationNoResponseException(_config, url);
 				}
-				throw new IntegrationAuthFailedException(_config, url);
+				throw new IntegrationAuthFailedException(_config, url, (int)status);
 			}
 		}
 	}

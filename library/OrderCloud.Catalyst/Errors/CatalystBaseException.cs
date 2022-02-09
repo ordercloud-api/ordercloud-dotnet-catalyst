@@ -42,12 +42,12 @@ namespace OrderCloud.Catalyst
 
 
 		// Keeping these depreacated constructors that take an Int for backwards compatibility.
-		//public CatalystBaseException(ApiError apiError, int httpStatus) : this(apiError, (HttpStatusCode)httpStatus) { }
+		public CatalystBaseException(ApiError apiError, int httpStatus) : this(apiError, (HttpStatusCode)httpStatus) { }
 
-		//public CatalystBaseException(IList<ApiError> errors, int httpStatus): this(errors, (HttpStatusCode)httpStatus) { }
+		public CatalystBaseException(IList<ApiError> errors, int httpStatus) : this(errors, (HttpStatusCode)httpStatus) { }
 
-		//public CatalystBaseException(string errorCode, string message, object data, int httpStatus)
-		//	: this(errorCode, message, data, (HttpStatusCode)httpStatus) { }
+		public CatalystBaseException(string errorCode, string message, object data, int httpStatus)
+			: this(errorCode, message, data, (HttpStatusCode)httpStatus) { }
 
 
 	}

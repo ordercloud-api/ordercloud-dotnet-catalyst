@@ -4,7 +4,7 @@ using System.Text;
 
 namespace OrderCloud.Catalyst
 { 
-	public class AvalaraList<T>
+	public class AvalaraFetchResult<T>
 	{
 		public int @recordsetCount { get; set; }
 		public List<T> value { get; set; } = new List<T> { };

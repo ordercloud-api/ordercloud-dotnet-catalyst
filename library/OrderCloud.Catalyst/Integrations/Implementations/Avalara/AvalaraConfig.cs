@@ -10,11 +10,9 @@ namespace OrderCloud.Catalyst
 		[RequiredIntegrationField]
 		public string BaseUrl { get; set; }
 		[RequiredIntegrationField]
-		public int AccountID { get; set; }
+		public string AccountID { get; set; }
 		[RequiredIntegrationField]
 		public string LicenseKey { get; set; }
-		[RequiredIntegrationField]
-		public int CompanyID { get; set; }
 		[RequiredIntegrationField]
 		public string CompanyCode { get; set; }
 	}

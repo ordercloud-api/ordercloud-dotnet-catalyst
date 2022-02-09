@@ -1,6 +1,7 @@
 ﻿using Flurl.Http;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -61,17 +62,17 @@ namespace OrderCloud.Catalyst
 			}
 			catch (FlurlHttpException ex)
 			{
-				if (ex.Call.Response == null || ex.Call.Response.StatusCode > 500)  // simulate by putting laptop on airplane mode
+				var status = ex?.Call?.Response?.StatusCode;
+				if (status == null) // simulate by putting laptop on airplane mode
 				{
-					// candidate for retry here?
 					throw new IntegrationNoResponseException(_config, request.Url);
 				}
-				if (ex.Call.Response.StatusCode == 401)
+				if (status == 401)
 				{
-					throw new IntegrationAuthFailedException(_config, request.Url);
+					throw new IntegrationAuthFailedException(_config, request.Url, (int)status);
 				}
-				var body = await ex.Call.Response.GetJsonAsync<TaxJarError>();
-				throw new IntegrationErrorResponseException(_config, request.Url, body);
+				var body = await ex.Call.Response.GetJsonAsync();
+				throw new IntegrationErrorResponseException(_config, request.Url, (int)status, body);
 			}
 		}
 	}

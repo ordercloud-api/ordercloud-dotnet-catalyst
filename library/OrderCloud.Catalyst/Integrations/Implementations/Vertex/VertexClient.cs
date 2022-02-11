@@ -12,18 +12,11 @@ namespace OrderCloud.Catalyst
 	{
 		protected const string ApiUrl = "https://restconnect.vertexsmb.com";
 		protected const string AuthUrl = "https://auth.vertexsmb.com";
-		protected DateTimeOffset? CurrentTokenExpires = null;
-		protected readonly VertexConfig _config;
-		protected VertexTokenResponse _token;
 
-		public VertexClient(VertexConfig config)
+		public static async Task<VertexCalculateTaxResponse> CalculateTax(VertexCalculateTaxRequest request, VertexConfig config)
 		{
-			_config = config;
-		}
-
-		public async Task<VertexCalculateTaxResponse> CalculateTax(VertexCalculateTaxRequest request)
-		{
-			var token = await GetToken(_config);
+			// TODO - cache the token. But, support config overrides and don't create multiple HttpClient objects in memory
+			var token = await GetToken(config); 
 			var url = $"{ApiUrl}/vertex-restapi/v1/sale";
 			try
 			{
@@ -35,28 +28,23 @@ namespace OrderCloud.Catalyst
 			} catch (FlurlHttpTimeoutException ex)  // simulate with this https://stackoverflow.com/questions/100841/artificially-create-a-connection-timeout-error
 			{
 				// candidate for retry here?
-				throw new IntegrationNoResponseException(_config, url);
+				throw new IntegrationNoResponseException(config, url);
 			}
 			catch (FlurlHttpException ex)
 			{
 				var status = ex?.Call?.Response?.StatusCode;
 				if (status == null) // simulate by putting laptop on airplane mode
 				{
-					throw new IntegrationNoResponseException(_config, url);
+					throw new IntegrationNoResponseException(config, url);
 				}
 				var body = await ex.Call.Response.GetJsonAsync<VertexResponse<VertexCalculateTaxResponse>>();
-				throw new IntegrationErrorResponseException(_config, url, ex.Call.Response.StatusCode, body.errors);
+				throw new IntegrationErrorResponseException(config, url, ex.Call.Response.StatusCode, body.errors);
 			}
 		}
 
 
-		protected async Task<VertexTokenResponse> GetToken(VertexConfig config)
+		protected static async Task<VertexTokenResponse> GetToken(VertexConfig config)
 		{
-			if (_token?.access_token != null && CurrentTokenExpires != null && CurrentTokenExpires > DateTimeOffset.Now)
-			{
-				return _token;
-			}
-
 			var body = new
 			{
 				scope = "calc-rest-api",
@@ -71,22 +59,20 @@ namespace OrderCloud.Catalyst
 			{
 				var response = await url.PostUrlEncodedAsync(body);
 				var token = await response.GetJsonAsync<VertexTokenResponse>();
-				_token = token;
-				CurrentTokenExpires = DateTimeOffset.Now.AddSeconds(token.expires_in);
 				return token;
 			} catch (FlurlHttpTimeoutException ex)  // simulate with this https://stackoverflow.com/questions/100841/artificially-create-a-connection-timeout-error
 			{
 				// candidate for retry here?
-				throw new IntegrationNoResponseException(_config, url);
+				throw new IntegrationNoResponseException(config, url);
 			}
 			catch (FlurlHttpException ex)
 			{
 				var status = ex?.Call?.Response?.StatusCode;
 				if (status == null) // simulate by putting laptop on airplane mode
 				{
-					throw new IntegrationNoResponseException(_config, url);
+					throw new IntegrationNoResponseException(config, url);
 				}
-				throw new IntegrationAuthFailedException(_config, url, (int)status);
+				throw new IntegrationAuthFailedException(config, url, (int)status);
 			}
 		}
 	}

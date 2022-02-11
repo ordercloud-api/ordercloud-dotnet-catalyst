@@ -124,7 +124,7 @@ namespace OrderCloud.Catalyst
 		public static List<(int Quantity, LineItem LineItem)> GetShipEstimateLineItems(this OrderWorksheet order, string shipEstimateID)
 		{
 			var shipEstimate = order.ShipEstimateResponse.ShipEstimates.FirstOrDefault(se => se.ID == shipEstimateID);
-			Require.That(shipEstimate != null, new ArgumentException($"No matching ship estimate found with ID {shipEstimateID}"));
+			Require.That(shipEstimate != null, new ArgumentException($"No matching ship estimate found with ID {shipEstimateID}", "shipEstimateID"));
 
 			var lineItems = new List<(int quantity, LineItem lineItem)> { };
 			foreach (var shipEstimateItem in shipEstimate.ShipEstimateItems)

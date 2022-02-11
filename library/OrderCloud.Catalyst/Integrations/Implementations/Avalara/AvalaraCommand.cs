@@ -4,33 +4,28 @@ namespace OrderCloud.Catalyst
 {
 	public class AvalaraCommand : OCIntegrationCommand , ITaxCodesProvider, ITaxCalculator
 	{
-		protected readonly AvalaraConfig _config;
-		protected readonly AvalaraClient _client;
+		public AvalaraCommand(AvalaraConfig configDefault) : base(configDefault) { }
 
-		public AvalaraCommand(AvalaraConfig config) : base(config)
+		public async Task<OrderTaxCalculation> CalculateEstimateAsync(OrderSummaryForTax orderSummary, OCIntegrationConfig configOverride = null) => 
+			await CreateTransactionAsync(AvalaraDocumentType.SalesOrder, orderSummary, configOverride);
+
+		public async Task<OrderTaxCalculation> CommitTransactionAsync(OrderSummaryForTax orderSummary, OCIntegrationConfig configOverride = null) =>
+			await CreateTransactionAsync(AvalaraDocumentType.SalesInvoice, orderSummary, configOverride);
+
+		protected async Task<OrderTaxCalculation> CreateTransactionAsync(AvalaraDocumentType type, OrderSummaryForTax orderSummary, OCIntegrationConfig configOverride = null)
 		{
-			_config = config;
-			_client = new AvalaraClient(config);
-		}
-
-		public async Task<OrderTaxCalculation> CalculateEstimateAsync(OrderSummaryForTax orderSummary) => 
-			await CreateTransactionAsync(AvalaraDocumentType.SalesOrder, orderSummary);
-
-		public async Task<OrderTaxCalculation> CommitTransactionAsync(OrderSummaryForTax orderSummary) =>
-			await CreateTransactionAsync(AvalaraDocumentType.SalesInvoice, orderSummary);
-
-		protected async Task<OrderTaxCalculation> CreateTransactionAsync(AvalaraDocumentType type, OrderSummaryForTax orderSummary)
-		{
-			var createTransaction = AvalaraRequestMapper.ToAvalaraTransactionModel(orderSummary, _config.CompanyCode, type);
-			var transaction = await _client.CreateTransaction(createTransaction);
+			var config = GetValidatedConfig<AvalaraConfig>(configOverride);
+			var createTransaction = AvalaraRequestMapper.ToAvalaraTransactionModel(orderSummary, config.CompanyCode, type);
+			var transaction = await AvalaraClient.CreateTransaction(createTransaction, config);
 			var calculation = AvalaraResponseMapper.ToOrderTaxCalculation(transaction);
 			return calculation;
 		}
 
-		public async Task<TaxCategorizationResponse> ListTaxCodesAsync(string filterTerm)
+		public async Task<TaxCategorizationResponse> ListTaxCodesAsync(string filterTerm, OCIntegrationConfig configOverride = null)
 		{
+			var config = GetValidatedConfig<AvalaraConfig>(configOverride);
 			var filter = AvalaraTaxCodeMapper.MapFilterTerm(filterTerm);
-			var codes = await _client.ListTaxCodesAsync(filter);
+			var codes = await AvalaraClient.ListTaxCodesAsync(filter, config);
 			return new TaxCategorizationResponse()
 			{
 				Categories = AvalaraTaxCodeMapper.MapTaxCodes(codes)

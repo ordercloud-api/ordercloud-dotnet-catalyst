@@ -13,7 +13,7 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// List the various tax categories a product could fall under
 		/// </summary>
-		Task<TaxCategorizationResponse> ListTaxCodesAsync(string filterTerm);
+		Task<TaxCategorizationResponse> ListTaxCodesAsync(string filterTerm, OCIntegrationConfig configOverride = null);
 	}
 
 	public class TaxCategorizationResponse

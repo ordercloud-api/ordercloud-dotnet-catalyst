@@ -36,7 +36,9 @@ namespace OrderCloud.Catalyst.Tests
 			// Arrange
 			var config = new VertexConfig();
 			// Act 
-			var ex = Assert.Throws<IntegrationMissingConfigsException>(() => new VertexCommand(config));
+			var ex = Assert.ThrowsAsync<IntegrationMissingConfigsException>(async () =>
+				await _command.CalculateEstimateAsync(_order, config)
+			);
 			// Assert
 			var data = (IntegrationMissingConfigs) ex.Errors[0].Data;
 			Assert.AreEqual(data.ServiceName, "Vertex");
@@ -55,6 +57,7 @@ namespace OrderCloud.Catalyst.Tests
 			);
 
 			var data = (IntegrationAuthFailedError) ex.Errors[0].Data;
+			Assert.AreEqual(data.ResponseStatus, 400);
 			Assert.AreEqual(data.ServiceName, "Vertex");
 			Assert.AreEqual(data.RequestUrl, "https://auth.vertexsmb.com/identity/connect/token");
 		}
@@ -75,7 +78,7 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
-		public void ShouldThrowVertexErrorForBadRequest()
+		public void ShouldThrowErrorForBadRequest()
 		{
 			// Arrange
 			_httpTest
@@ -89,8 +92,9 @@ namespace OrderCloud.Catalyst.Tests
 				await _command.CalculateEstimateAsync(_order)
 			);
 
-			var data = (IntegrationErrorResponseError)ex.Errors[0].Data;
+			var data = (IntegrationErrorResponseError) ex.Errors[0].Data;
 			Assert.AreEqual(data.ServiceName, "Vertex");
+			Assert.AreEqual(data.ResponseStatus, 400);
 			Assert.AreEqual(data.RequestUrl, "https://restconnect.vertexsmb.com/vertex-restapi/v1/sale");
 			Assert.AreEqual(((List<VertexResponseError>) data.ResponseBody)[0].detail, "The LocationRole being added is invalid.This might be due to an invalid location or an invalid address field.Make sure that the locationRole is valid, and try again.\n");
 		}

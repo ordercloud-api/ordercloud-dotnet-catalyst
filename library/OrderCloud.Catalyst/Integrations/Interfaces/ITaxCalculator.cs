@@ -9,16 +9,16 @@ namespace OrderCloud.Catalyst
 	/// <summary>
 	/// An interface to define expected responses from tax calculation. Meant to be used in OrderCloud ecommerce checkout.
 	/// </summary>
-	public interface ITaxCalculator
+	public interface ITaxCalculator 
 	{
 		/// <summary>
 		/// Calculates tax for an order without creating any records. Use this to display tax amount to user prior to order submit.
 		/// </summary>
-		Task<OrderTaxCalculation> CalculateEstimateAsync(OrderSummaryForTax orderSummary);
+		Task<OrderTaxCalculation> CalculateEstimateAsync(OrderSummaryForTax orderSummary, OCIntegrationConfig configOverride = null);
 		/// <summary>
 		/// Creates a tax transaction record in the calculating system. Use this once per order - on order submit, payment capture, or fulfillment.
 		/// </summary>
-		Task<OrderTaxCalculation> CommitTransactionAsync(OrderSummaryForTax orderSummary);
+		Task<OrderTaxCalculation> CommitTransactionAsync(OrderSummaryForTax orderSummary, OCIntegrationConfig configOverride = null);
 	}
 
 	/// <summary>

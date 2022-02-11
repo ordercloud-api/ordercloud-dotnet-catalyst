@@ -11,23 +11,5 @@ namespace OrderCloud.Catalyst
 	public abstract class OCIntegrationConfig
 	{
 		public abstract string ServiceName { get; } 
-
-		public void ValidateRequiredFields()
-		{
-			var props = GetType()
-				.GetProperties();
-			var missing = props.Where(prop =>
-				{
-					var value = (string)prop.GetValue(this);
-					var isRequired = Attribute.IsDefined(prop, typeof(RequiredIntegrationFieldAttribute));
-					return isRequired && value.IsNullOrEmpty();
-				});
-
-			if (missing.Any())
-			{
-				var names = missing.Select(p => p.Name).ToList();
-				throw new IntegrationMissingConfigsException(this, names);
-			}
-		}
 	}
 }

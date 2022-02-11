@@ -40,7 +40,9 @@ namespace OrderCloud.Catalyst.Tests
 			// Arrange
 			var config = new TaxJarConfig();
 			// Act 
-			var ex = Assert.Throws<IntegrationMissingConfigsException>(() => new TaxJarCommand(config));
+			var ex = Assert.ThrowsAsync<IntegrationMissingConfigsException>(async () =>
+				await _command.CalculateEstimateAsync(_order, config)
+			);
 			// Assert
 			var data = (IntegrationMissingConfigs)ex.Errors[0].Data;
 			Assert.AreEqual(data.ServiceName, "TaxJar");
@@ -60,6 +62,7 @@ namespace OrderCloud.Catalyst.Tests
 
 			var data = (IntegrationAuthFailedError)ex.Errors[0].Data;
 			Assert.AreEqual(data.ServiceName, "TaxJar");
+			Assert.AreEqual(data.ResponseStatus, 401);
 			Assert.AreEqual(data.RequestUrl, $"{_config.BaseUrl}/v2/taxes");
 		}
 
@@ -79,7 +82,7 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
-		public void ShouldThrowVertexErrorForBadRequest()
+		public void ShouldThrowErrorForBadRequest()
 		{
 			// Arrange
 			_httpTest
@@ -91,10 +94,11 @@ namespace OrderCloud.Catalyst.Tests
 				await _command.CalculateEstimateAsync(_order)
 			);
 
-			var data = (IntegrationErrorResponseError)ex.Errors[0].Data;
+			var data = (IntegrationErrorResponseError) ex.Errors[0].Data;
 			Assert.AreEqual(data.ServiceName, "TaxJar");
+			Assert.AreEqual(data.ResponseStatus, 400);
 			Assert.AreEqual(data.RequestUrl, $"{_config.BaseUrl}/v2/taxes");
-			Assert.AreEqual(((TaxJarError)data.ResponseBody).detail, "No to zip, required when country is US");
+			Assert.AreEqual(((TaxJarError) data.ResponseBody).detail, "No to zip, required when country is US");
 		}
 
 		[Test]

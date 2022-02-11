@@ -50,8 +50,8 @@ Feel free open issues recommending changes or additions to the interfaces.
 	- Keep the number of properties and methods on your exposed contracts to the minimum required. Do a small amount well. 
 	- Aim to follow the code patterns of existing integrations. 
  - Project Structure
-    - Create a new Visual Studio project under /libraries. It should be a .NET Standard 2.0 code library project called OrderCloud.Catalyst.[Category].[ServiceName]. For example OrderCloud.Catalyst.Tax.Avalara.
-	- Your new project should have a procject dependency on OrderCloud.Catalyst. Also, OrderCloud.Catalyst.TestApi should depend on your new project. 
+    - Create a new Visual Studio project under /libraries. It should be a .NET Standard 2.0 code library project called `OrderCloud.Catalyst.[Category].[ServiceName]`. For example, `OrderCloud.Catalyst.Tax.Avalara`.
+	- Your new project should have a project dependency on OrderCloud.Catalyst. Also, OrderCloud.Catalyst.TestApi should depend on your new project. 
 	- At the root of your new folder include your Command, Config and a README.md with instructions. Copy the README format of existing integrations.
 	- All files and class names in the project should begin with your service name to avoid collisions.
 	- Use the OrderCloud.Catalyst.[Category].[ServiceName] namespace for all classes.
@@ -68,11 +68,11 @@ Feel free open issues recommending changes or additions to the interfaces.
 	- Test error scenarios as well.
 	- See [VertexTests](../../../tests.OrderCloud.Catalyst.Tests/IntegrationTests/Vertex/VertexTests.cs).
  - Code Style
-    - For every public method on the Command class use the `GetValidatedConfig()` method to authenticate. It will default to the config provided in the constructor, but safely give priority to any config specified in the method call. This supports different suppliers using different credentials, for example.
+    - For every public method on the Command class use the `GetValidatedConfig()` method to authenticate. It will default to the config provided in the constructor, but safely give priority to any config specified in the method call. This supports use cases like different suppliers using different credentials.
  	- Many of the existing integrations also have a Client class. For these integrations the Client class is a pure API wrapper, handling HTTP requests and exceptions. Avoid code patterns that lead to creating multiple Http Client objects in memory.  
-	- Avoid adding a nuget package for your service's SDK (or nuget packages in general if you can). Instead, use the Flurl library for RESTful requests. This will also keep testing consistient. 
+	- Avoid adding a nuget package for your service's SDK (or nuget packages in general). Instead, use the Flurl library for RESTful requests. This will also keep testing consistient. 
     - When you want to make methods or properties `private`, consider using `protected` instead so that client projects can extend your functionality. 
-	- Use DateTime.Utc explicitly to keep the project time-zone agnostic.
+	- Use `DateTime.Utc` explicitly to avoid the confusion of local timezones.
 	- Always use the `decimal` type for anything money related.
 
 ## Approval

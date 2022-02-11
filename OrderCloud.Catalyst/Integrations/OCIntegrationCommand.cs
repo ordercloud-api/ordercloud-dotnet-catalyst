@@ -10,7 +10,7 @@ namespace OrderCloud.Catalyst
 	/// </summary>
 	public abstract class OCIntegrationCommand
 	{
-		protected readonly OCIntegrationConfig _configDefault;
+		private readonly OCIntegrationConfig _configDefault;
 
 		public OCIntegrationCommand(OCIntegrationConfig configDefault)
 		{

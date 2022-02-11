@@ -1,14 +1,14 @@
 ﻿# Contributing Guide For Integrations 
 
-Thank you for investing your time in contributing! These are guidelines for adding a new integration to the Catalyst library. See a list of [existing integrations](./Implementations/README.md).
+Thank you for investing your time in contributing! These are guidelines for adding a new C# integration to OrderCloud Catalyst. See a list of [existing integrations](./README.md).
 
 ## Basics 
 
-Creating an integration in this project means it will be published as part of a [Nuget code library](https://www.nuget.org/packages/ordercloud-dotnet-catalyst/). Each integration should expose functionality to interact with 1 external service and should not depend on any other integrations. There is a natural tension between providing too little "wrapper" functionality (creating a generic API client) and too much "wrapper" (an opinionated solution that limits use cases). The key to this balance are the details of the contract your integration exposes.
+Creating an integration in this project means it will be published as its own Nuget code library. Each library should expose functionality to interact with 1 external service and should not depend on any other integrations. All integrations will depend on the [OrderCloud.Catalyst](https://www.nuget.org/packages/ordercloud-dotnet-catalyst/) base library to enforce standard contracts. There is a natural tension between providing too little "wrapper" functionality (creating a generic API client) and too much "wrapper" (an opinionated solution that limits use cases). The key to this balance are the details of the contract your integration exposes.
 
 ## Exposed Contracts 
 
-All integrations should include two classes designed to be exposed and consumed by solutions - an `OCIntegrationConfig` and an `OCIntegrationCommand`. The config is a POCO which contains `string` properties for all the environment variables needed to authenticate to the service. The command exposes the functionality of your integration through methods. For an example service called "Mississippi" you would create the classes below. 
+All integrations should include two classes designed to be used by ecommerce solutions - an `OCIntegrationConfig` and an `OCIntegrationCommand`. The config is a POCO which contains `string` properties for all the environment variables needed to authenticate to the service. The command exposes the functionality of your integration through methods. There should be two ways to provide a config to the command. First, a default config which is a constructor parameter. Second, every method should take an optional override config which only applies to that request's scope'. For an example service called "Mississippi" you would create the classes below. 
 
 ```c#
 public class MississippiConfig : OCIntegrationConfig
@@ -18,25 +18,21 @@ public class MississippiConfig : OCIntegrationConfig
 	[RequiredIntegrationField]
 	public string ApiKey { get; set;}
 
-	... etc.
+	... more environment variables.
 }
 ```
 ```c#
 public class MississippiCommand : OCIntegrationCommand
 {
-	protected readonly MississippiConfig _config;
+	public MississippiOCIntegrationCommand(MississippiConfig configDefault) : base(configDefault) { }
 
-	public MississippiOCIntegrationCommand(MississippiConfig config) : base(config)
+	public async Task<decimal> GetRiverLength(OCIntegrationConfig configOverride = null) 
 	{
-		_config = config; // used to auth to service
+		var configToUse = GetValidatedConfig<MississippiConfig>(configOverride);
+		// Make request here 
 	}
 
-	public async Task<decimal> GetRiverLength() 
-	{
-
-	}
-
-	... etc.
+	... more methods.
 }
 ```
 
@@ -44,7 +40,7 @@ Your integration will likely contain other public classes but these two mandator
 
 ## Interfaces 
 
-A key goal is *interoperability*. In other words, if two services solve roughly the same problem (e.g. calculating tax), they should expose the same contract. To facilitate that, there are interfaces like [ITaxCalculator](./Interfaces/ITaxCalculator.cs). Please check under [/Integrations/Interfaces](./Interfaces) to see if any apply to your integration's problem domain. If some do, make sure your OCIntegrationCommand implements those interfaces.
+A key goal is *interoperability*. In other words, if two services solve roughly the same problem (e.g. calculating tax), they should expose the same contract. To facilitate that, there are interfaces like [ITaxCalculator](./Interfaces/ITaxCalculator.cs). Please check under [./Interfaces](./Interfaces) to see if any apply to your integration's problem domain. If some do, make sure your OCIntegrationCommand implements those interfaces.
 
 Feel free open issues recommending changes or additions to the interfaces. 
 
@@ -53,11 +49,16 @@ Feel free open issues recommending changes or additions to the interfaces.
  - General
 	- Keep the number of properties and methods on your exposed contracts to the minimum required. Do a small amount well. 
 	- Aim to follow the code patterns of existing integrations. 
- - Folders and files	
-	- Under [/Integrations/Implementations](./Implementations) create a folder with your service name (e.g. "Mississippi") to contain your files. 
-	- At the root of your new folder include your Command, Config and a README.md. Copy the README format of existing integrations.
-	- All files and class names should begin with your service name.
-	- Many of the existing integrations also have a Client class. For these integrations the Client class is a pure API wrapper, handling HTTP requests and exceptions. This leaves mapping as the responsibility of the Command class. 
+ - Project Structure
+    - Create a new Visual Studio project under /libraries. It should be a .NET Standard 2.0 code library project called OrderCloud.Catalyst.[Category].[ServiceName]. For example OrderCloud.Catalyst.Tax.Avalara.
+	- Your new project should have a procject dependency on OrderCloud.Catalyst. Also, OrderCloud.Catalyst.TestApi should depend on your new project. 
+	- At the root of your new folder include your Command, Config and a README.md with instructions. Copy the README format of existing integrations.
+	- All files and class names in the project should begin with your service name to avoid collisions.
+	- Use the OrderCloud.Catalyst.[Category].[ServiceName] namespace for all classes.
+ - Publishing on Nuget
+	- Your .csproj file contains details of how your integration will be published. Make sure the target framework is `netstandard2.0` and the package Id is `OrderCloud.Catalyst.[Category].[ServiceName]`.
+	- For versioning, refer to https://semver.org/. Specifically, major version changes (API breaking changes) should only be made in response to major version changes in the core Order.Catalyst library. This should only happen when the interfaces in [/Integrations/Interfaces](./Interfaces) are changed. If the two libraries start with the same major version number, they should have matching interface definitions and be compatible. 
+	- For now, the OrderCloud team will handle publishing packages in order to maintain high quality.
  - Errors 
 	- Handle error scenarios within your integration by throwing one of the exceptions in [/Integrations/Exceptions](./Exceptions). 
 	- Every integration should handle cases like missing configs, invalid authentication, error response, and no response.
@@ -67,7 +68,9 @@ Feel free open issues recommending changes or additions to the interfaces.
 	- Test error scenarios as well.
 	- See [VertexTests](../../../tests.OrderCloud.Catalyst.Tests/IntegrationTests/Vertex/VertexTests.cs).
  - Code Style
-	- Avoid adding a nuget package for your service's SDK. This will lead to bloat as many projects may use this library without using your service. Instead, use the Flurl library for RESTful requests. This will also keep testing consistient. 
+    - For every public method on the Command class use the `GetValidatedConfig()` method to authenticate. It will default to the config provided in the constructor, but safely give priority to any config specified in the method call. This supports different suppliers using different credentials, for example.
+ 	- Many of the existing integrations also have a Client class. For these integrations the Client class is a pure API wrapper, handling HTTP requests and exceptions. Avoid code patterns that lead to creating multiple Http Client objects in memory.  
+	- Avoid adding a nuget package for your service's SDK (or nuget packages in general if you can). Instead, use the Flurl library for RESTful requests. This will also keep testing consistient. 
     - When you want to make methods or properties `private`, consider using `protected` instead so that client projects can extend your functionality. 
 	- Use DateTime.Utc explicitly to keep the project time-zone agnostic.
 	- Always use the `decimal` type for anything money related.

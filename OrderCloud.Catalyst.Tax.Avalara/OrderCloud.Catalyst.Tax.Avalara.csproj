@@ -1,22 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.5.1</Version>
+    <Version>1.0.1-alpha</Version>
     <PackageId>OrderCloud.Catalyst.Tax.Avalara</PackageId>
     <Title>OrderCloud Tax Integration with Avalara</Title>
     <Authors>Oliver Heywood</Authors>
-    <Description>Integrate the OrderCloud ecommerce platform with Avalara for tax calculation.</Description>
+    <Description>Integrate the OrderCloud ecommerce platform with Avalara for tax calculation. Alpha version, not recommended for production.</Description>
     <Copyright>Copyright 2021 Four51, Inc.</Copyright>
     <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
     <PackageIconUrl></PackageIconUrl>
     <PackageIcon>ordercloud-logo-blue.png</PackageIcon>
-    <PackageTags>ecommerce b2b azure aspnetcore webjobs four51 ordercloud</PackageTags>
+    <PackageTags>ordercloud ecommerce tax webjobs sitecore avalara</PackageTags>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Company>Four51 Inc</Company>
+    <Company>Sitecore</Company>
     <Product>OrderCloud</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>

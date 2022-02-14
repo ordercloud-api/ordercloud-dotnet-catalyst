@@ -57,8 +57,12 @@ Feel free open issues recommending changes or additions to the interfaces.
 	- Use the OrderCloud.Catalyst.[Category].[ServiceName] namespace for all classes.
  - Publishing on Nuget
 	- Your .csproj file contains details of how your integration will be published. Make sure the target framework is `netstandard2.0` and the package Id is `OrderCloud.Catalyst.[Category].[ServiceName]`.
-	- For versioning, refer to https://semver.org/. Specifically, major version changes (API breaking changes) should only be made in response to major version changes in the core Order.Catalyst library. This should only happen when the interfaces in [/Integrations/Interfaces](./Interfaces) are changed. If the two libraries start with the same major version number, they should have matching interface definitions and be compatible. 
+	- Versioning 
+		- Refer to https://semver.org/. 
+		- Start at version x.0.1 where x is the most recent Major version of OrderCloud.Catalyst. Increment the Patch version for bug fixes and Minor version for new functionality.  
+		- Major version changes (API breaking changes) should only be made in response to major version changes in the core OrderCloud.Catalyst library. This should only happen when the interfaces in [/Integrations/Interfaces](./Interfaces) are changed. If the two libraries start with the same major version number, they should have matching interface definitions and be compatible. 
 	- For now, the OrderCloud team will handle publishing packages in order to maintain high quality.
+	- Versions marked `alpha` are early releases that are not ready for production. Use them only to provide feedback or get a sneak peak.
  - Errors 
 	- Handle error scenarios within your integration by throwing one of the exceptions in [/Integrations/Exceptions](./Exceptions). 
 	- Every integration should handle cases like missing configs, invalid authentication, error response, and no response.

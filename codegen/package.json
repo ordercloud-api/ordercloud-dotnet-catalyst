@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "codegen": "tsc --p . && oc-codegen -t templates -o ../library/OrderCloud.Catalyst/Generated -i https://sandboxapi.ordercloud.io/v1/openapi/v3 -k hooks.js -c"
+    "codegen": "tsc --p . && oc-codegen -t templates -o ../OrderCloud.Catalyst/Generated -i https://sandboxapi.ordercloud.io/v1/openapi/v3 -k hooks.js -c"
   },
   "author": "",
   "license": "ISC",

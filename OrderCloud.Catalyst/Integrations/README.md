@@ -1,7 +1,7 @@
 ﻿# List of Integrations 
 
-| Name | Integration Guide | Contributed By | Categories |
-| ------------- | ------------- | ------------- | ------------- | ------------- |
-| **Vertex** | [README.md](../../OrderCloud.Catalyst.Tax.Vertex/README.md) | OrderCloud Team | Tax
-| **Avalara** | [README.md](../../OrderCloud.Catalyst.Tax.Avalara/README.md) | OrderCloud Team | Tax
-| **TaxJar** | [README.md](../../OrderCloud.Catalyst.Tax.TaxJar/README.md) | OrderCloud Team | Tax
+| Name | Project | Contributed By | Categories |
+| ------------- | ------------- | ------------- | ------------- |
+| **Vertex** | [OrderCloud.Catalyst.Tax.Vertex](../../OrderCloud.Catalyst.Tax.Vertex) | OrderCloud Team | Tax
+| **Avalara** | [OrderCloud.Catalyst.Tax.Avalara](../../OrderCloud.Catalyst.Tax.Avalara) | OrderCloud Team | Tax
+| **TaxJar** | [OrderCloud.Catalyst.Tax.TaxJar](../../OrderCloud.Catalyst.Tax.TaxJar) | OrderCloud Team | Tax

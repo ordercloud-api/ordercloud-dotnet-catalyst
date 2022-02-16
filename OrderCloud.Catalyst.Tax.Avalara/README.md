@@ -1,6 +1,6 @@
 ﻿# OrderCloud.Catalyst.Tax.Avalara
 
-This project brings easy tax calculation to your ecommerce app using the [Avalara](https://www.avalara.com/us/en/index.html) API. It is published as a nuget code library and conforms to standard tax interfaces published in OrderCloud.Catalyst.
+This project brings easy tax calculation to your ecommerce app using the [Avalara](https://www.avalara.com/us/en/index.html) API. It will be published as a nuget code library and conforms to standard tax interfaces published in the base library OrderCloud.Catalyst.
 
 ## Basics and Installation
 

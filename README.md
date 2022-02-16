@@ -136,6 +136,6 @@ Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/I
 
 | Name | Project Guide | Nuget Library | Contributed By | Categories |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
-| **Vertex** | [OrderCloud.Catalyst.Tax.Vertex](./OrderCloud.Catalyst.Tax.Vertex) | Comming | OrderCloud Team | Tax
-| **Avalara** | [OrderCloud.Catalyst.Tax.Avalara](./OrderCloud.Catalyst.Tax.Avalara) | Comming | OrderCloud Team | Tax
-| **TaxJar** | [OrderCloud.Catalyst.Tax.TaxJar](./OrderCloud.Catalyst.Tax.TaxJar) | Comming | OrderCloud Team | Tax
+| **Vertex** | [OrderCloud.Catalyst.Tax.Vertex](./OrderCloud.Catalyst.Tax.Vertex) | Coming | OrderCloud Team | Tax
+| **Avalara** | [OrderCloud.Catalyst.Tax.Avalara](./OrderCloud.Catalyst.Tax.Avalara) | Coming | OrderCloud Team | Tax
+| **TaxJar** | [OrderCloud.Catalyst.Tax.TaxJar](./OrderCloud.Catalyst.Tax.TaxJar) | Coming | OrderCloud Team | Tax

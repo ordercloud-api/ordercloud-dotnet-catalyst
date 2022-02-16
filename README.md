@@ -132,6 +132,8 @@ httpClient.DefaultRequestHeaders.Authorization =
 
 ### 3rd Party Integrations 
 
+Contributing Guide For Integrations -> [./OrderCloud.Catalyst/Integrations.CONTRIBUTING.md](./OrderCloud.Catalyst/Integrations.CONTRIBUTING.md)
+
 | Name | Project | Nuget Library | Contributed By | Categories |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 | **Vertex** | [OrderCloud.Catalyst.Tax.Vertex](./OrderCloud.Catalyst.Tax.Vertex) | Comming soon | OrderCloud Team | Tax

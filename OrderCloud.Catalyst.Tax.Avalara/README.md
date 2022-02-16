@@ -30,7 +30,7 @@ A taxable transaction is committed to avalara asynchronously shortly following o
 - Using the OrderCloud API Portal, configure an Order Chekout IntegrationEvent object to point to your new middleware. [See guide](https://ordercloud.io/knowledge-base/order-checkout-integration)
 - Create an avalara account online and retrieve all the configuration variables required in [AvalaraConfig.cs](./Avalara.cs); 
 	- BaseUrl (https://sandbox-rest.avatax.com/api/v2","https://rest.avatax.com/api/v2")
-    	- AccountID 
+	- AccountID 
 	- LicenseKey
 	- CompanyCode
 - Within your .NET code project, create an instance of [AvalaraCommand.cs](./AvalaraCommand.cs). Use the method `CalculateEstimateAsync` within the **`OrderCalculate`** Checkout Integration Event.  Use the method `CommitTransactionAsync` within the **`PostOrderSubmit`** Checkout Integration Event. 

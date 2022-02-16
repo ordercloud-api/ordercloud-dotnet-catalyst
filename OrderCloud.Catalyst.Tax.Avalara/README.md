@@ -77,9 +77,10 @@ public class CheckoutIntegrationEventController : CatalystController
 }
 ```
 
-This library also supports more complex cases that require mulitple avalara accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of AvalaraCommand exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
+This library also supports more complex cases that require mulitple tax accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of AvalaraCommand exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
 
 ```c#
-AvalaraConfig configOverride = await FetchAvalaraCredentials(supplierID);
-OrderTaxCalculation taxCalculation = await _taxCalculator.CalculateEstimateAsync(new OrderSummaryForTax() { ... }, configOverride);
+AvalaraConfig configOverride = await FetchTaxAccountCredentials(supplierID);
+var summary = new OrderSummaryForTax() { ... }
+OrderTaxCalculation taxCalculation = await _taxCalculator.CalculateEstimateAsync(summary, configOverride);
 ```

@@ -1,37 +1,87 @@
-﻿# Vertex Integration 
+﻿# OrderCloud.Catalyst.Tax.Vertex
 
-## Scope of this integration
-This .NET integration calculates sales tax for an Order using the vertex cloud API. It can be used during checkout to provide a tax cost to the buyer or after submit to create a vertex transaction for filling. 
+This project brings easy tax calculation to your ecommerce app using the [Vertex](https://www.vertexinc.com/) API. It is published as a nuget code library.
 
-## Vertex Basics 
-[Vertex](https://www.vertexinc.com/) is a cloud or on premise **sales and use tax solution**. Vertex Cloud integrates with leading e-commerce platforms and mid-market ERP systems. Customers can use Vertex Cloud to manage complex sales and use tax across multiple jurisdictions. Vertex Cloud provides tax calculations and signature-ready PDF returns in one comprehensive solution.
+## Basics and Installation
 
-## Sales Tax Estimate
-The sales tax cost on an Order is first calculated in checkout after shipping selections are made and before payment. Following that, they are updated whenever the order is changed. 
+1. If you haven't, please read [How to Calculate Tax with OrderCloud](https://ordercloud.io/knowledge-base/how-to-calculate-tax-with-ordercloud). In short, webhooks from the platform make requests to solution-custom API routes that contain tax calculation logic. 
+2. This project helps in the context of a .NET API project that responds to those webhooks. If you already have a .NET API project, great. If not, you can [follow this guide](https://ordercloud.io/knowledge-base/start-dotnet-middleware-from-scratch). After you have published your API, you will need to configure OrderCloud to point its Integration Event webhooks at your API. 
+3. In your .NET project, add the OrderCloud.Catalyst.Tax.Vertex nuget package with either the Visual Studio UI or the dotnet CLI.
+`dotnet add package OrderCloud.Catalyst.Tax.Vertex`
 
-**Vertex Side -** Get a tax estimate in Vertex Cloud by calling the [Tax Calculate for Sellers API endpoint](https://developer.vertexcloud.com/api/docs/#operation/Sale_Post) with `saleMessageType` set to `QUOTATION`.
+## Authentication and Injection
 
-**OrderCloud Side -** This integration should be triggered by the **`OrderCalculate`** Checkout Integration Event. Learn more about [checkout integration events](https://ordercloud.io/knowledge-base/order-checkout-integration); 
+You will need 5 pieces of configuration information to authneticate to the Vertex API - *CompanyName*, *ClientID*, *ClientSecret*, *Username*, and *Password*. Create an account with vertex and get these from the admin portal.
 
-## Order Forwarding
-A taxable transaction is committed to vertex asynchronously shortly following order submit. This enables businesses to easily file sales tax returns. OrderCloud guarantees the submitted order details provided will be unchanged since the most recent tax estimate displayed to the user.
+```c#
+var vertexCommand = new VertexCommand(new VertexConfig()
+{
+	CompanyName = "...",
+	ClientID = "...",
+	ClientSecret = "...",
+	Username = "...",
+	Password = "...",
+});
+```
 
-**Vertex Side -** Commit a transaction in Vertex Cloud by calling the [Tax Calculate for Sellers API endpoint](https://developer.vertexcloud.com/api/docs/#operation/Sale_Post) with `saleMessageType` set to `INVOICE`.
+For efficient use of compute resources and clean code, create 1 VertexCommand object and make it available throughout your project using inversion of control dependency injection. 
 
-**OrderCloud Side -** This integration should be triggered by the **`PostOrderSubmit`** Checkout Integration Event. Learn more about [checkout integration events](https://ordercloud.io/knowledge-base/order-checkout-integration); 
+```c#
+services.AddSingleton<ITaxCalculator>(vertexCommand);
+services.AddSingleton<ITaxCodeProvider>(vertexCommand);
+```
 
-## Set up steps
+Notice that the interfaces being used to register vertexCommand are not specific to Vertex. They are general to the domain of tax and come from the upstream OrderCloud.Catalyst package. 
 
-- You should set up a .NET middleware project using the Catalyst library and starter project. [See guide](https://ordercloud.io/knowledge-base/start-dotnet-middleware-from-scratch).
-- Using the OrderCloud API Portal, configure an Order Chekout IntegrationEvent object to point to your new middleware. [See guide](https://ordercloud.io/knowledge-base/order-checkout-integration)
-- Create a vertex account online and retrieve all the configuration variables required in [VertexOCIntegrationConfig.cs](./VertexOCIntegrationConfig.cs); 
-	- CompanyName
-	- ClientID
-	- ClientSecret
-	- Username
-	- Password
-- Within your .NET code project, create an instance of [VertexOCIntegrationCommand.cs](./VertexOCIntegrationCommand.cs). Use the method `CalculateEstimateAsync` within the **`OrderCalculate`** Checkout Integration Event.  Use the method `CommitTransactionAsync` within the **`PostOrderSubmit`** Checkout Integration Event. 
 
-## Interfaces
+## Usage 
 
-- It conforms to the [ITaxCalculator](../../Interfaces/ITaxCalculator.cs) interface.
+Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the tax interfaces like ITaxCalculator and use them within the logic of the route. It is not recommended to rely directly on VertexCommand anywhere. The layer of abstraction that ITaxCalculator provides decouples your code from Vertex as a specific provider and hides some internal complexity of tax calculation.
+
+```c#
+public class CheckoutIntegrationEventController : CatalystController
+{
+	private readonly ITaxCalculator _taxCalculator;
+
+	public CheckoutIntegrationEventController(ITaxCalculator taxCalculator)
+	{
+		// Inject interface. Implementation will depend on how services were registered, VertexCommand in this case.
+		_taxCalculator = taxCalculator; 
+	}
+
+	....
+
+	[HttpPost, Route("ordercalculate")] // route and method specified by OrderCloud platform
+	[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
+	public async Task<OrderCalculateResponse> CalculateOrder([FromBody] OrderCalculatePayload<CheckoutConfig> payload)
+	{
+		// custom logic and mapping 
+
+		var summary = new OrderSummaryForTax() { ... }
+		OrderTaxCalculation taxCalculation = await _taxCalculator.CalculateEstimateAsync(summary);
+		response.TaxTotal = calculation.TotalTax; // Populate Total Tax field on the Order
+
+		...
+	}
+
+	[HttpPost, Route("ordersubmit")] // route and method specified by OrderCloud platform
+	[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
+	public async Task<OrderSubmitResponse> HandleOrderSubmit([FromBody] OrderCalculatePayload<CheckoutConfig> payload)
+	{
+		// custom logic and mapping 
+
+		var summary = new OrderSummaryForTax() { ... }
+		await _taxCalculator.CommitTransactionAsync(summary);
+
+		...
+	}
+}
+```
+
+This library also supports more complex cases that require mulitple tax accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of VertexCommand exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
+
+```c#
+VertexConfig configOverride = await FetchTaxAccountCredentials(supplierID);
+var summary = new OrderSummaryForTax() { ... }
+OrderTaxCalculation taxCalculation = await _taxCalculator.CalculateEstimateAsync(summary, configOverride);
+```

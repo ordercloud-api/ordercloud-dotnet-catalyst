@@ -28,11 +28,9 @@ A taxable transaction is committed to taxjar asynchronously shortly following or
 
 - You should set up a .NET middleware project using the Catalyst library and starter project. [See guide](https://ordercloud.io/knowledge-base/start-dotnet-middleware-from-scratch).
 - Using the OrderCloud API Portal, configure an Order Chekout IntegrationEvent object to point to your new middleware. [See guide](https://ordercloud.io/knowledge-base/order-checkout-integration)
-- Create a taxjar account online and retrieve all the configuration variables required in [TaxJarConfig.cs](./TaxJarConfig.cs); 
-	- BaseUrl
-		- Likely "https://api.sandbox.taxjar.com" or "https://api.taxjar.com")
-    - APIToken 
-		- Find at https://app.taxjar.com/ under Account -> TaxJar API -> Generate Token
+- Create a taxjar account online and retrieve all the configuration variables required in [TaxJarConfig.cs](./TaxJarConfig.cs); Find APIToken at https://app.taxjar.com/ under Account -> TaxJar API -> Generate Token
+	- BaseUrl ("https://api.sandbox.taxjar.com", "https://api.taxjar.com")
+	- APIToken 
 - Within your .NET code project, create an instance of [TaxJarCommand.cs](./TaxJarCommand.cs). Use the method `CalculateEstimateAsync` within the **`OrderCalculate`** Checkout Integration Event.  Use the method `CommitTransactionAsync` within the **`PostOrderSubmit`** Checkout Integration Event. 
 
 ## Interfaces

@@ -1,6 +1,6 @@
 ﻿# OrderCloud.Catalyst.Tax.Vertex
 
-This project brings easy tax calculation to your ecommerce app using the [Vertex](https://www.vertexinc.com/) API. It is published as a nuget code library.
+This project brings easy tax calculation to your ecommerce app using the [Vertex](https://www.vertexinc.com/) API. It is published as a nuget code library and conforms to standard tax interfaces published in OrderCloud.Catalyst.
 
 ## Basics and Installation
 

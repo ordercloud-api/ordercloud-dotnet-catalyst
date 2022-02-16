@@ -132,7 +132,7 @@ httpClient.DefaultRequestHeaders.Authorization =
 
 ### 3rd Party Integrations 
 
-Contributing Guide For Integrations -> [./OrderCloud.Catalyst/Integrations.CONTRIBUTING.md](./OrderCloud.Catalyst/Integrations.CONTRIBUTING.md)
+Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/Integrations/CONTRIBUTING.md)
 
 | Name | Project | Nuget Library | Contributed By | Categories |
 | ------------- | ------------- | ------------- | ------------- | ------------- |

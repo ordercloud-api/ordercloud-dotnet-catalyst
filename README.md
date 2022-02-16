@@ -134,7 +134,7 @@ httpClient.DefaultRequestHeaders.Authorization =
 
 Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/Integrations/CONTRIBUTING.md)
 
-| Name | Project | Nuget Library | Contributed By | Categories |
+| Name | Project Guide | Nuget Library | Contributed By | Categories |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 | **Vertex** | [OrderCloud.Catalyst.Tax.Vertex](./OrderCloud.Catalyst.Tax.Vertex) | Comming | OrderCloud Team | Tax
 | **Avalara** | [OrderCloud.Catalyst.Tax.Avalara](./OrderCloud.Catalyst.Tax.Avalara) | Comming | OrderCloud Team | Tax

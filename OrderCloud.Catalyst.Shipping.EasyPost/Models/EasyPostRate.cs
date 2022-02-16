@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ordercloud.integrations.easypost
+namespace OrderCloud.Catalyst.Shipping.EasyPost
 {
     // https://www.easypost.com/docs/api#rate-object
     public class EasyPostRate

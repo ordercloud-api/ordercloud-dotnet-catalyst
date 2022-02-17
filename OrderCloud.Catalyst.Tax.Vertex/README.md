@@ -28,7 +28,6 @@ For efficient use of compute resources and clean code, create 1 VertexCommand ob
 
 ```c#
 services.AddSingleton<ITaxCalculator>(vertexCommand);
-services.AddSingleton<ITaxCodeProvider>(vertexCommand);
 ```
 
 Notice that the interfaces being used to register vertexCommand are not specific to Vertex. They are general to the domain of tax and come from the upstream OrderCloud.Catalyst package. 

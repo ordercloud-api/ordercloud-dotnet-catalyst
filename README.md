@@ -129,3 +129,13 @@ var token = FakeOrderCloudToken.Create(
 httpClient.DefaultRequestHeaders.Authorization =
     new AuthenticationHeaderValue("Bearer", token);
 ```
+
+### 3rd Party Integrations 
+
+Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/Integrations/CONTRIBUTING.md)
+
+| Name | Project Guide | Nuget Library | Contributed By | Categories |
+| ------------- | ------------- | ------------- | ------------- | ------------- |
+| **Vertex** | [OrderCloud.Catalyst.Tax.Vertex](./OrderCloud.Catalyst.Tax.Vertex) | Coming | OrderCloud Team | Tax
+| **Avalara** | [OrderCloud.Catalyst.Tax.Avalara](./OrderCloud.Catalyst.Tax.Avalara) | Coming | OrderCloud Team | Tax
+| **TaxJar** | [OrderCloud.Catalyst.Tax.TaxJar](./OrderCloud.Catalyst.Tax.TaxJar) | Coming | OrderCloud Team | Tax

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace OrderCloud.Catalyst.Shipping.EasyPost
 {
-	public static class EasyPostServiceMapper
+	public static class EasyPostMapper
 	{
 		public static EasyPostShipment ToEasyPostShipment(ShipPackage package, List<string> carrierAccountIDs)
 		{
@@ -60,38 +60,37 @@ namespace OrderCloud.Catalyst.Shipping.EasyPost
 			{
 				description = item.Description,
 				origin_country = originCountry,
-				value = shipEstimateItem.Quantity * (double)lineItem.UnitPrice,
-				quantity = shipEstimateItem.Quantity,
-				weight = shipEstimateItem.Quantity * (double)lineItem.Product.ShipWeight
+				quantity = item.Quantity,
+				value = item.Quantity * item.UnitPrice,
+				weight = item.Quantity * item.UnitWeight
 			};
 		}
 
-		public static IList<ShipMethod> ToOrderCloudShipMethods(EasyPostShipment shipment)
+		public static List<ShipMethod> ToOrderCloudShipMethods(EasyPostShipment shipment)
 		{
-			if (shipment.rates != null) // if no rates are returned
+			if (shipment.rates == null) // if no rates are returned
 			{
 				return new List<ShipMethod> { };
 			}
-			return shipment.rates.Select(rate =>
+			var rates = shipment.rates.Select(rate =>
 			{
-				return new ShipMethod()
+				var shipMethod = new ShipMethod()
 				{
 					ID = rate.id,
 					Name = rate.service,
 					Cost = decimal.Parse(rate.rate),
-					EstimatedTransitDays = rate.delivery_days ?? 5,
-					xp = new ShipMethodXp()
+					EstimatedTransitDays = rate.delivery_days ?? 0,
+					xp = new 
 					{
 						Carrier = rate.carrier,
-						// These additional fields were useful for SEB, but we should compare to other shipping models to see how they can be integrated. 
-						//CarrierAccountID = rate.carrier_account_id,
-						//OriginalCost = decimal.Parse(rate.rate),
-						//ListCost = decimal.Parse(rate.list_rate),
-						//IsDeliveryDateGuaranteed = rate.delivery_date_guaranteed
+						ListCost = decimal.Parse(rate.list_rate), // the list rate is the non-negotiated rate given for having an account with the carrier
 					}
 				};
+				return shipMethod;
 			}).ToList();
+			return rates;
 		}
+
 		public static EasyPostAddress ToEasyPostAddress(Address address)
 		{
 			return new EasyPostAddress()

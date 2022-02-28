@@ -4,7 +4,9 @@ using System.Text;
 
 namespace OrderCloud.Catalyst.Shipping.EasyPost
 {
-    // https://www.easypost.com/docs/api#shipment-object
+    /// <summary>
+    /// https://www.easypost.com/docs/api#shipment-object
+    /// </summary>
     public class EasyPostShipment
 	{
         public string id { get; set; }
@@ -35,6 +37,9 @@ namespace OrderCloud.Catalyst.Shipping.EasyPost
         public EasyPostCustomsInfo customs_info { get; set; }
     }
 
+    /// <summary>
+    /// https://www.easypost.com/docs/api#customs-info-object
+    /// </summary>
     public class EasyPostCustomsInfo
     {
         public bool customs_certify { get; set; }
@@ -45,12 +50,15 @@ namespace OrderCloud.Catalyst.Shipping.EasyPost
         public List<EasyPostCustomsItem> customs_items { get; set; } = new List<EasyPostCustomsItem>();
     }
 
+    /// <summary>
+    /// https://www.easypost.com/docs/api#customs-item-object
+    /// </summary>
     public class EasyPostCustomsItem
     {
         public string description { get; set; }
         public int quantity { get; set; }
-        public double weight { get; set; }
-        public double value { get; set; }
+        public decimal weight { get; set; }
+        public decimal value { get; set; }
         public string hs_tariff_number { get; set; }
         public string origin_country { get; set; }
     }

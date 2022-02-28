@@ -8,7 +8,7 @@ namespace OrderCloud.Catalyst.Shipping.EasyPost
 {
 	public class EasyPostClient
 	{
-		private static async Task<EasyPostShipment> PostShipmentAsync(EasyPostShipment shipment, EasyPostConfig config)
+		public static async Task<EasyPostShipment> PostShipmentAsync(EasyPostShipment shipment, EasyPostConfig config)
 		{
 			return await TryCatchRequestAsync(config, async (request) =>
 			{
@@ -39,11 +39,12 @@ namespace OrderCloud.Catalyst.Shipping.EasyPost
 				{
 					throw new IntegrationNoResponseException(config, request.Url);
 				}
-				if (status == 401)
+				if (status == 401 || status == 403)
 				{
 					throw new IntegrationAuthFailedException(config, request.Url, (int)status);
 				}
-				var body = await ex.Call.Response.GetJsonAsync();
+				var body = await ex.Call.Response.GetJsonAsync<EasyPostError>();
+				// here's a list of possible error codes https://www.easypost.com/errors-guide#error-codes
 				throw new IntegrationErrorResponseException(config, request.Url, (int)status, body);
 			}
 		}

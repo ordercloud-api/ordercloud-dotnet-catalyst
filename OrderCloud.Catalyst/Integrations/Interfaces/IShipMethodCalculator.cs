@@ -56,7 +56,7 @@ namespace OrderCloud.Catalyst
 		public string Description { get; set; }
 		public decimal UnitPrice { get; set; }
 		public int Quantity { get; set; }
-		public decimal Weight { get; set; }
+		public decimal UnitWeight { get; set; }
 	}
 
 	public enum CustomsNonDeliveryOption

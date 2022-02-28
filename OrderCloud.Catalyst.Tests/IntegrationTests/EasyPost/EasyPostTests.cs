@@ -5,6 +5,7 @@ using OrderCloud.Catalyst.Shipping.EasyPost;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst.Tests
 {
@@ -17,7 +18,7 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			ApiKey = _fixture.Create<string>(),
 			BaseUrl = "https://api.fake.com",
-			CarrierAccountIDs = new List<string> { "fake"}
+			CarrierAccountIDs = new List<string> { "fake" }
 		};
 		private EasyPostCommand _command = new EasyPostCommand(_config);
 		private List<ShipPackage> _packages = _fixture.Create<List<ShipPackage>>();
@@ -98,6 +99,35 @@ namespace OrderCloud.Catalyst.Tests
 			Assert.AreEqual(data.ResponseStatus, 422);
 			Assert.AreEqual(data.RequestUrl, $"{_config.BaseUrl}/shipments");
 			Assert.AreEqual(((EasyPostError)data.ResponseBody).error.code, "ADDRESS.COUNTRY.INVALID");
+		}
+
+		[Test]
+		public async Task SuccessResponseShouldBeMappedCorrectly()
+		{
+			// Arrange
+			var shipmentResponse = _fixture.Create<EasyPostShipment>();
+			foreach (var rate in shipmentResponse.rates)
+			{
+				rate.rate = _fixture.Create<decimal>().ToString();
+				rate.list_rate = _fixture.Create<decimal>().ToString();
+			}
+
+			_httpTest.RespondWithJson(shipmentResponse);
+			// Act
+			var result = await _command.CalculateShipMethodsAsync(_packages);
+
+			// Assert
+			Assert.AreEqual(_packages.Count, result.Count);
+
+			Assert.AreEqual(shipmentResponse.rates.Count, result[0].Count);
+
+			var mockRate = shipmentResponse.rates[0];
+			var resultRate = result[0][0];
+			Assert.AreEqual(mockRate.id, resultRate.ID);
+			Assert.AreEqual(mockRate.service, resultRate.Name);
+			Assert.AreEqual(mockRate.delivery_days, resultRate.EstimatedTransitDays);
+			Assert.AreEqual(decimal.Parse(mockRate.rate), resultRate.Cost);
+
 		}
 	}
 }

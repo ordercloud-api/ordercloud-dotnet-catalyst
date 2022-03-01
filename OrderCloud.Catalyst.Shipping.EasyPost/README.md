@@ -28,7 +28,7 @@ For efficient use of compute resources and clean code, create 1  object and make
 services.AddSingleton<IShipMethodCalculator>(easyPostCommand);
 ```
 
-Notice that the interface being used to register easyPostCommand are not specific to EasyPost. It is general to shipping rates and come from the upstream OrderCloud.Catalyst package. 
+Notice that IShipMethodCalculator is not specific to EasyPost. It is general to shipping rates and comes from the upstream OrderCloud.Catalyst package. 
 
 
 ## Usage 

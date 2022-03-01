@@ -39,11 +39,11 @@ namespace OrderCloud.Catalyst.Shipping.UPS
 				{
 					throw new IntegrationNoResponseException(config, request.Url);
 				}
-				if (status == 401 || status == 403)
+				if (status == 401)
 				{
 					throw new IntegrationAuthFailedException(config, request.Url, (int)status);
 				}
-				var body = await ex.Call.Response.GetJsonAsync();
+				var body = await ex.Call.Response.GetJsonAsync<UPSErrorBody>();
 				// here's a list of possible error codes https://www.easypost.com/errors-guide#error-codes
 				throw new IntegrationErrorResponseException(config, request.Url, (int)status, body);
 			}

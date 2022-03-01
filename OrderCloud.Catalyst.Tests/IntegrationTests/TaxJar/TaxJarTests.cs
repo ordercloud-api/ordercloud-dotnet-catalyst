@@ -8,7 +8,7 @@ using NUnit.Framework;
 using OrderCloud.Catalyst.Tax.TaxJar;
 using OrderCloud.SDK;
 
-namespace OrderCloud.Catalyst.Tests
+namespace OrderCloud.Catalyst.Tests.IntegrationTests
 {
 	[TestFixture]
 	public class TaxJarTests

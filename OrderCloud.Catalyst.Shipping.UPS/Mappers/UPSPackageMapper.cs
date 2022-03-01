@@ -49,7 +49,7 @@ namespace OrderCloud.Catalyst.Shipping.UPS
                         },
                         Shipper = ToUPSAddress(shipPackage.ReturnAddress),
                         ShipFrom = ToUPSAddress(shipPackage.ShipFrom),
-                        ShipTo = ToUPSAddress(shipPackage.ShipFrom),
+                        ShipTo = ToUPSAddress(shipPackage.ShipTo),
                         ShipmentTotalWeight = new UPSWeightMeasurement
                         {
                             Weight = shipPackage.Weight.ToString(),

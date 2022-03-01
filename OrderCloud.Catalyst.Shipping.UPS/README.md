@@ -1,39 +1,38 @@
-﻿# OrderCloud.Catalyst.Shipping.EasyPost
+﻿# OrderCloud.Catalyst.Shipping.UPS
 
-This project brings shipping rate calculation to your ecommerce app using the [EasyPost](https://www.easypost.com/) API. It will be published as a nuget code library and conforms to a standard shipping interface published in the base library OrderCloud.Catalyst.
+This project brings shipping rate calculation to your ecommerce app using the [UPS RESTful API](https://www.ups.com/upsdeveloperkit?loc=en_US). It will be published as a nuget code library and conforms to a standard shipping interface published in the base library OrderCloud.Catalyst.
 
 ## Basics and Installation
 
 1. If you haven't, please review [Order Checkout Integration Event](https://ordercloud.io/knowledge-base/order-checkout-integration) focusing on the ShippingRates event. In short, a webhook from the platform makes a request to a solution-custom API route that contains logic for estimating shipping rates. 
 2. This project helps in the context of a .NET API project that responds to those webhooks. If you already have a .NET API project, great. If not, you can [follow this guide](https://ordercloud.io/knowledge-base/start-dotnet-middleware-from-scratch). After you have published your API, you will need to configure OrderCloud to point its Integration Event webhooks at your API. 
-3. In your .NET project, add the OrderCloud.Catalyst.Shipping.EasyPost nuget package with either the Visual Studio UI or the dotnet CLI.
-`dotnet add package OrderCloud.Catalyst.Shipping.EasyPost`
+3. In your .NET project, add the OrderCloud.Catalyst.Shipping.UPS nuget package with either the Visual Studio UI or the dotnet CLI.
+`dotnet add package OrderCloud.Catalyst.Shipping.UPS`
 
 ## Authentication and Injection
 
-You will need 3 pieces of configuration information to authneticate to the EasyPost API - *ApiKey*, *BaseUrl*, and *CarrierAccountIDs*. Create an account with EasyPost and get these from the admin portal.
+You will need 2 pieces of configuration information to authneticate to the UPS API - *ApiKey*, and *BaseUrl*. Create a UPS account to get an ApiKey.
 
 ```c#
-var easyPostCommand = new EasyPostCommand(new EasyPostConfig()
+var upsCommand = new UPSCommand(new UPSConfig()
 {
-	BaseUrl = "https://api.easypost.com/v2",
+	BaseUrl = "https://onlinetools.ups.com/ship/v1",
 	ApiKey = "...",
-	CarrierAccountIDs = new List<string> { "...", "..."}
 });
 ```
 
 For efficient use of compute resources and clean code, create 1  object and make it available throughout your project using inversion of control dependency injection. 
 
 ```c#
-services.AddSingleton<IShipMethodCalculator>(easyPostCommand);
+services.AddSingleton<IShipMethodCalculator>(upsCommand);
 ```
 
-Notice that the interface IShipMethodCalculator is not specific to EasyPost. It is general across providers and comes from the upstream OrderCloud.Catalyst package. 
+Notice that the interface IShipMethodCalculator is not specific to UPS. It is general across providers and comes from the upstream OrderCloud.Catalyst package. 
 
 
 ## Usage 
 
-Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the shipping interface IShipMethodCalculator and use it within the logic of the route. It is not recommended to rely directly on EasyPost command anywhere. The layer of abstraction that IShipMethodCalculator provides decouples your code from EasyPost as a specific provider and hides some internal complexity.
+Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the shipping interface IShipMethodCalculator and use it within the logic of the route. It is not recommended to rely directly on UPSCommand anywhere. The layer of abstraction that IShipMethodCalculator provides decouples your code from UPS as a specific provider and hides some internal complexity.
 
 ```c#
 public class CheckoutIntegrationEventController : CatalystController
@@ -42,7 +41,7 @@ public class CheckoutIntegrationEventController : CatalystController
 
 	public CheckoutIntegrationEventController(IShipMethodCalculator shipMethodCalculator)
 	{
-		// Inject interface. Implementation will depend on how services were registered, EasyPostCommand in this case.
+		// Inject interface. Implementation will depend on how services were registered, UPSCommand in this case.
 		_shipMethodCalculator = shipMethodCalculator; 
 	}
 
@@ -74,10 +73,10 @@ public class CheckoutIntegrationEventController : CatalystController
 }
 ```
 
-This library also supports more complex cases that require mulitple shipping accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of EasyPostCommand exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
+This library also supports more complex cases that require mulitple shipping accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of UPSCommand exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
 
 ```c#
-EasyPostConfig configOverride = await FetchShippingAccountCredentials(supplierID);
+UPSConfig configOverride = await FetchShippingAccountCredentials(supplierID);
 var packages = new List<ShipPackage>() { ... }
 List<List<ShipMethods> rates = await await _shipMethodCalculator.CalculateShipMethodsAsync(packages, configOverride);
 ```

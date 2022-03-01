@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Catalyst.Tests
+namespace OrderCloud.Catalyst.Tests.IntegrationTests
 {
 	[TestFixture]
 	public class EasyPostTests

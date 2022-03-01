@@ -7,7 +7,7 @@ namespace OrderCloud.Catalyst.Shipping.UPS
         public UPSRateResponse RateResponse { get; set; }
     }
 
-    public class UPSResponse
+    public class UPsResponseMeta
     {
         public UPSCodeDescription ResponseStatus { get; set; }
         public List<UPSCodeDescription> Alert { get; set; }
@@ -16,7 +16,7 @@ namespace OrderCloud.Catalyst.Shipping.UPS
 
     public class UPSRateResponse
     {
-        public UPSResponse Response { get; set; }
+        public UPsResponseMeta Response { get; set; }
         public List<UPSRatedShipment> RatedShipment { get; set; }
     }
 

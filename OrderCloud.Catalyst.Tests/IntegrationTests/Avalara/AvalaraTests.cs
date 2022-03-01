@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Tests
+namespace OrderCloud.Catalyst.Tests.IntegrationTests
 { 
 	[TestFixture]
 	public class AvalaraTests

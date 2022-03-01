@@ -9,10 +9,15 @@ namespace OrderCloud.Catalyst.Shipping.UPS
 	public static class UPSRatesMapper
     {
         public static List<ShipMethod> ToOrderCloudShipMethods(this UPSRestResponseBody upsRatesResponse)
-        { 
-		    var shipMethods = upsRatesResponse.RateResponse.RatedShipment
-                .Select(ToOrderCloudShipMethod)
-                .ToList();
+        {
+            var shipMethods = new List<ShipMethod>();
+            foreach (var rate in upsRatesResponse.RateResponse.RatedShipment)
+			{
+                if (rate?.GuaranteedDelivery?.BusinessDaysInTransit != null)
+                {
+                    shipMethods.Add(ToOrderCloudShipMethod(rate));
+                }
+			}
             return shipMethods;
         }
 

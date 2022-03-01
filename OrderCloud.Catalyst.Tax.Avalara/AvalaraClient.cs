@@ -18,7 +18,7 @@ namespace OrderCloud.Catalyst.Tax.Avalara
 			return await TryCatchRequestAsync(config, async (request) =>
 			{
 				var tax = await request
-					.AppendPathSegments("api", "v2", "definitions", "taxcodes")
+					.AppendPathSegments("definitions", "taxcodes")
 					.SetQueryParam("$filter", filterParam)
 					.GetJsonAsync<AvalaraFetchResult<AvalaraTaxCode>>();
 				return tax.value;
@@ -33,7 +33,7 @@ namespace OrderCloud.Catalyst.Tax.Avalara
 			return await TryCatchRequestAsync(config, async (request) =>
 			{
 				var tax = await request
-					.AppendPathSegments("api", "v2", "transactions", "create")
+					.AppendPathSegments("transactions", "create")
 					.PostJsonAsync(transaction).ReceiveJson<AvalaraTransactionModel>();
 				return tax;
 			});

@@ -16,8 +16,8 @@ You will need 3 pieces of configuration information to authneticate to the EasyP
 ```c#
 var easyPostCommand = new EasyPostCommand(new EasyPostConfig()
 {
-	ApiKey = "...",
 	BaseUrl = "https://api.easypost.com/v2",
+	ApiKey = "...",
 	CarrierAccountIDs = new List<string> { "...", "..."}
 });
 ```

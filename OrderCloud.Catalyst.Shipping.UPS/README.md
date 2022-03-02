@@ -77,5 +77,5 @@ This library also supports more complex cases that require mulitple shipping acc
 ```c#
 UPSConfig configOverride = await FetchShippingAccountCredentials(supplierID);
 var packages = new List<ShipPackage>() { ... }
-List<List<ShipMethods> rates = await await _shipMethodCalculator.CalculateShipMethodsAsync(packages, configOverride);
+List<List<ShipMethods> rates = await _shipMethodCalculator.CalculateShipMethodsAsync(packages, configOverride);
 ```

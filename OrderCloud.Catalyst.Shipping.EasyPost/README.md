@@ -77,7 +77,7 @@ public class CheckoutIntegrationEventController : CatalystController
 This library also supports more complex cases that require mulitple shipping accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of EasyPostCommand exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
 
 ```c#
-EasyPostConfig configOverride = await FetchShippingAccountCredentials(supplierID);await _shipMethodCalculator.CalculateShipMethodsAsync(packages);
+EasyPostConfig configOverride = await FetchShippingAccountCredentials(supplierID);
 var packages = new List<ShipPackage>() { ... }
 List<List<ShipMethods> rates = await await _shipMethodCalculator.CalculateShipMethodsAsync(packages, configOverride);
 ```

@@ -4,25 +4,25 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Catalyst.Shipping.EasyPost
+namespace OrderCloud.Catalyst.Shipping.UPS
 {
-	public class EasyPostClient
+	public class UPSClient
 	{
-		public static async Task<EasyPostShipment> PostShipmentAsync(EasyPostShipment shipment, EasyPostConfig config)
+		public async static Task<UPSRestResponseBody> ShopRates(UPSRestRequestBody rateRequest, UPSConfig config)
 		{
 			return await TryCatchRequestAsync(config, async (request) =>
 			{
 				var response = await request
-					.AppendPathSegment("shipments")
-					.PostJsonAsync(new { shipment })
-					.ReceiveJson<EasyPostShipment>();
+					.AppendPathSegment("rating/Shop")
+					.PostJsonAsync(rateRequest)
+					.ReceiveJson<UPSRestResponseBody>();
 				return response;
-			});					
+			});		
 		}
 
-		protected static async Task<T> TryCatchRequestAsync<T>(EasyPostConfig config, Func<IFlurlRequest, Task<T>> run)
+		protected static async Task<T> TryCatchRequestAsync<T>(UPSConfig config, Func<IFlurlRequest, Task<T>> run)
 		{
-			var request = config.BaseUrl.WithBasicAuth(config.ApiKey, "");
+			var request = config.BaseUrl.WithHeaders(new { ContentType = "application/json", AccessLicenseNumber = config.ApiKey });
 			try
 			{
 				return await run(request);
@@ -39,11 +39,11 @@ namespace OrderCloud.Catalyst.Shipping.EasyPost
 				{
 					throw new IntegrationNoResponseException(config, request.Url);
 				}
-				if (status == 401 || status == 403)
+				if (status == 401)
 				{
 					throw new IntegrationAuthFailedException(config, request.Url, (int)status);
 				}
-				var body = await ex.Call.Response.GetJsonAsync<EasyPostError>();
+				var body = await ex.Call.Response.GetJsonAsync<UPSErrorBody>();
 				// here's a list of possible error codes https://www.easypost.com/errors-guide#error-codes
 				throw new IntegrationErrorResponseException(config, request.Url, (int)status, body);
 			}

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace OrderCloud.Catalyst.Shipping.EasyPost
 {
-	public static class EasyPostMapper
+	public static class EasyPostPackageMapper
 	{
 		public static EasyPostShipment ToEasyPostShipment(ShipPackage package, List<string> carrierAccountIDs)
 		{

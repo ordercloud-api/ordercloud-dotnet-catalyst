@@ -17,7 +17,7 @@ namespace OrderCloud.Catalyst.Tax.TaxJar
 			return await TryCatchRequestAsync(config, async (request) =>
 			{
 				var tax = await request
-					.AppendPathSegments("v2", "taxes", "orders")
+					.AppendPathSegments("taxes", "orders")
 					.PostJsonAsync(order)
 					.ReceiveJson<TaxJarOrder>();
 				return tax;
@@ -32,7 +32,7 @@ namespace OrderCloud.Catalyst.Tax.TaxJar
 			return await TryCatchRequestAsync(config, async (request) =>
 			{ 
 				var categories = await request
-					.AppendPathSegments("v2", "categories")
+					.AppendPathSegments("categories")
 					.GetJsonAsync<TaxJarCategories>();
 				return categories;
 			});
@@ -46,7 +46,7 @@ namespace OrderCloud.Catalyst.Tax.TaxJar
 			return await TryCatchRequestAsync(config, async (request) =>
 			{
 				var tax = await request
-					.AppendPathSegments("v2", "taxes")
+					.AppendPathSegments("taxes")
 					.PostJsonAsync(order)
 					.ReceiveJson<TaxJarCalcResponse>();
 				return tax;

@@ -64,7 +64,7 @@ namespace OrderCloud.Catalyst.Tests
 			var data = (IntegrationAuthFailedError)ex.Errors[0].Data;
 			Assert.AreEqual(data.ServiceName, "Avalara");
 			Assert.AreEqual(data.ResponseStatus, 401);
-			Assert.AreEqual(data.RequestUrl, $"{_config.BaseUrl}/api/v2/transactions/create");
+			Assert.AreEqual(data.RequestUrl, $"{_config.BaseUrl}/transactions/create");
 		}
 
 		[Test]
@@ -97,7 +97,7 @@ namespace OrderCloud.Catalyst.Tests
 
 			var data = (IntegrationErrorResponseError) ex.Errors[0].Data;
 			Assert.AreEqual(data.ServiceName, "Avalara");
-			Assert.AreEqual(data.RequestUrl, $"{_config.BaseUrl}/api/v2/transactions/create");
+			Assert.AreEqual(data.RequestUrl, $"{_config.BaseUrl}/transactions/create");
 			Assert.AreEqual(data.ResponseStatus, 400);
 		}
 	}

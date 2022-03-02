@@ -64,7 +64,7 @@ namespace OrderCloud.Catalyst.Tests
 			var data = (IntegrationAuthFailedError)ex.Errors[0].Data;
 			Assert.AreEqual(data.ServiceName, "TaxJar");
 			Assert.AreEqual(data.ResponseStatus, 401);
-			Assert.AreEqual(data.RequestUrl, $"{_config.BaseUrl}/v2/taxes");
+			Assert.AreEqual(data.RequestUrl, $"{_config.BaseUrl}/taxes");
 		}
 
 		[Test]
@@ -98,7 +98,7 @@ namespace OrderCloud.Catalyst.Tests
 			var data = (IntegrationErrorResponseError) ex.Errors[0].Data;
 			Assert.AreEqual(data.ServiceName, "TaxJar");
 			Assert.AreEqual(data.ResponseStatus, 400);
-			Assert.AreEqual(data.RequestUrl, $"{_config.BaseUrl}/v2/taxes");
+			Assert.AreEqual(data.RequestUrl, $"{_config.BaseUrl}/taxes");
 			Assert.AreEqual(((TaxJarError) data.ResponseBody).detail, "No to zip, required when country is US");
 		}
 
@@ -127,8 +127,8 @@ namespace OrderCloud.Catalyst.Tests
 			// Act
 			var result = await _command.CalculateEstimateAsync(_order);
 			// Assert
-			_httpTest.ShouldHaveCalled($"{_config.BaseUrl}/v2/taxes").Times((lineItems.Count + shipEstimates.Count));
-			_httpTest.ShouldNotHaveCalled($"{_config.BaseUrl}/v2/taxes/orders");
+			_httpTest.ShouldHaveCalled($"{_config.BaseUrl}/taxes").Times((lineItems.Count + shipEstimates.Count));
+			_httpTest.ShouldNotHaveCalled($"{_config.BaseUrl}/taxes/orders");
 		}
 
 		[Test]
@@ -142,8 +142,8 @@ namespace OrderCloud.Catalyst.Tests
 			// Act
 			var result = await _command.CommitTransactionAsync(_order);
 			// Assert
-			_httpTest.ShouldHaveCalled($"{_config.BaseUrl}/v2/taxes").Times((lineItems.Count + shipEstimates.Count));
-			_httpTest.ShouldHaveCalled($"{_config.BaseUrl}/v2/taxes/orders").Times((lineItems.Count + shipEstimates.Count));
+			_httpTest.ShouldHaveCalled($"{_config.BaseUrl}/taxes").Times((lineItems.Count + shipEstimates.Count));
+			_httpTest.ShouldHaveCalled($"{_config.BaseUrl}/taxes/orders").Times((lineItems.Count + shipEstimates.Count));
 		}
 	}
 }

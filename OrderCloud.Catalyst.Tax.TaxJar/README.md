@@ -16,7 +16,7 @@ You will need 2 pieces of configuration information to authneticate to the TaxJa
 ```c#
 var taxJarCommand = new TaxJarCommand(new TaxJarConfig()
 {
-	BaseUrl = "https://api.sandbox.taxjar.com",
+	BaseUrl = "https://api.sandbox.taxjar.com/v2",
 	APIToken = "...",
 });
 ```

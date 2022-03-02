@@ -30,9 +30,9 @@ namespace OrderCloud.Catalyst
 				.GetProperties()
 				.Where(prop =>
 				{
-					var value = (string)prop.GetValue(config);
+					var value = prop.GetValue(config);
 					var isRequired = Attribute.IsDefined(prop, typeof(RequiredIntegrationFieldAttribute));
-					return isRequired && value.IsNullOrEmpty();
+					return isRequired && value == null;
 				});
 
 			if (missing.Any())

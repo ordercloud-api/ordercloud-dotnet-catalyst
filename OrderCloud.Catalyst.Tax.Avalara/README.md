@@ -16,7 +16,7 @@ You will need 4 pieces of configuration information to authneticate to the Avala
 ```c#
 var avalaraCommand = new AvalaraCommand(new AvalaraConfig()
 {
-	BaseUrl = "https://sandbox-rest.avatax.com",
+	BaseUrl = "https://sandbox-rest.avatax.com/api/v2",
 	LicenseKey = "...",
 	AccountID = "...",
 	CompanyCode = "...",

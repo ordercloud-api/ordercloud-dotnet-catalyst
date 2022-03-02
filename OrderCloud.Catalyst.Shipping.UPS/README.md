@@ -27,12 +27,7 @@ For efficient use of compute resources and clean code, create 1  object and make
 services.AddSingleton<IShipMethodCalculator>(upsCommand);
 ```
 
-<<<<<<< HEAD:OrderCloud.Catalyst.Shipping.UPS/README.md
 Notice that the interface IShipMethodCalculator is not specific to UPS. It is general across providers and comes from the upstream OrderCloud.Catalyst package. 
-=======
-Notice that IShipMethodCalculator is not specific to EasyPost. It is general to shipping rates and comes from the upstream OrderCloud.Catalyst package. 
->>>>>>> upstream/dev:OrderCloud.Catalyst.Shipping.EasyPost/README.md
-
 
 ## Usage 
 

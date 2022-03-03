@@ -13,7 +13,7 @@ All integrations should include two classes designed to be used by downstream pr
 ```c#
 public class MississippiConfig : OCIntegrationConfig
 {
-    public override string ServiceName { get; } = "Mississippi";
+	public override string ServiceName { get; } = "Mississippi";
 
 	[RequiredIntegrationField]
 	public string ApiKey { get; set;}

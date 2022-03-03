@@ -17,7 +17,7 @@ namespace OrderCloud.Catalyst.Shipping.Fedex
 			_defaultConfig = defaultConfig;
 		}
 
-		public async Task<object> GetRates(FedexRateRequestBody request, FedexConfig optionalOverride = null)
+		public async Task<FedexRateResponse> GetRates(FedexRateRequestBody request, FedexConfig optionalOverride = null)
 		{
 			var token = await GetToken(optionalOverride);
 			var config = optionalOverride ?? _defaultConfig;
@@ -25,7 +25,7 @@ namespace OrderCloud.Catalyst.Shipping.Fedex
 				.AppendPathSegments("rate", "v1", "rates", "quotes")
 				.WithOAuthBearerToken(token.access_token)
 				.PostJsonAsync(request)
-				.ReceiveJson();
+				.ReceiveJson<FedexRateResponse>();
 			return response;
 		}
 

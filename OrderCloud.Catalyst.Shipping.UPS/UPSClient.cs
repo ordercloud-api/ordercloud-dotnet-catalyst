@@ -13,7 +13,7 @@ namespace OrderCloud.Catalyst.Shipping.UPS
 			return await TryCatchRequestAsync(config, async (request) =>
 			{
 				var response = await request
-					.AppendPathSegment("rating/Shop")
+					.AppendPathSegments("rating", "Shop")
 					.PostJsonAsync(rateRequest)
 					.ReceiveJson<UPSRestResponseBody>();
 				return response;

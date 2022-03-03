@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrderCloud.Catalyst.Shipping.EasyPost\OrderCloud.Catalyst.Shipping.EasyPost.csproj" />
+    <ProjectReference Include="..\OrderCloud.Catalyst.Shipping.Fedex\OrderCloud.Catalyst.Shipping.Fedex.csproj" />
     <ProjectReference Include="..\OrderCloud.Catalyst.Shipping.UPS\OrderCloud.Catalyst.Shipping.UPS.csproj" />
     <ProjectReference Include="..\OrderCloud.Catalyst.Tax.Avalara\OrderCloud.Catalyst.Tax.Avalara.csproj" />
     <ProjectReference Include="..\OrderCloud.Catalyst.Tax.TaxJar\OrderCloud.Catalyst.Tax.TaxJar.csproj" />

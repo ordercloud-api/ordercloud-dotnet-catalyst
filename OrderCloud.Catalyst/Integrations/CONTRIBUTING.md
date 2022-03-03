@@ -8,7 +8,7 @@ Creating an integration in this project means it will be published as its own Nu
 
 ## Exposed Contracts 
 
-All integrations should include two classes designed to be used downstream - an `OCIntegrationConfig` and an `OCIntegrationCommand`. The config is a POCO which contains `string` properties for all the environment variables needed to authenticate to the service. The command exposes the functionality of your integration through methods. There should be two ways to provide a config to the command. First, a default config which is a constructor parameter. Second, every method should take an optional override config which only applies to that request's scope'. For an example service called "Mississippi" you would create the classes below. 
+All integrations should include two classes designed to be used by downstream projects - an `OCIntegrationConfig` and an `OCIntegrationCommand`. The config is a POCO which contains `string` properties for all the environment variables needed to authenticate to the service. The command exposes the functionality of your integration through methods. There should be two ways to provide a config to the command. First, a default config which is a constructor parameter. Second, every method should take an optional override config which only applies to that request's scope'. For an example service called "Mississippi" you would create the classes below. 
 
 ```c#
 public class MississippiConfig : OCIntegrationConfig

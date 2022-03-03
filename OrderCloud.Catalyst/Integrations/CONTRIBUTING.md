@@ -1,6 +1,6 @@
 ﻿# Contributing Guide For Integrations 
 
-Thank you for investing your time in contributing! These are guidelines for adding a new C# integration to OrderCloud Catalyst. See a list of [existing integrations](./README.md).
+Thank you for investing your time in contributing! These are guidelines for adding a new C# integration to OrderCloud Catalyst. See a list of [existing integrations](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst#3rd-party-integrations).
 
 ## Basics 
 

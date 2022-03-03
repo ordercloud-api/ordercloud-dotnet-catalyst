@@ -36,7 +36,7 @@ public class MississippiCommand : OCIntegrationCommand
 }
 ```
 
-Your integration will likely contain other public classes but these two mandatory classes form the exposed surface of your integration - designed for use in other projects. 
+Your integration will likely contain other public classes but these two mandatory classes form the exposed surface of your integration. 
 
 ## Interfaces 
 

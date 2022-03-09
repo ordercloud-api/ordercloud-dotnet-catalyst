@@ -11,9 +11,9 @@ namespace OrderCloud.Catalyst.Shipping.EasyPost
 	{ 
 		public EasyPostCommand(EasyPostConfig defaultConfig) : base(defaultConfig) { }
 
-		public async Task<List<List<ShipMethod>>> CalculateShipMethodsAsync(IEnumerable<ShipPackage> shippingPackages, OCIntegrationConfig configOverride = null)
+		public async Task<List<List<ShipMethod>>> CalculateShipMethodsAsync(IEnumerable<ShipPackage> shippingPackages, OCIntegrationConfig overrideConfig = null)
 		{
-			var config = GetValidatedConfig<EasyPostConfig>(configOverride);
+			var config = ValidateConfig<EasyPostConfig>(overrideConfig ?? _defaultConfig);
 			var easyPostShipments = shippingPackages.Select(p => EasyPostPackageMapper.ToEasyPostShipment(p, config.CarrierAccountIDs));
 			var responses = await Throttler.RunAsync(easyPostShipments, 100, 6, ship => EasyPostClient.PostShipmentAsync(ship, config));
 			var shipMethods = responses.Select(EasyPostRateMapper.ToOrderCloudShipMethods).ToList();

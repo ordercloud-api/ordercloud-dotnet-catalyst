@@ -11,9 +11,9 @@ namespace OrderCloud.Catalyst.Shipping.UPS
 	{
 		public UPSCommand(UPSConfig defaultConfig) : base(defaultConfig) { }
 
-		public async Task<List<List<ShipMethod>>> CalculateShipMethodsAsync(IEnumerable<ShipPackage> shippingPackages, OCIntegrationConfig configOverride = null)
+		public async Task<List<List<ShipMethod>>> CalculateShipMethodsAsync(IEnumerable<ShipPackage> shippingPackages, OCIntegrationConfig overrideConfig = null)
 		{
-			var config = GetValidatedConfig<UPSConfig>(configOverride);
+			var config = ValidateConfig<UPSConfig>(overrideConfig ?? _defaultConfig);
 			var rateRequests = shippingPackages.Select(UPSPackageMapper.ToRateRequest);
 			var responses = await Throttler.RunAsync(rateRequests, 100, 6, ship => UPSClient.ShopRates(ship, config));
 			var shipMethods = responses.Select(UPSRatesMapper.ToOrderCloudShipMethods).ToList();

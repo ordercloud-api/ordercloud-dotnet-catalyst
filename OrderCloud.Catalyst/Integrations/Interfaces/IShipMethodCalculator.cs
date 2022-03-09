@@ -55,6 +55,7 @@ namespace OrderCloud.Catalyst
 	{
 		public string Description { get; set; }
 		public decimal UnitPrice { get; set; }
+		public string Currency { get; set; } = "USD"; // default
 		public int Quantity { get; set; }
 		public decimal UnitWeight { get; set; }
 	}

@@ -71,7 +71,7 @@ namespace OrderCloud.Catalyst.Shipping.Fedex
 		public string destinationPostalCode { get; set; }
 		public string commitDate { get; set; }
 		public string astraDescription { get; set; }
-		public string deliveryDate {get; set;}
+		public string deliveryDate { get; set; }
 		public string deliveryEligibilities { get; set; }
 		public bool ineligibleForMoneyBackGuarantee { get; set; }
 		public string maximmumTransitTime { get; set; }
@@ -88,5 +88,6 @@ namespace OrderCloud.Catalyst.Shipping.Fedex
 		public string urdaSuffixCode { get; set; }
 		public string destinationServiceAreas { get; set; }
 		public string originPostalCodes { get; set; }
-		public string customTransitTime	{ get; set; }
+		public string customTransitTime { get; set; }
+	}
 }

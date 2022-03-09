@@ -11,7 +11,7 @@ This project brings easy tax calculation to your ecommerce app using the [Avalar
 
 ## Authentication and Injection
 
-You will need 4 pieces of configuration information to authneticate to the Avalara API - *BaseUrl*, *AccountID*, *LicenseKey*, and *CompanyCode*. Create an account with avalara and get these from the admin portal.
+You will need these configuration data points to authneticate to the Avalara API - *BaseUrl*, *AccountID*, *LicenseKey*, and *CompanyCode*. Create an account with avalara and get these from the admin portal.
 
 ```c#
 var avalaraCommand = new AvalaraCommand(new AvalaraConfig()

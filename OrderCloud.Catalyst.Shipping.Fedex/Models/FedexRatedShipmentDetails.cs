@@ -32,7 +32,7 @@ namespace OrderCloud.Catalyst.Shipping.Fedex
 		public string currency { get; set; }
 		public FedexWeight totalBillingWeight = new FedexWeight();
 		public FedexCurrencyExchange currencyExchangeRate { get; set; } = new FedexCurrencyExchange();
-		public List<FedexSurCharge> surCharges { get; set; } = new List<FedexSurCharge>()
+		public List<FedexSurCharge> surCharges { get; set; } = new List<FedexSurCharge>();
 	}
 
 	public class FedexCurrencyExchange

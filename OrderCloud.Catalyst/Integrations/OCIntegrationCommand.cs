@@ -10,22 +10,18 @@ namespace OrderCloud.Catalyst
 	/// </summary>
 	public abstract class OCIntegrationCommand
 	{
-		private readonly OCIntegrationConfig _configDefault;
+		protected readonly OCIntegrationConfig _defaultConfig;
 
-		public OCIntegrationCommand(OCIntegrationConfig configDefault)
+		public OCIntegrationCommand(OCIntegrationConfig defaultConfig)
 		{
-			_configDefault = configDefault;
+			ValidateConfigData(defaultConfig);
+			_defaultConfig = defaultConfig;
 		}
 
-		public T GetValidatedConfig<T>(OCIntegrationConfig configOverride) where T : OCIntegrationConfig
+		protected void ValidateConfigData(OCIntegrationConfig config)
 		{
-			var config = configOverride ?? _configDefault; 
+			if (config == null) return;
 			var type = config.GetType();
-			if (type != typeof(T))
-			{
-				throw new ArgumentException($"Integration configuration must be of type {typeof(T).Name} to match this command. Found {type.Name} instead.", "configOverride");
-			}
-
 			var missing = type
 				.GetProperties()
 				.Where(prop =>
@@ -40,7 +36,22 @@ namespace OrderCloud.Catalyst
 				var names = missing.Select(p => p.Name).ToList();
 				throw new IntegrationMissingConfigsException(config, names);
 			}
+		}
 
+		protected void ValidateConfigType<T>(OCIntegrationConfig config) where T : OCIntegrationConfig
+		{
+			if (config == null) return;
+			var type = config.GetType();
+			if (type != typeof(T))
+			{
+				throw new ArgumentException($"Integration configuration must be of type {typeof(T).Name} to match this command. Found {type.Name} instead.", "configOverride");
+			}
+		}
+
+		protected T ValidateConfig<T>(OCIntegrationConfig config) where T : OCIntegrationConfig
+		{
+			ValidateConfigType<T>(config);
+			ValidateConfigData(config);
 			return config as T;
 		}
 	}

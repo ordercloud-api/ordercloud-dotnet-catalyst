@@ -11,7 +11,7 @@ This project brings shipping rate calculation to your ecommerce app using the [U
 
 ## Authentication and Injection
 
-You will need 2 pieces of configuration information to authneticate to the UPS API - *ApiKey*, and *BaseUrl*. Create a UPS account to get an ApiKey.
+You will need these configuration data points to authneticate to the UPS API - *ApiKey*, and *BaseUrl*. Create a UPS account to get an ApiKey.
 
 ```c#
 var upsCommand = new UPSCommand(new UPSConfig()
@@ -21,7 +21,7 @@ var upsCommand = new UPSCommand(new UPSConfig()
 });
 ```
 
-For efficient use of compute resources and clean code, create 1  object and make it available throughout your project using inversion of control dependency injection. 
+For efficient use of compute resources and clean code, create 1 UPSCommand object and make it available throughout your project using inversion of control dependency injection. 
 
 ```c#
 services.AddSingleton<IShipMethodCalculator>(upsCommand);
@@ -77,5 +77,5 @@ This library also supports more complex cases that require mulitple shipping acc
 ```c#
 UPSConfig configOverride = await FetchShippingAccountCredentials(supplierID);
 var packages = new List<ShipPackage>() { ... }
-List<List<ShipMethods> rates = await await _shipMethodCalculator.CalculateShipMethodsAsync(packages, configOverride);
+List<List<ShipMethods> rates = await _shipMethodCalculator.CalculateShipMethodsAsync(packages, configOverride);
 ```

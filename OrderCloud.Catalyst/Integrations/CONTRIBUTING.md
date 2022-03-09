@@ -1,6 +1,6 @@
 ﻿# Contributing Guide For Integrations 
 
-Thank you for investing your time in contributing! These are guidelines for adding a new C# integration to OrderCloud Catalyst. See a list of [existing integrations](./README.md).
+Thank you for investing your time in contributing! These are guidelines for adding a new C# integration to OrderCloud Catalyst. See a list of [existing integrations](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst#3rd-party-integrations).
 
 ## Basics 
 
@@ -8,12 +8,12 @@ Creating an integration in this project means it will be published as its own Nu
 
 ## Exposed Contracts 
 
-All integrations should include two classes designed to be used by ecommerce solutions - an `OCIntegrationConfig` and an `OCIntegrationCommand`. The config is a POCO which contains `string` properties for all the environment variables needed to authenticate to the service. The command exposes the functionality of your integration through methods. There should be two ways to provide a config to the command. First, a default config which is a constructor parameter. Second, every method should take an optional override config which only applies to that request's scope'. For an example service called "Mississippi" you would create the classes below. 
+All integrations should include two classes designed to be used by downstream projects - an `OCIntegrationConfig` and an `OCIntegrationCommand`. The config is a plain old c# object which contains properties for all the environment variables needed to authenticate to the service. The command exposes the functionality of your integration through methods. There should be two ways to provide a config to the command. First, a default config which is a constructor parameter. Second, every method should take an optional override config which only applies to that request's scope. For an example service called "Mississippi" you would create the classes below. 
 
 ```c#
 public class MississippiConfig : OCIntegrationConfig
 {
-    public override string ServiceName { get; } = "Mississippi";
+	public override string ServiceName { get; } = "Mississippi";
 
 	[RequiredIntegrationField]
 	public string ApiKey { get; set;}
@@ -36,7 +36,7 @@ public class MississippiCommand : OCIntegrationCommand
 }
 ```
 
-Your integration will likely contain other public classes but these two mandatory classes form the exposed surface of your integration - designed for use in other projects. 
+Your integration will likely contain other public classes but these two mandatory classes form the exposed surface of your integration. 
 
 ## Interfaces 
 

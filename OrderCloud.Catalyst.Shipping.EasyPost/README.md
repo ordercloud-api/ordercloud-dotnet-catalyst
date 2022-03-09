@@ -7,7 +7,8 @@ This project brings shipping rate calculation to your ecommerce app using the [E
 1. If you haven't, please review [Order Checkout Integration Event](https://ordercloud.io/knowledge-base/order-checkout-integration) focusing on the ShippingRates event. In short, a webhook from the platform makes a request to a solution-custom API route that contains logic for estimating shipping rates. 
 2. This project helps in the context of a .NET API project that responds to those webhooks. If you already have a .NET API project, great. If not, you can [follow this guide](https://ordercloud.io/knowledge-base/start-dotnet-middleware-from-scratch). After you have published your API, you will need to configure OrderCloud to point its Integration Event webhooks at your API. 
 3. In your .NET project, add the OrderCloud.Catalyst.Shipping.EasyPost nuget package with either the Visual Studio UI or the dotnet CLI.
-`dotnet add package OrderCloud.Catalyst.Shipping.EasyPost`
+
+```dotnet add package OrderCloud.Catalyst.Shipping.EasyPost```
 
 ## Authentication and Injection
 

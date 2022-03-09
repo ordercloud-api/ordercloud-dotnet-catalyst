@@ -11,7 +11,7 @@ This project brings easy tax calculation to your ecommerce app using the [TaxJar
 
 ## Authentication and Injection
 
-You will need 2 pieces of configuration information to authneticate to the TaxJar API - *BaseUrl*, and *APIToken*. Create an account with taxjar and get these from the admin portal.
+You will need these configuration data points to authneticate to the TaxJar API - *BaseUrl*, and *APIToken*. Create an account with taxjar and get these from the admin portal.
 
 ```c#
 var taxJarCommand = new TaxJarCommand(new TaxJarConfig()

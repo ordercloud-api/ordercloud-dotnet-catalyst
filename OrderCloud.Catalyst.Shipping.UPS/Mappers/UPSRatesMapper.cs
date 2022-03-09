@@ -8,7 +8,7 @@ namespace OrderCloud.Catalyst.Shipping.UPS
 {
 	public static class UPSRatesMapper
     {
-        public static List<ShipMethod> ToOrderCloudShipMethods(this UPSRestResponseBody upsRatesResponse)
+        public static List<ShipMethod> ToOrderCloudShipMethods(UPSRestResponseBody upsRatesResponse)
         {
             var shipMethods = new List<ShipMethod>();
             foreach (var rate in upsRatesResponse.RateResponse.RatedShipment)
@@ -21,7 +21,7 @@ namespace OrderCloud.Catalyst.Shipping.UPS
             return shipMethods;
         }
 
-        public static ShipMethod ToOrderCloudShipMethod(this UPSRatedShipment rate)
+        public static ShipMethod ToOrderCloudShipMethod(UPSRatedShipment rate)
 		{
             var shipMethod = new ShipMethod
             {

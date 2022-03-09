@@ -9,26 +9,26 @@ namespace OrderCloud.Catalyst.Tax.TaxJar
 {
 	public class TaxJarCommand : OCIntegrationCommand, ITaxCalculator, ITaxCodesProvider
 	{
-		public TaxJarCommand(TaxJarConfig configDefault) : base(configDefault) { }
+		public TaxJarCommand(TaxJarConfig defaultConfig) : base(defaultConfig) { }
 
-		public async Task<TaxCategorizationResponse> ListTaxCodesAsync(string filterTerm = "", OCIntegrationConfig configOverride = null)
+		public async Task<TaxCategorizationResponse> ListTaxCodesAsync(string filterTerm = "", OCIntegrationConfig overrideConfig = null)
 		{
-			var config = GetValidatedConfig<TaxJarConfig>(configOverride);
+			var config = ValidateConfig<TaxJarConfig>(overrideConfig ?? _defaultConfig);
 			var categories = await TaxJarClient.ListCategoriesAsync(config);
 			return TaxJarCategoryMapper.ToTaxCategorization(categories, filterTerm);
 		}
 
-		public async Task<OrderTaxCalculation> CalculateEstimateAsync(OrderSummaryForTax orderSummary, OCIntegrationConfig configOverride = null)
+		public async Task<OrderTaxCalculation> CalculateEstimateAsync(OrderSummaryForTax orderSummary, OCIntegrationConfig overrideConfig = null)
 		{
-			var config = GetValidatedConfig<TaxJarConfig>(configOverride);
+			var config = ValidateConfig<TaxJarConfig>(overrideConfig ?? _defaultConfig); 
 			var orders = await CalculateTax(orderSummary, config);
 			var orderTaxCalculation = TaxJarResponseMapper.ToOrderTaxCalculation(orders);
 			return orderTaxCalculation;
 		}
 
-		public async Task<OrderTaxCalculation> CommitTransactionAsync(OrderSummaryForTax orderSummary, OCIntegrationConfig configOverride = null)
+		public async Task<OrderTaxCalculation> CommitTransactionAsync(OrderSummaryForTax orderSummary, OCIntegrationConfig overrideConfig = null)
 		{
-			var config = GetValidatedConfig<TaxJarConfig>(configOverride);
+			var config = ValidateConfig<TaxJarConfig>(overrideConfig ?? _defaultConfig); 
 			var orders = await CalculateTax(orderSummary, config);
 			foreach (var response in orders)
 			{

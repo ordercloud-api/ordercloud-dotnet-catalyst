@@ -85,8 +85,8 @@ namespace OrderCloud.Catalyst
 			var type = lookup["usrtype"].FirstOrDefault();
 			CommerceRole = GetCommerceRole(type);
 			ClientID = lookup["cid"].FirstOrDefault();
-			ExpiresUTC = UnixToUTCDateTime(lookup["exp"].FirstOrDefault()) ?? throw new ArgumentNullException("Token must contain \"exp\" claim");
-			NotValidBeforeUTC = UnixToUTCDateTime(lookup["nbf"].FirstOrDefault()) ?? throw new ArgumentNullException("Token must contain \"nbf\" claim"); ;
+			ExpiresUTC = int.Parse(lookup["exp"].FirstOrDefault() ?? throw new ArgumentNullException("Token must contain \"exp\" claim")).FromUnixEpoch();
+			NotValidBeforeUTC = int.Parse(lookup["nbf"].FirstOrDefault() ?? throw new ArgumentNullException("Token must contain \"nbf\" claim")).FromUnixEpoch(); 
 			UserDatabaseID = lookup["u"].FirstOrDefault() ?? lookup["uid"].FirstOrDefault();
 			ImpersonatingUserDatabaseID = lookup["imp"].FirstOrDefault();
 		}
@@ -116,20 +116,6 @@ namespace OrderCloud.Catalyst
 		private static string GetHeader(JwtSecurityToken jwt, string key)
 		{
 			return jwt.Header.FirstOrDefault(t => t.Key == key).Value?.ToString();
-		}
-
-		private static DateTime? UnixToUTCDateTime(string unix)
-		{
-			if (unix == null) { return null; }
-			var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-			return dtDateTime.AddSeconds(int.Parse(unix));
-		}
-
-		private static string UTCDateTimeToUnix(DateTime? utc)
-		{
-			if (utc == null) { return null; }
-			var span = utc - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-			return ((int)span.Value.TotalSeconds).ToString();
 		}
 
 		public static CommerceRole GetCommerceRole(string userType)

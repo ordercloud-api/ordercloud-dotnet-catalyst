@@ -136,5 +136,17 @@ namespace OrderCloud.Catalyst
 
 			return lineItems;
 		}
+
+		public static DateTime FromUnixEpoch(this int unix)
+		{
+			var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+			return dtDateTime.AddSeconds(unix);
+		}
+
+		public static int ToUnixEpoch(this DateTime utc)
+		{
+			var span = utc - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+			return (int) span.TotalSeconds;
+		}
 	}
 }

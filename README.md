@@ -137,6 +137,7 @@ Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/I
 | Name | Project Guide | Nuget Library | Contributed By | Categories |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 | **EasyPost** | [OrderCloud.Catalyst.Shipping.EasyPost](./OrderCloud.Catalyst.Shipping.EasyPost) | Coming | OrderCloud Team | Shipping
+| **Fedex** | [OrderCloud.Catalyst.Shipping.Fedex](./OrderCloud.Catalyst.Shipping.Fedex) | Coming | OrderCloud Team | Shipping
 | **UPS** | [OrderCloud.Catalyst.Shipping.UPS](./OrderCloud.Catalyst.Shipping.UPS) | Coming | OrderCloud Team | Shipping
 | **Vertex** | [OrderCloud.Catalyst.Tax.Vertex](./OrderCloud.Catalyst.Tax.Vertex) | Coming | OrderCloud Team | Tax
 | **Avalara** | [OrderCloud.Catalyst.Tax.Avalara](./OrderCloud.Catalyst.Tax.Avalara) | Coming | OrderCloud Team | Tax

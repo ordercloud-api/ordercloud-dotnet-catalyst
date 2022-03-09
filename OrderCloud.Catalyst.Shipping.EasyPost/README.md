@@ -11,7 +11,7 @@ This project brings shipping rate calculation to your ecommerce app using the [E
 
 ## Authentication and Injection
 
-You will need 3 pieces of configuration information to authneticate to the EasyPost API - *ApiKey*, *BaseUrl*, and *CarrierAccountIDs*. Create an account with EasyPost and get these from the admin portal.
+YYou will need these configuration data points to authneticate to the EasyPost API - *ApiKey*, *BaseUrl*, and *CarrierAccountIDs*. Create an account with EasyPost and get these from the admin portal.
 
 ```c#
 var easyPostCommand = new EasyPostCommand(new EasyPostConfig()
@@ -22,7 +22,7 @@ var easyPostCommand = new EasyPostCommand(new EasyPostConfig()
 });
 ```
 
-For efficient use of compute resources and clean code, create 1  object and make it available throughout your project using inversion of control dependency injection. 
+For efficient use of compute resources and clean code, create 1 EasyPostommand object and make it available throughout your project using inversion of control dependency injection. 
 
 ```c#
 services.AddSingleton<IShipMethodCalculator>(easyPostCommand);
@@ -33,7 +33,7 @@ Notice that IShipMethodCalculator is not specific to EasyPost. It is general to 
 
 ## Usage 
 
-Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the shipping interface IShipMethodCalculator and use it within the logic of the route. It is not recommended to rely directly on EasyPost command anywhere. The layer of abstraction that IShipMethodCalculator provides decouples your code from EasyPost as a specific provider and hides some internal complexity.
+Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the shipping interface IShipMethodCalculator and use it within the logic of the route. It is not recommended to rely directly on EasyPostCommand anywhere. The layer of abstraction that IShipMethodCalculator provides decouples your code from EasyPost as a specific provider and hides some internal complexity.
 
 ```c#
 public class CheckoutIntegrationEventController : CatalystController
@@ -79,5 +79,5 @@ This library also supports more complex cases that require mulitple shipping acc
 ```c#
 EasyPostConfig configOverride = await FetchShippingAccountCredentials(supplierID);
 var packages = new List<ShipPackage>() { ... }
-List<List<ShipMethods> rates = await await _shipMethodCalculator.CalculateShipMethodsAsync(packages, configOverride);
+List<List<ShipMethods> rates = await _shipMethodCalculator.CalculateShipMethodsAsync(packages, configOverride);
 ```

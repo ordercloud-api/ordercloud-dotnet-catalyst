@@ -11,7 +11,7 @@ This project brings easy tax calculation to your ecommerce app using the [Vertex
 
 ## Authentication and Injection
 
-You will need 5 pieces of configuration information to authneticate to the Vertex API - *CompanyName*, *ClientID*, *ClientSecret*, *Username*, and *Password*. Create an account with vertex and get these from the admin portal.
+You will need these configuration data points to authneticate to the Vertex API - *CompanyName*, *ClientID*, *ClientSecret*, *Username*, and *Password*. Create an account with vertex and get these from the admin portal.
 
 ```c#
 var vertexCommand = new VertexCommand(new VertexConfig()

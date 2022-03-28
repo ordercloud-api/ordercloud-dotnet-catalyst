@@ -340,6 +340,21 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
+		public async Task two_requests_with_the_same_kid_should_verify_both()
+		{
+			var keyID = "something1";
+			var token1 = FakeOrderCloudToken.Create("mYcLiEnTiD", new List<string> { "Shopper" }, keyID: keyID);
+			var token2 = token1 + "makethisinvalid";
+
+			var response1 = await TestFramework.Client.WithOAuthBearerToken(token1).Request("demo/shop").GetAsync();
+			var response2 = await TestFramework.Client.WithOAuthBearerToken(token2).Request("demo/shop").GetAsync();
+
+			await response2.ShouldHaveFirstApiError("InvalidToken", 401, "Access token is invalid or expired.");
+		}
+
+
+
+		[Test]
 		public async Task user_auth_provider_handles_mulitple_concurrent_requests()
 		{
 			var requestCount = 10;

@@ -106,7 +106,11 @@ namespace OrderCloud.Catalyst.TestApi
 		[HttpPost("usercontext/{token}")]
 		public async Task<SimplifiedUser> SetUserContext(string token)
 		{
-			var user = await _tokenProvider.VerifyTokenAsync(token);
+			var opts = new OrderCloudUserAuthOptions()
+			{
+				AnyClientIDCanAccess = true
+			};
+			var user = await _tokenProvider.VerifyTokenAsync(token, opts);
 			return new SimplifiedUser() { 
 				AvailableRoles = user.Roles.ToList(),
 				Username = user.Username, 

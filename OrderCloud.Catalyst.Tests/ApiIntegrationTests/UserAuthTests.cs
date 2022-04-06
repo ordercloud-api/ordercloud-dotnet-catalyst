@@ -127,7 +127,7 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			var fixture = new Fixture();
 			var username = fixture.Create<string>();
-			var clientID = fixture.Create<string>();
+			var clientID = fixture.Create<string>(); // This also tests that OrderCloudUserAuthOptions.AnyClientIDCanAccess works as expected
 			var token = FakeOrderCloudToken.Create(clientID, new List<string> { "Shopper" }, username: username);
 
 			var result = await TestFramework.Client
@@ -349,7 +349,7 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
-		public async Task two_requests_with_the_same_kid_should_verify_both()
+		public async Task two_requests_with_the_same_kid_should_verify_both_tokens()
 		{
 			var fixture = new Fixture();
 			var keyID = fixture.Create<string>();

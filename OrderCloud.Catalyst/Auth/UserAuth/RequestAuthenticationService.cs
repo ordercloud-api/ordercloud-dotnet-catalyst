@@ -249,7 +249,7 @@ namespace OrderCloud.Catalyst
 				catch (Exception ex)
 				{
 					await _cache.RemoveAsync(cacheKey); // not their fault, don't make them wait 5 min   
-					return null; // will fail; 
+					return null; // null public key will lead to unauthorized exception; 
 				}
 			});
 			return VerifyTokenWithPublicKey(jwt.AccessToken, publicKey);

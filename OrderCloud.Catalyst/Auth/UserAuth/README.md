@@ -7,7 +7,7 @@ When a user authenticates and acquires an access token from OrderCloud.io, typic
 ```c#
 // In Startup.cs
 public virtual void ConfigureServices(IServiceCollection services) {
-    services.AddOrderCloudUserAuth();
+    services.AddOrderCloudUserAuth(opts => opts.AddValidClientIDs("client_id_1", "client_id_2"));
 }
 ```
 #### 2. In your front-end app, anywhere you call one of your custom endpoints, pass the OrderCloud.io access token in a request header.

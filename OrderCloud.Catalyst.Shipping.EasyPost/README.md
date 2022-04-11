@@ -51,7 +51,7 @@ public class CheckoutIntegrationEventController : CatalystController
 
 	[HttpPost, Route("shippingrates")] // route and method specified by OrderCloud platform
 	[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
-	public async Task<OrderCalculateResponse> EstimateShippingRates([FromBody] OrderCalculatePayload<CheckoutConfig> payload)
+	public async Task<ShipEstimateResponse> EstimateShippingRates([FromBody] OrderCalculatePayload<CheckoutConfig> payload)
 	{
 		var response = new ShipEstimateResponse();
 
@@ -69,7 +69,7 @@ public class CheckoutIntegrationEventController : CatalystController
 			response.ShipEstimates[0].ShipMethods = rates[0]
 		}
 
-		...
+		return response;
 	}
 
 }

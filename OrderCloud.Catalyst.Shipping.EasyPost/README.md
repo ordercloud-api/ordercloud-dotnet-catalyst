@@ -56,14 +56,12 @@ public class CheckoutIntegrationEventController : CatalystController
 		var response = new ShipEstimateResponse();
 
 		// containerization logic - how should lineItem quantities be boxed into a set of shipped packages?
-
 		response.ShipEstimates = new List<ShipEstimate> { ... }
-
-		// Each ShipEstimate should be convertable into a ShipPackage, which has all the data shippers need to provide a rate.
-		// Your mapping here
-
-		var packages = new List<ShipPackages>() { ... }
+		var packages = response.ShipEstimates.Select(se => MapToPackages(response.ShipEstimates));
+		
+		// use the interface
 		List<List<ShipMethod> rates = await _shipMethodCalculator.CalculateShipMethodsAsync(packages);
+		
 		for (var i = 0; i<response.ShipEstimates.Count; i++) 
 		{
 			response.ShipEstimates[0].ShipMethods = rates[0]

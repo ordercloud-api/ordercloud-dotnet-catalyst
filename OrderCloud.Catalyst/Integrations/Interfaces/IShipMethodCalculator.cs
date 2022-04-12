@@ -11,6 +11,8 @@ namespace OrderCloud.Catalyst
 		Task<List<List<ShipMethod>>> CalculateShipMethodsAsync(IEnumerable<ShipPackage> shippingPackages, OCIntegrationConfig configOverride = null);
 	}
 
+	// inherit from SDK to expose candidates for platform additions
+	// avoid circular deps
 	public class ShipPackage
 	{
 		public decimal Length { get; set; }

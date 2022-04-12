@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OrderCloud.Catalyst.Payments.Stripe\OrderCloud.Catalyst.Payments.Stripe.csproj" />
     <ProjectReference Include="..\OrderCloud.Catalyst.Shipping.EasyPost\OrderCloud.Catalyst.Shipping.EasyPost.csproj" />
     <ProjectReference Include="..\OrderCloud.Catalyst.Shipping.Fedex\OrderCloud.Catalyst.Shipping.Fedex.csproj" />
     <ProjectReference Include="..\OrderCloud.Catalyst.Shipping.UPS\OrderCloud.Catalyst.Shipping.UPS.csproj" />

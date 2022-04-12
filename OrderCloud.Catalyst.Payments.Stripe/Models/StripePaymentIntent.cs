@@ -26,7 +26,16 @@ namespace OrderCloud.Catalyst.Payments.Stripe.Models
         public int amount { get; set; }
         public int amount_capturable { get; set; }
         public int amount_received { get; set; }
+        public string application { get; set; }
+        public int application_fee_amount { get; set; }
+        public AutomaticPaymentMethods automatic_payment_methods { get; set; }
+
         public List<string> payment_method_types { get; set; }
 
+    }
+
+    public class AutomaticPaymentMethods
+    {
+        public bool enabled { get; set; }
     }
 }

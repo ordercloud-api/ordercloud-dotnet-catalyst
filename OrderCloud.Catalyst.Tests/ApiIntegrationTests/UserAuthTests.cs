@@ -44,7 +44,7 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task can_auth_with_oc_token()
 		{
-			var token = FakeOrderCloudToken.Create("mYcLiEnTiD", new List<string> { "Shopper" }); // clientID check should be case insensitive
+			var token = FakeOrderCloudToken.Create(Startup.UnitTestClientID, new List<string> { "Shopper" }); // clientID check should be case insensitive
 			var result = await TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/shop")
@@ -54,9 +54,23 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
+		public async Task auth_should_fail_with_random_client_id()
+		{
+			var fixture = new Fixture();
+			var clientID = fixture.Create<string>();
+			var token = FakeOrderCloudToken.Create(clientID, new List<string> { "Shopper" }); // clientID check should be case insensitive
+			var result = await TestFramework.Client
+				.WithOAuthBearerToken(token)
+				.Request("demo/shop")
+				.GetAsync();
+
+			await result.ShouldHaveFirstApiError("InvalidToken", 401, "Access token is invalid or expired.");
+		}
+
+		[Test]
 		public async Task should_succeed_with_custom_role()
 		{
-			var token = FakeOrderCloudToken.Create("mYcLiEnTiD", new List<string> { "CustomRole" });
+			var token = FakeOrderCloudToken.Create(Startup.UnitTestClientID, new List<string> { "CustomRole" });
 			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/custom");
@@ -69,7 +83,7 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task should_succeed_with_with_full_access()
 		{
-			var token = FakeOrderCloudToken.Create("mYcLiEnTiD", new List<string> { "FullAccess" });
+			var token = FakeOrderCloudToken.Create(Startup.UnitTestClientID, new List<string> { "FullAccess" });
 			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/admin");
@@ -82,7 +96,7 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task should_error_without_custom_role()
 		{
-			var token = FakeOrderCloudToken.Create("mYcLiEnTiD");
+			var token = FakeOrderCloudToken.Create(Startup.UnitTestClientID);
 			var result = await TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/custom")
@@ -96,8 +110,7 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			var fixture = new Fixture();
 			var username = fixture.Create<string>();
-			var clientID = fixture.Create<string>();
-			var token = FakeOrderCloudToken.Create(clientID, new List<string> { "Shopper" }, username: username);
+			var token = FakeOrderCloudToken.Create(Startup.UnitTestClientID, new List<string> { "Shopper" }, username: username);
 
 			var result = await TestFramework.Client
 				.WithOAuthBearerToken(token)
@@ -105,7 +118,7 @@ namespace OrderCloud.Catalyst.Tests
 				.GetJsonAsync<SimplifiedUser>();
 
 			Assert.AreEqual(username, result.Username);
-			Assert.AreEqual(clientID, result.TokenClientID);
+			Assert.AreEqual(Startup.UnitTestClientID, result.TokenClientID);
 			Assert.AreEqual("Shopper", result.AvailableRoles[0]);
 		}
 
@@ -114,7 +127,7 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			var fixture = new Fixture();
 			var username = fixture.Create<string>();
-			var clientID = fixture.Create<string>();
+			var clientID = fixture.Create<string>(); // This also tests that OrderCloudUserAuthOptions.AnyClientIDCanAccess works as expected
 			var token = FakeOrderCloudToken.Create(clientID, new List<string> { "Shopper" }, username: username);
 
 			var result = await TestFramework.Client
@@ -130,10 +143,8 @@ namespace OrderCloud.Catalyst.Tests
 		[Test]
 		public async Task should_succeed_if_now_is_between_expiry_and_nvb()
 		{
-			var fixture = new Fixture();
-
 			var token = FakeOrderCloudToken.Create(
-				clientID: fixture.Create<string>(),
+				clientID: Startup.UnitTestClientID,
 				roles: new List<string> { "Shopper" },
 				expiresUTC: DateTime.UtcNow + TimeSpan.FromHours(1),
 				notValidBeforeUTC: DateTime.UtcNow - TimeSpan.FromHours(1)
@@ -148,16 +159,16 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
-		public async Task should_allow_access_if_no_client_id()
+		public async Task should_not_allow_access_if_no_client_id()
 		{
 			var token = FakeOrderCloudToken.Create(null, new List<string> { "Shopper" });
 
 			var result = await TestFramework.Client
 				.WithOAuthBearerToken(token)
 				.Request("demo/shop")
-				.GetStringAsync();
+				.GetAsync();
 
-			result.Should().Be("\"hello shopper!\"");
+			await result.ShouldHaveFirstApiError("InvalidToken", 401, "Access token is invalid or expired.");
 		}
 
 		[Test]
@@ -186,7 +197,7 @@ namespace OrderCloud.Catalyst.Tests
 			var fixture = new Fixture();
 
 			var token = FakeOrderCloudToken.Create(
-				clientID: fixture.Create<string>(),
+				clientID: Startup.UnitTestClientID,
 				apiUrl: "https://api.ordercloud.io"
 			);
 
@@ -199,15 +210,14 @@ namespace OrderCloud.Catalyst.Tests
 
 			var response = await request.GetAsync();
 
-			await response.ShouldHaveFirstApiError("InvalidToken", 401, "Environment mismatch. Token gives access to https://api.ordercloud.io while this API expects ");
+			await response.ShouldHaveFirstApiError("InvalidToken", 401, "Environment mismatch. Token gives access to https://api.ordercloud.io while this API expects mockdomain.com");
 		}
 
 		[Test]
 		public async Task should_succeed_based_on_token_not_me_get()
 		{
 			var fixture = new Fixture();
-			var clientID = fixture.Create<string>();
-			var token = FakeOrderCloudToken.Create(clientID, new List<string> { "OrderAdmin" }); // token has the role
+			var token = FakeOrderCloudToken.Create(Startup.UnitTestClientID, new List<string> { "OrderAdmin" }); // token has the role
 
 			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)
@@ -258,10 +268,8 @@ namespace OrderCloud.Catalyst.Tests
 			var fixture = new Fixture();
 			var errorCode = fixture.Create<string>();
 			var message = fixture.Create<string>();
-			var clientID = fixture.Create<string>();
-
-			var keyID = useKid ? "something" : null;
-			var token = FakeOrderCloudToken.Create(clientID, new List<string> { "Shopper" }, keyID: keyID); // token has the role
+			var keyID = useKid ? fixture.Create<string>() : null;
+			var token = FakeOrderCloudToken.Create(Startup.UnitTestClientID, new List<string> { "Shopper" }, keyID: keyID); // token has the role
 
 			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)
@@ -293,7 +301,7 @@ namespace OrderCloud.Catalyst.Tests
 		[TestCase("demo/anon", true)]
 		public async Task can_authorize_by_role(string endpoint, bool success)
 		{
-			var token = FakeOrderCloudToken.Create("mYcLiEnTiD", new List<string> { "Shopper" });
+			var token = FakeOrderCloudToken.Create(Startup.UnitTestClientID, new List<string> { "Shopper" });
 
 			var request = TestFramework.Client
 					.WithOAuthBearerToken(token)
@@ -317,8 +325,9 @@ namespace OrderCloud.Catalyst.Tests
 		[TestCase(false)]
 		public async Task user_authorization_is_cached(bool useKid)
 		{
-			var keyID = useKid ? "something" : null;
-			var token = FakeOrderCloudToken.Create("mYcLiEnTiD", new List<string> { "Shopper" }, keyID: keyID);
+			var fixture = new Fixture();
+			var keyID = useKid ? fixture.Create<string>() : null;
+			var token = FakeOrderCloudToken.Create(Startup.UnitTestClientID, new List<string> { "Shopper" }, keyID: keyID);
 
 			var request = TestFramework.Client.WithOAuthBearerToken(token).Request("demo/shop");
 
@@ -340,19 +349,36 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
+		public async Task two_requests_with_the_same_kid_should_verify_both_tokens()
+		{
+			var fixture = new Fixture();
+			var keyID = fixture.Create<string>();
+
+			var token1 = FakeOrderCloudToken.Create(Startup.UnitTestClientID, new List<string> { "Shopper" }, keyID: keyID);
+			var token2 = token1 + "makethisinvalid";
+
+			var response1 = await TestFramework.Client.WithOAuthBearerToken(token1).Request("demo/shop").GetAsync();
+			var response2 = await TestFramework.Client.WithOAuthBearerToken(token2).Request("demo/shop").GetAsync();
+
+			await response2.ShouldHaveFirstApiError("InvalidToken", 401, "Access token is invalid or expired.");
+		}
+
+
+
+		[Test]
 		public async Task user_auth_provider_handles_mulitple_concurrent_requests()
 		{
-			var requestCount = 10;
 			var fixture = new Fixture();
-			var clientIDs = new List<string>();
+			var requestCount = 10;
+			var usernames = new List<string>();
 			var requests = new List<Task<string>>();
 
 			foreach (var i in Enumerable.Range(0, requestCount))
 			{
-				var clientID = fixture.Create<string>();
-				clientIDs.Add(clientID);
-				var token = FakeOrderCloudToken.Create(clientID);
-				var request = TestFramework.Client.WithOAuthBearerToken(token).Request("demo/clientid").GetStringAsync();
+				var username = fixture.Create<string>();
+				usernames.Add(username);
+				var token = FakeOrderCloudToken.Create(Startup.UnitTestClientID, username: username);
+				var request = TestFramework.Client.WithOAuthBearerToken(token).Request("demo/username").GetStringAsync();
 				requests.Add(request);
 			}
 
@@ -360,7 +386,7 @@ namespace OrderCloud.Catalyst.Tests
 
 			foreach (var i in Enumerable.Range(0, requestCount))
 			{
-				Assert.AreEqual("\"" + clientIDs[i] + "\"", results[i]);
+				Assert.AreEqual("\"" + usernames[i] + "\"", results[i]);
 			}
 		}
 

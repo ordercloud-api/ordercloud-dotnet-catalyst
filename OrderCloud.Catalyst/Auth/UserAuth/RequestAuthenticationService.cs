@@ -75,11 +75,15 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Verifies the provided OrderCloud token. Throws 401 if invalid or 403 if insufficient roles.
 		/// </summary>
-		public async Task<DecodedToken> VerifyTokenAsync(string token, IEnumerable<string> requiredRoles = null, IEnumerable<CommerceRole> allowedUserTypes = null)
+		public async Task<DecodedToken> VerifyTokenAsync(string token, OrderCloudUserAuthOptions options, IEnumerable<string> requiredRoles = null, IEnumerable<CommerceRole> allowedUserTypes = null)
 		{
 			Require.That(!string.IsNullOrEmpty(token), new UnAuthorizedException());
 
 			var decodedToken = new DecodedToken(token);
+
+			Require.That(decodedToken.ClientID != null, new UnAuthorizedException());
+
+			Require.That(options.AnyClientIDCanAccess || options.ValidClientIDs.Contains(decodedToken.ClientID, StringComparer.InvariantCultureIgnoreCase), new UnAuthorizedException());
 
 			Require.That(decodedToken.NotValidBeforeUTC < DateTime.UtcNow && decodedToken.ExpiresUTC > DateTime.UtcNow,
 				new UnAuthorizedException());
@@ -131,19 +135,19 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Verifies the provided HttpRequest's OrderCloud Token. Throws 401 if invalid or 403 if insufficient roles.
 		/// </summary>
-		public async Task<DecodedToken> VerifyTokenAsync(HttpRequest request, IEnumerable<string> requiredRoles = null, IEnumerable<CommerceRole> allowedUserTypes = null)
+		public async Task<DecodedToken> VerifyTokenAsync(HttpRequest request, OrderCloudUserAuthOptions options, IEnumerable<string> requiredRoles = null, IEnumerable<CommerceRole> allowedUserTypes = null)
 		{
 			var token = GetToken(request);
-			return await VerifyTokenAsync(token, requiredRoles, allowedUserTypes);
+			return await VerifyTokenAsync(token, options, requiredRoles, allowedUserTypes);
 		}
 
 
 		/// <summary>
 		/// Verifies the current HttpContext request's OrderCloud token. Throws 401 if invalid or 403 if insufficient roles.
 		/// </summary>
-		public async Task<DecodedToken> VerifyTokenAsync(IEnumerable<string> requiredRoles = null, IEnumerable<CommerceRole> allowedUserTypes = null)
+		public async Task<DecodedToken> VerifyTokenAsync(OrderCloudUserAuthOptions options, IEnumerable<string> requiredRoles = null, IEnumerable<CommerceRole> allowedUserTypes = null)
 		{
-			return await VerifyTokenAsync(_httpContextAccessor.HttpContext.Request, requiredRoles, allowedUserTypes);
+			return await VerifyTokenAsync(_httpContextAccessor.HttpContext.Request, options, requiredRoles, allowedUserTypes);
 		}
 
 
@@ -178,7 +182,7 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Verifiy the validity of an OrderCloud token, given details about the public key.
 		/// </summary>
-		public static bool VerifyTokenCryptoValid(string accessToken, PublicKey publicKey)
+		public static bool VerifyTokenWithPublicKey(string accessToken, PublicKey publicKey)
 		{
 			if (publicKey == null)
 			{
@@ -231,14 +235,12 @@ namespace OrderCloud.Catalyst
 
 		private async Task<bool> VerifyTokenWithKeyID(DecodedToken jwt)
 		{
-			var cacheKey = jwt.KeyID;
-
-			return await _cache.GetOrAddAsync(cacheKey, TimeSpan.FromDays(30), async () =>
+			var cacheKey = $"{jwt.ApiUrl}-{jwt.KeyID}";
+			var publicKey = await _cache.GetOrAddAsync(cacheKey, TimeSpan.FromDays(30), async () =>
 			{
 				try
 				{
-					var publicKey = await _oc.Certs.GetPublicKeyAsync(jwt.KeyID);
-					return VerifyTokenCryptoValid(jwt.AccessToken, publicKey);
+					return await _oc.Certs.GetPublicKeyAsync(jwt.KeyID);
 				}
 				catch (OrderCloudException ex)
 				{
@@ -247,9 +249,10 @@ namespace OrderCloud.Catalyst
 				catch (Exception ex)
 				{
 					await _cache.RemoveAsync(cacheKey); // not their fault, don't make them wait 5 min   
-					return false;
+					return null; // null public key will lead to unauthorized exception; 
 				}
 			});
+			return VerifyTokenWithPublicKey(jwt.AccessToken, publicKey);
 		}
 
 		private static byte[] FromBase64Url(string base64Url)

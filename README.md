@@ -8,9 +8,11 @@ See [dotnet-catalyst-examples](https://github.com/ordercloud-api/dotnet-catalyst
 
 If you're building solutions for OrderCloud using .NET and find a particular task difficult or tedious, we welcome you to [suggest a feature](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/issues/new) for inclusion in this library. 
 
+:warning: Versions 1.x.x have known security holes. Please only use version 2.0.1 and later. 
+
 ## Features
 
-### [User Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Auth/UserAuth)
+### [User Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Auth/UserAuth)
 
 Use Ordercloud's authentication scheme in your own APIs.
 
@@ -21,7 +23,7 @@ public string SayHello() {
 }
 ```
 
-### [Webhook Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Auth/WebhookAuth)
+### [Webhook Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Auth/WebhookAuth)
 
 Securely receive push notifications of events from the Ordercloud platform.
 
@@ -32,7 +34,7 @@ public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConf
 }
 ```
 
-### [Listing All Pages](./library/OrderCloud.Catalyst/DataMovement/ListAllAsync)
+### [Listing All Pages](./OrderCloud.Catalyst/DataMovement/ListAllAsync)
 
 If OrderCloud's limit of 100 records per page is a pain point.
 
@@ -40,7 +42,7 @@ If OrderCloud's limit of 100 records per page is a pain point.
 var orders = new OrderCloudClient(...).Orders.ListAllAsync();
 ```
 
-### [Proxying Platform List Calls](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Models/ListOptions)
+### [Proxying Platform List Calls](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Models/ListOptions)
 
 Receive list requests to your API with user defined filters, search, paging, and sorting.
 ```c#
@@ -56,7 +58,7 @@ public async Task<ListPage<Order>> ListOrders(IListArgs args)
 }
 ```
 
-### [Caching](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/DataMovement/Caching)
+### [Caching](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/DataMovement/Caching)
 
 Use Redis or LazyCache. Or, define your own implementation of ISimpleCache.
 
@@ -79,7 +81,7 @@ public Thing EditThing(string thingID) {
 }
 ```
 
-### [Throttler](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/DataMovement/Throttler) 
+### [Throttler](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/DataMovement/Throttler) 
 
 A perfomance helper for multiple async function calls.
 
@@ -91,7 +93,7 @@ var minPause = 100 // ms
 var carOwners = await Throttler.RunAsync(cars, minPause, maxConcurency, car => apiClient.GetCarOwner(car.ID);
 ```
 
-### [Error Handling](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/library/OrderCloud.Catalyst/Errors)
+### [Error Handling](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Errors)
 
 Handle API errors, including unexpected ones, with a standard JSON response structure. Define your own errors.
 

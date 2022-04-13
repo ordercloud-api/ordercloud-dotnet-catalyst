@@ -51,25 +51,23 @@ public class CheckoutIntegrationEventController : CatalystController
 
 	[HttpPost, Route("shippingrates")] // route and method specified by OrderCloud platform
 	[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
-	public async Task<OrderCalculateResponse> EstimateShippingRates([FromBody] OrderCalculatePayload<CheckoutConfig> payload)
+	public async Task<ShipEstimateResponse> EstimateShippingRates([FromBody] OrderCalculatePayload<CheckoutConfig> payload)
 	{
 		var response = new ShipEstimateResponse();
 
 		// containerization logic - how should lineItem quantities be boxed into a set of shipped packages?
-
 		response.ShipEstimates = new List<ShipEstimate> { ... }
-
-		// Each ShipEstimate should be convertable into a ShipPackage, which has all the data shippers need to provide a rate.
-		// Your mapping here
-
-		var packages = new List<ShipPackages>() { ... }
+		var packages = response.ShipEstimates.Select(se => MapToPackages(response.ShipEstimates));
+		
+		// use the interface
 		List<List<ShipMethod> rates = await _shipMethodCalculator.CalculateShipMethodsAsync(packages);
+		
 		for (var i = 0; i<response.ShipEstimates.Count; i++) 
 		{
 			response.ShipEstimates[0].ShipMethods = rates[0]
 		}
 
-		...
+		return response;
 	}
 
 }

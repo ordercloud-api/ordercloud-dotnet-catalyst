@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst.Integrations.Interfaces
@@ -17,7 +16,8 @@ namespace OrderCloud.Catalyst.Integrations.Interfaces
 	{
 		public string ID { get; set; }
 		public string Email { get; set; }
-		public string Name { get; set; }
+		public string FirstName { get; set; }
+		public string LastName { get; set; }
 	}
 
 	public class SavedCreditCard : PCISafeCardDetails
@@ -33,7 +33,7 @@ namespace OrderCloud.Catalyst.Integrations.Interfaces
 		public string NumberLast4Digits { get; set; }
 		[MaxLength(2, ErrorMessage = "Invalid expiration month format: MM")]
 		public string ExpirationMonth { get; set; }
-		[MaxLength(2, ErrorMessage = "Invalid expiration year format: YY")]
+		[MaxLength(4, ErrorMessage = "Invalid expiration year format: YYYY")]
 		public string ExpirationYear { get; set; }
 		public string CardType { get; set; }
 	}

@@ -17,20 +17,28 @@ namespace OrderCloud.Catalyst.Payments.Stripe.Models
         /// Supported currencies: https://stripe.com/docs/currencies
         /// </summary>
         public string currency { get; set; }
-        public List<string> payment_method_types { get; set; }
+        public string payment_method { get; set; }
+        // this is wrong:
+        public string[] payment_method_types { get; set; }
+        public string client_secret { get; set; }
+        /// <summary>
+        /// ID of the Customer this PaymentIntent belongs to, if one exists.
+        /// </summary>
+        public string customer { get; set; }
     }
 
     public class StripePaymentIntentResponse
     {
         public string id { get; set; }
-        public int amount { get; set; }
-        public int amount_capturable { get; set; }
+        //public int amount { get; set; }
+        //public int amount_capturable { get; set; }
         public int amount_received { get; set; }
-        public string application { get; set; }
-        public int application_fee_amount { get; set; }
-        public AutomaticPaymentMethods automatic_payment_methods { get; set; }
+        public string payment_method { get; set; }
+        //public string application { get; set; }
+        //public int application_fee_amount { get; set; }
+        //public AutomaticPaymentMethods automatic_payment_methods { get; set; }
 
-        public List<string> payment_method_types { get; set; }
+        //public List<string> payment_method_types { get; set; }
 
     }
 

@@ -77,7 +77,7 @@ namespace OrderCloud.Catalyst.Payments.Stripe
             {
                 foreach (var method in stripeReq.payment_method_types.Select((value, index) => new { index, value }))
                 {
-                    //https://stackoverflow.com/questions/67750333/flutter-invalid-array-in-payment-method-types-of-stripe-checkout?noredirect=1#comment119781638_67750333
+                    //https://stackoverflow.com/questions/67785824/list-of-strings-converts-to-single-string-in-post-rest-api-dart-flutter
                     requestBody.Add(new KeyValuePair<string, string>($"payment_method_types[{method.index}]", method.value));
                 }
             }

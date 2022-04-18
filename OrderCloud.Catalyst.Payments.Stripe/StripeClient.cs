@@ -10,7 +10,6 @@ using OrderCloud.Catalyst.Payments.Stripe.Models;
 
 namespace OrderCloud.Catalyst.Payments.Stripe
 {
-    // https://stripe.com/docs/api/authentication?lang=dotnet
     public class StripeClient
     {
         private StripeConfig _defaultConfig;
@@ -20,12 +19,7 @@ namespace OrderCloud.Catalyst.Payments.Stripe
             _defaultConfig = defaultConfig;
         }
 
-        // create customer
-
-        // create payment intent
-        // confirm payment intent
-        // capture payment intent
-        // accept payment?
+        // https://stripe.com/docs/development/quickstart
         // https://stripe.com/docs/payments/payment-intents
         // https://stripe.com/docs/api/payment_intents
         public async Task<StripePaymentIntentResponse> CreatePaymentIntentAsync(StripePaymentIntentRequest stripeRequest, StripeConfig optionalOverride = null)

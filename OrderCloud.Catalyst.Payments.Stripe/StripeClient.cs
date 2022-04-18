@@ -41,80 +41,51 @@ namespace OrderCloud.Catalyst.Payments.Stripe
 
         public async Task<StripePaymentIntentResponse> ConfirmPaymentIntentAsync(string paymentID, StripePaymentIntentRequest stripeRequest, StripeConfig optionalOverride = null)
         {
-            // instead of passing in paymentID here can we use stripeRequest.client_secret?
             StripeConfig config = optionalOverride ?? _defaultConfig;
 
             var flurlRequest = config.BaseUrl
                 .AppendPathSegments("v1", "payment_intents", paymentID, "confirm")
                 .WithOAuthBearerToken(config.SecretKey);
 
-            //return await MakeStripeRequest(flurlRequest, stripeRequest, config);
-            try
-            {
-                return await flurlRequest
-                    .WithHeader("Content-Type", "application/x-www-form-urlencoded")
-                    .PostAsync()
-                    .ReceiveJson<StripePaymentIntentResponse>();
-            }
-            catch (FlurlHttpTimeoutException ex)  // simulate with this https://stackoverflow.com/questions/100841/artificially-create-a-connection-timeout-error
-            {
-                // candidate for retry here?
-                throw new IntegrationNoResponseException(config, flurlRequest.Url);
-            }
-            catch (FlurlHttpException ex)
-            {
-                var status = ex?.Call?.Response?.StatusCode;
-                if (status == null) // simulate by putting laptop on airplane mode
-                {
-                    throw new IntegrationNoResponseException(config, flurlRequest.Url);
-                }
-                if (status == 401 || status == 403)
-                {
-                    throw new IntegrationAuthFailedException(config, flurlRequest.Url, (int)status);
-                }
-                var body = await ex.Call.Response.GetJsonAsync();
-                // add return type to GetJsonAsync();
-                throw new IntegrationErrorResponseException(config, flurlRequest.Url, (int)status, body);
-            }
-        }
-
-        public async Task<StripePaymentIntentResponse> CapturePaymentIntentAsync(string paymentID, StripePaymentIntentRequest stripeRequest, StripeConfig optionalOverride = null)
-        {
-            // instead of passing in paymentID here can we use stripeRequest.client_secret?
-            StripeConfig config = optionalOverride ?? _defaultConfig;
-
-            var flurlRequest = config.BaseUrl
-                .AppendPathSegments("v1", "payment_intents", paymentID)
-                .WithOAuthBearerToken(config.SecretKey);
-
             return await MakeStripeRequest(flurlRequest, stripeRequest, config);
         }
 
+        //public async Task<StripePaymentIntentResponse> CapturePaymentIntentAsync(string paymentID, StripePaymentIntentRequest stripeRequest, StripeConfig optionalOverride = null)
+        //{
+        //    // instead of passing in paymentID here can we use stripeRequest.client_secret?
+        //    StripeConfig config = optionalOverride ?? _defaultConfig;
+
+        //    var flurlRequest = config.BaseUrl
+        //        .AppendPathSegments("v1", "payment_intents", paymentID)
+        //        .WithOAuthBearerToken(config.SecretKey);
+
+        //    return await MakeStripeRequest(flurlRequest, stripeRequest, config);
+        //}
+
         internal async Task<StripePaymentIntentResponse> MakeStripeRequest(IFlurlRequest flurlReq, StripePaymentIntentRequest stripeReq, StripeConfig config)
         {
-            //dynamic requestBody = stripeReq;
-            var requestBody = new { };
+            var requestBody = new List<KeyValuePair<string, string>>();
+            var keyValuePairs = stripeReq.ToKeyValuePairs();
+            foreach (var pair in keyValuePairs.Select((value, index) => new { index, value }))
+            {
+                if (pair.value.Key != "payment_method_types")
+                    // what if value is an object?
+                    requestBody.Add(new KeyValuePair<string, string>(pair.value.Key, pair.value.Value?.ToString()));
+            }
+
+            if (stripeReq.payment_method_types != null && stripeReq.payment_method_types.Any())
+            {
+                foreach (var method in stripeReq.payment_method_types.Select((value, index) => new { index, value }))
+                {
+                    //https://stackoverflow.com/questions/67750333/flutter-invalid-array-in-payment-method-types-of-stripe-checkout?noredirect=1#comment119781638_67750333
+                    requestBody.Add(new KeyValuePair<string, string>($"payment_method_types[{method.index}]", method.value));
+                }
+            }
+
+            var formattedRequestBody = (object)requestBody;
+
             try
             {
-                var keyValuePairs = stripeReq.ToKeyValuePairs();
-                foreach (var pair in keyValuePairs)
-                {
-                    if (pair.Key == "payment_method_types")
-                    {
-
-                    }
-                }
-
-                if (stripeReq.payment_method_types.Any())
-                {
-                    foreach (var method in stripeReq.payment_method_types.Select((value, index) => new { index, value}))
-                    {
-                        // Key/Value pairs this to dynamically build an object?
-                        //requestBody[$"payment_method_types[{method.index}]"] = method.value;
-                    }
-                }
-
-                var formattedRequestBody = (object) requestBody;
                 return await flurlReq.PostUrlEncodedAsync(formattedRequestBody)
                     .ReceiveJson<StripePaymentIntentResponse>();
             }

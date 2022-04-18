@@ -11,7 +11,7 @@ namespace OrderCloud.Catalyst.Payments.Stripe.Models
         /// REQUIRED A positive integer representing amount intended to be collected.
         /// Minimum value is 50 ($0.50)
         /// </summary>
-        public int amount { get; set; }
+        public int? amount { get; set; }
         /// <summary>
         /// REQUIRED Three-letter ISO currency code in lowercase.
         /// Supported currencies: https://stripe.com/docs/currencies

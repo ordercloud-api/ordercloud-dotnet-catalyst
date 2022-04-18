@@ -19,29 +19,27 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
         private readonly StripeClient _client = new StripeClient(_config);
 
         [Test]
-        public async Task should_call_create_payment_intent()
+        public async Task should_call_create_payment_intent_and_confirm()
         {
-            var result = new [] {"pm_card_visa"}.ToArray();
-            var request = new StripePaymentIntentRequest()
+            var paymentIntents = new [] { "card" }.ToArray();
+            var createRequest = new StripePaymentIntentRequest()
             {
                 amount = 500,
                 currency = "usd",
-                //https://stackoverflow.com/questions/67750333/flutter-invalid-array-in-payment-method-types-of-stripe-checkout?noredirect=1#comment119781638_67750333
-                payment_method_types = result
-                // payment_method_types[n] = "pm_card_visa"
+                payment_method_types = paymentIntents
             };
-            var response = await _client.CreatePaymentIntentAsync(request, _config);
+            var response = await _client.CreatePaymentIntentAsync(createRequest, _config);
 
             Assert.IsNotNull(response.id);
 
-            request = new StripePaymentIntentRequest()
+            var confirmRequest = new StripePaymentIntentRequest()
             {
-                payment_method = response.payment_method
+                payment_method = response.payment_method ?? "pm_card_visa"
             };
 
-            response = await _client.ConfirmPaymentIntentAsync(response.id, request, _config);
+            response = await _client.ConfirmPaymentIntentAsync(response.id, confirmRequest, _config);
 
-            Assert.AreEqual(request.amount, response.amount_received);
+            Assert.AreEqual(createRequest.amount, response.amount_received);
         }
     }
 }

@@ -19,6 +19,15 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
         private readonly StripeClient _client = new StripeClient(_config);
 
         [Test]
+        public async Task should_call_create_customer()
+        {
+            var createRequest = new StripeCustomerRequest();
+            var response = await _client.CreateCustomerAsync(createRequest, _config);
+
+            Assert.IsNotNull(response.id);
+        }
+
+        [Test]
         public async Task should_call_create_payment_intent_and_confirm()
         {
             var paymentIntents = new [] { "card" }.ToArray();

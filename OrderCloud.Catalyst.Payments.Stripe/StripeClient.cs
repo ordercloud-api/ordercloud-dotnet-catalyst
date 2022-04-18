@@ -36,7 +36,7 @@ namespace OrderCloud.Catalyst.Payments.Stripe
                 .AppendPathSegments("v1", "payment_intents")
                 .WithOAuthBearerToken(config.SecretKey);
 
-            return await MakeStripeRequest(flurlRequest, stripeRequest, config);
+            return await MakeStripeRequestAsync(flurlRequest, stripeRequest, config);
         }
 
         public async Task<StripePaymentIntentResponse> ConfirmPaymentIntentAsync(string paymentID, StripePaymentIntentRequest stripeRequest, StripeConfig optionalOverride = null)
@@ -47,7 +47,7 @@ namespace OrderCloud.Catalyst.Payments.Stripe
                 .AppendPathSegments("v1", "payment_intents", paymentID, "confirm")
                 .WithOAuthBearerToken(config.SecretKey);
 
-            return await MakeStripeRequest(flurlRequest, stripeRequest, config);
+            return await MakeStripeRequestAsync(flurlRequest, stripeRequest, config);
         }
 
         //public async Task<StripePaymentIntentResponse> CapturePaymentIntentAsync(string paymentID, StripePaymentIntentRequest stripeRequest, StripeConfig optionalOverride = null)
@@ -59,10 +59,10 @@ namespace OrderCloud.Catalyst.Payments.Stripe
         //        .AppendPathSegments("v1", "payment_intents", paymentID)
         //        .WithOAuthBearerToken(config.SecretKey);
 
-        //    return await MakeStripeRequest(flurlRequest, stripeRequest, config);
+        //    return await MakeStripeRequestAsync(flurlRequest, stripeRequest, config);
         //}
 
-        internal async Task<StripePaymentIntentResponse> MakeStripeRequest(IFlurlRequest flurlReq, StripePaymentIntentRequest stripeReq, StripeConfig config)
+        internal async Task<StripePaymentIntentResponse> MakeStripeRequestAsync(IFlurlRequest flurlReq, StripePaymentIntentRequest stripeReq, StripeConfig config)
         {
             var requestBody = new List<KeyValuePair<string, string>>();
             var keyValuePairs = stripeReq.ToKeyValuePairs();

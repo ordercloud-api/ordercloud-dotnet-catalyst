@@ -25,6 +25,10 @@ namespace OrderCloud.Catalyst.Payments.Stripe.Models
         /// ID of the Customer this PaymentIntent belongs to, if one exists.
         /// </summary>
         public string customer { get; set; }
+        /// <summary>
+        /// on_session value indicates the customer is in the checkout flow of your app. An off_session value indicates the customer has exited out of your app
+        /// </summary>
+        public string setup_future_usage { get; set; }
     }
 
     public class StripePaymentIntentResponse

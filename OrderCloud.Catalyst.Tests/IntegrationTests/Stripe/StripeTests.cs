@@ -50,5 +50,35 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
 
             Assert.AreEqual(createRequest.amount, response.amount_received);
         }
+
+        [Test]
+        public async Task payment_flow_should_succeed()
+        {
+            // https://stripe.com/docs/development/quickstart#test-api-request
+            var customerCreateRequest = new StripeCustomerRequest();
+            var customer = await _client.CreateCustomerAsync(customerCreateRequest, _config);
+
+            var paymentIntents = new[] { "card" }.ToArray();
+            var createPaymentIntentRequest = new StripePaymentIntentRequest()
+            {
+                amount = 500,
+                currency = "usd",
+                payment_method_types = paymentIntents,
+                customer = customer.id,
+                setup_future_usage = "on_session"
+            };
+            var response = await _client.CreatePaymentIntentAsync(createPaymentIntentRequest, _config);
+
+            Assert.IsNotNull(response.id);
+
+            var confirmPaymentIntentRequest = new StripePaymentIntentRequest()
+            {
+                payment_method = response.payment_method ?? "pm_card_visa"
+            };
+
+            response = await _client.ConfirmPaymentIntentAsync(response.id, confirmPaymentIntentRequest, _config);
+
+            Assert.AreEqual(createPaymentIntentRequest.amount, response.amount_received);
+        }
     }
 }

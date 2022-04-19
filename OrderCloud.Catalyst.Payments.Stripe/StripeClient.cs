@@ -92,6 +92,7 @@ namespace OrderCloud.Catalyst.Payments.Stripe
 
             try
             {
+                // string json = JsonConvert.SerializeObject(employee, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                 return await flurlReq.PostUrlEncodedAsync(requestBody)
                     .ReceiveJson<StripePaymentIntentResponse>();
             }

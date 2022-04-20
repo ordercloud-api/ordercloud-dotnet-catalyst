@@ -73,7 +73,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 				await new FedexService(_config).CalculateShippingRatesAsync(_packages, config)
 			);
 			// Assert
-			Assert.AreEqual("Integration configuration must be of type FedexConfig to match this command. Found EasyPostConfig instead. (Parameter 'configOverride')", ex.Message);
+			Assert.AreEqual("Integration configuration must be of type FedexConfig to match this service. Found EasyPostConfig instead. (Parameter 'configOverride')", ex.Message);
 		}
 
 		[Test]

@@ -2,7 +2,7 @@ name: publish OrderCloud.Catalyst to nuget
 on:
   push:
     branches:
-      - dev # Default release branch
+      - dev
 
 env:
   PROJECT_PATH: OrderCloud.Catalyst/OrderCloud.Catalyst.csproj

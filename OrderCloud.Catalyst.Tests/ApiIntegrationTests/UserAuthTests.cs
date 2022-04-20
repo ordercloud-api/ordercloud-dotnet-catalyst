@@ -266,10 +266,11 @@ namespace OrderCloud.Catalyst.Tests
 		public async Task ordercloud_error_should_be_forwarded(bool useKid, int statusCode)
 		{
 			var fixture = new Fixture();
+			var userID = fixture.Create<string>(); // different userIDs each time, means different tokens, prevents caching errors
 			var errorCode = fixture.Create<string>();
 			var message = fixture.Create<string>();
 			var keyID = useKid ? fixture.Create<string>() : null;
-			var token = FakeOrderCloudToken.Create(Startup.UnitTestClientID, new List<string> { "Shopper" }, keyID: keyID); // token has the role
+			var token = FakeOrderCloudToken.Create(Startup.UnitTestClientID, new List<string> { "Shopper" }, keyID: keyID, userDatabaseID: userID); // token has the role
 
 			var request = TestFramework.Client
 				.WithOAuthBearerToken(token)

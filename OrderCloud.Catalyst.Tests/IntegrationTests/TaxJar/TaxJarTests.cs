@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using Flurl.Http.Testing;
 using NUnit.Framework;
-using OrderCloud.Catalyst.Tax.TaxJar;
+using OrderCloud.Integrations.Tax.TaxJar;
 using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst.Tests.IntegrationTests
@@ -20,7 +20,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			APIToken = _fixture.Create<string>(),
 			BaseUrl = "https://api.fake.com"
 		};
-		private TaxJarCommand _command = new TaxJarCommand(_config);
+		private TaxJarService _command = new TaxJarService(_config);
 		private OrderSummaryForTax _order = _fixture.Create<OrderSummaryForTax>();
 
 		[SetUp]
@@ -107,7 +107,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 		{
 			// Arrange
 			var lineItems = _order.LineItems;
-			var shipEstimates = _order.ShipEstimates;
+			var shipEstimates = _order.ShippingCosts;
 			var response = _fixture.Create<TaxJarCalcResponse>();
 			_httpTest.RespondWithJson(response);
 			// Act
@@ -121,7 +121,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 		{
 			// Arrange
 			var lineItems = _order.LineItems;
-			var shipEstimates = _order.ShipEstimates;
+			var shipEstimates = _order.ShippingCosts;
 			var response = _fixture.Create<TaxJarCalcResponse>();
 			_httpTest.RespondWithJson(response);
 			// Act
@@ -136,7 +136,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 		{
 			// Arrange
 			var lineItems = _order.LineItems;
-			var shipEstimates = _order.ShipEstimates;
+			var shipEstimates = _order.ShippingCosts;
 			var response = _fixture.Create<TaxJarCalcResponse>();
 			_httpTest.RespondWithJson(response);
 			// Act

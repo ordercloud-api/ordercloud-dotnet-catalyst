@@ -13,17 +13,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Catalyst.Tests",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Catalyst", "OrderCloud.Catalyst\OrderCloud.Catalyst.csproj", "{6FF92BF8-491D-4F7F-8104-440387572E3C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Catalyst.Tax.Avalara", "OrderCloud.Catalyst.Tax.Avalara\OrderCloud.Catalyst.Tax.Avalara.csproj", "{4F5B79DC-8C4F-4EE1-BCE3-2C7887584ABD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Tax.Avalara", "OrderCloud.Integrations.Tax.Avalara\OrderCloud.Integrations.Tax.Avalara.csproj", "{4F5B79DC-8C4F-4EE1-BCE3-2C7887584ABD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Catalyst.Tax.Vertex", "OrderCloud.Catalyst.Tax.Vertex\OrderCloud.Catalyst.Tax.Vertex.csproj", "{85191118-5B5C-4BCE-BB27-CF6FF3760BAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Tax.Vertex", "OrderCloud.Integrations.Tax.Vertex\OrderCloud.Integrations.Tax.Vertex.csproj", "{85191118-5B5C-4BCE-BB27-CF6FF3760BAD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Catalyst.Tax.TaxJar", "OrderCloud.Catalyst.Tax.TaxJar\OrderCloud.Catalyst.Tax.TaxJar.csproj", "{CFA2757C-D155-4225-85FD-ED2AD3DB3E0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Tax.TaxJar", "OrderCloud.Integrations.Tax.TaxJar\OrderCloud.Integrations.Tax.TaxJar.csproj", "{CFA2757C-D155-4225-85FD-ED2AD3DB3E0C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Catalyst.Shipping.UPS", "OrderCloud.Catalyst.Shipping.UPS\OrderCloud.Catalyst.Shipping.UPS.csproj", "{636F46DB-6475-4C41-B5CB-8DCF77615096}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Shipping.UPS", "OrderCloud.Integrations.Shipping.UPS\OrderCloud.Integrations.Shipping.UPS.csproj", "{636F46DB-6475-4C41-B5CB-8DCF77615096}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderCloud.Catalyst.Shipping.EasyPost", "OrderCloud.Catalyst.Shipping.EasyPost\OrderCloud.Catalyst.Shipping.EasyPost.csproj", "{EE03A8ED-B316-47E4-B89E-DC3C9019D16E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Shipping.EasyPost", "OrderCloud.Integrations.Shipping.EasyPost\OrderCloud.Integrations.Shipping.EasyPost.csproj", "{EE03A8ED-B316-47E4-B89E-DC3C9019D16E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderCloud.Catalyst.Shipping.Fedex", "OrderCloud.Catalyst.Shipping.Fedex\OrderCloud.Catalyst.Shipping.Fedex.csproj", "{C32A3102-2CEB-4042-8F37-3EA4D66D743F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Shipping.Fedex", "OrderCloud.Integrations.Shipping.Fedex\OrderCloud.Integrations.Shipping.Fedex.csproj", "{C32A3102-2CEB-4042-8F37-3EA4D66D743F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using OrderCloud.Catalyst.Payments.Stripe;
 using OrderCloud.Catalyst.Payments.Stripe.Models;
+using Stripe;
+using StripeClient = OrderCloud.Catalyst.Payments.Stripe.StripeClient;
 
 namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
 {
@@ -13,7 +15,6 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
     {
         private static StripeConfig _config = new StripeConfig()
         {
-            BaseUrl = "https://api.stripe.com",
             SecretKey = ""
         };
         private readonly StripeClient _client = new StripeClient(_config);
@@ -21,64 +22,88 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
         [Test]
         public async Task should_call_create_customer()
         {
-            var createRequest = new StripeCustomerRequest();
+            var createRequest = new CustomerCreateOptions()
+            {
+                Email = "alexa.snyder@sitecore.net"
+            };
             var response = await _client.CreateCustomerAsync(createRequest, _config);
 
-            Assert.IsNotNull(response.id);
+            Assert.IsNotNull(response.Id);
         }
 
         [Test]
         public async Task should_call_create_payment_intent_and_confirm()
         {
-            var paymentIntents = new [] { "card" }.ToArray();
-            var createRequest = new StripePaymentIntentRequest()
+            var createRequest = new PaymentIntentCreateOptions()
             {
-                amount = 500,
-                currency = "usd",
-                payment_method_types = paymentIntents
+                Amount = 500,
+                Currency = "usd",
+                PaymentMethodTypes= new List<string>()
+                {
+                    "card"
+                }
             };
-            var response = await _client.CreatePaymentIntentAsync(createRequest, _config);
+            PaymentIntent response = await _client.CreatePaymentIntentAsync(createRequest, _config);
 
-            Assert.IsNotNull(response.id);
+            Assert.IsNotNull(response.Id);
 
-            var confirmRequest = new StripePaymentIntentRequest()
-            {
-                payment_method = response.payment_method ?? "pm_card_visa"
-            };
+            var confirmRequest = new PaymentIntentConfirmOptions()
+            { PaymentMethod = response.PaymentMethodId };
 
-            response = await _client.ConfirmPaymentIntentAsync(response.id, confirmRequest, _config);
+            response = await _client.ConfirmPaymentIntentAsync(response.Id, confirmRequest, _config);
 
-            Assert.AreEqual(createRequest.amount, response.amount_received);
+            Assert.AreEqual(createRequest.Amount, response.AmountReceived);
         }
 
         [Test]
         public async Task payment_flow_should_succeed()
         {
             // https://stripe.com/docs/development/quickstart#test-api-request
-            var customerCreateRequest = new StripeCustomerRequest();
-            var customer = await _client.CreateCustomerAsync(customerCreateRequest, _config);
+            var createRequest = new CustomerCreateOptions()
+            {
+                Email = "alexa.snyder@sitecore.net"
+            };
+            var customer = await _client.CreateCustomerAsync(createRequest, _config);
 
             var paymentIntents = new[] { "card" }.ToArray();
-            var createPaymentIntentRequest = new StripePaymentIntentRequest()
+            var createPaymentIntentRequest = new PaymentIntentCreateOptions()
             {
-                amount = 500,
-                currency = "usd",
-                payment_method_types = paymentIntents,
-                customer = customer.id,
-                setup_future_usage = "on_session"
+                Amount = 500,
+                Currency = "usd",
+                //PaymentMethodTypes = new List<string>() {"card"},
+                Customer = customer.Id,
+                SetupFutureUsage = "on_session",
+                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions()
+                {
+                    Enabled = true
+                }
             };
-            var response = await _client.CreatePaymentIntentAsync(createPaymentIntentRequest, _config);
+            var paymentIntent = await _client.CreatePaymentIntentAsync(createPaymentIntentRequest, _config);
 
-            Assert.IsNotNull(response.id);
+            Assert.IsNotNull(paymentIntent.Id);
 
-            var confirmPaymentIntentRequest = new StripePaymentIntentRequest()
+            var paymentMethodOptions = new PaymentMethodCreateOptions()
             {
-                payment_method = response.payment_method ?? "pm_card_visa"
+                Type = "card",
+                Card = new PaymentMethodCardOptions
+                {
+                    Number = "4242424242424242",
+                    ExpMonth = 4,
+                    ExpYear = 2023,
+                    Cvc = "314",
+                }
+            };
+            var paymentMethod = await _client.CreatePaymentMethodAsync(paymentMethodOptions, _config);
+
+            var confirmPaymentIntentRequest = new PaymentIntentConfirmOptions()
+            {
+                PaymentMethod = paymentMethod.Id ?? "pm_card_visa",
+                ReturnUrl = "https://someplace.com"
             };
 
-            response = await _client.ConfirmPaymentIntentAsync(response.id, confirmPaymentIntentRequest, _config);
+            paymentIntent = await _client.ConfirmPaymentIntentAsync(paymentIntent.Id, confirmPaymentIntentRequest, _config);
 
-            Assert.AreEqual(createPaymentIntentRequest.amount, response.amount_received);
+            Assert.AreEqual(createPaymentIntentRequest.Amount, paymentIntent.AmountReceived);
         }
     }
 }

@@ -26,22 +26,22 @@ var easyPostService = new EasyPostService(new EasyPostConfig()
 For efficient use of compute resources and clean code, create 1 EasyPostommand object and make it available throughout your project using inversion of control dependency injection. 
 
 ```c#
-services.AddSingleton<IShipMethodCalculator>(easyPostService);
+services.AddSingleton<IShippingRatesCalculator>(easyPostService);
 ```
 
-Notice that IShipMethodCalculator is not specific to EasyPost. It is general to shipping rates and comes from the upstream OrderCloud.Catalyst package. 
+Notice that IShippingRatesCalculator is not specific to EasyPost. It is general to shipping rates and comes from the upstream OrderCloud.Catalyst package. 
 
 
 ## Usage 
 
-Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the shipping interface IShipMethodCalculator and use it within the logic of the route. It is not recommended to rely directly on EasyPostService anywhere. The layer of abstraction that IShipMethodCalculator provides decouples your code from EasyPost as a specific provider and hides some internal complexity.
+Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the shipping interface IShippingRatesCalculator and use it within the logic of the route. It is not recommended to rely directly on EasyPostService anywhere. The layer of abstraction that IShippingRatesCalculator provides decouples your code from EasyPost as a specific provider and hides some internal complexity.
 
 ```c#
 public class CheckoutIntegrationEventController : CatalystController
 {
-	private readonly IShipMethodCalculator _shipMethodCalculator;
+	private readonly IShippingRatesCalculator _shipMethodCalculator;
 
-	public CheckoutIntegrationEventController(IShipMethodCalculator shipMethodCalculator)
+	public CheckoutIntegrationEventController(IShippingRatesCalculator shipMethodCalculator)
 	{
 		// Inject interface. Implementation will depend on how services were registered, EasyPostService in this case.
 		_shipMethodCalculator = shipMethodCalculator; 

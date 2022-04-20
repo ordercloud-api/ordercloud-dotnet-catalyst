@@ -12,7 +12,7 @@ This project brings shipping rate calculation to your ecommerce app using the [E
 
 ## Authentication and Injection
 
-YYou will need these configuration data points to authneticate to the EasyPost API - *ApiKey*, *BaseUrl*, and *CarrierAccountIDs*. Create an account with EasyPost and get these from the admin portal.
+You will need these configuration data points to authneticate to the EasyPost API - *ApiKey*, *BaseUrl*, and *CarrierAccountIDs*. Create an account with EasyPost and get these from the admin portal.
 
 ```c#
 var easyPostService = new EasyPostService(new EasyPostConfig()

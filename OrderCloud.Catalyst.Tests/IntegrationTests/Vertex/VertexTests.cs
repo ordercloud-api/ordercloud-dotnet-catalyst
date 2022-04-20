@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using Flurl.Http.Testing;
 using NUnit.Framework;
-using OrderCloud.Catalyst.Tax.Vertex;
+using OrderCloud.Integrations.Tax.Vertex;
 using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst.Tests.IntegrationTests

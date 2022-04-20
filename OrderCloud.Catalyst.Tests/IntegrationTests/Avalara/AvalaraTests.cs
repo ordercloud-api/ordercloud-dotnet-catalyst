@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using Flurl.Http.Testing;
 using NUnit.Framework;
-using OrderCloud.Catalyst.Tax.Avalara;
+using OrderCloud.Integrations.Tax.Avalara;
 using System;
 using System.Collections.Generic;
 using System.Text;

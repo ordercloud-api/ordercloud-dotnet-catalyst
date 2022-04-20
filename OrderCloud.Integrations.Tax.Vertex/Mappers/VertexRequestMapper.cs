@@ -5,8 +5,9 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Tax.Vertex
+namespace OrderCloud.Integrations.Tax.Vertex
 {
 	public static class VertexRequestMapper
 	{

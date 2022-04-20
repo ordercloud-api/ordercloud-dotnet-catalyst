@@ -3,9 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using OrderCloud.Catalyst;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Catalyst.Shipping.UPS
+namespace OrderCloud.Integrations.Shipping.UPS
 {
 	public class UPSService : OCIntegrationService, IShippingRatesCalculator
 	{

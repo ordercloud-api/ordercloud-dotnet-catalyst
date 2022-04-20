@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Tax.Vertex
+namespace OrderCloud.Integrations.Tax.Vertex
 {
 	public class VertexClient
 	{

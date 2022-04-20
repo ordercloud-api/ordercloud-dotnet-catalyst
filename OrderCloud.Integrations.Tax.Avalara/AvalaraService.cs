@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Tax.Avalara
+namespace OrderCloud.Integrations.Tax.Avalara
 {
 	public class AvalaraService : OCIntegrationService , ITaxCodesProvider, ITaxCalculator
 	{

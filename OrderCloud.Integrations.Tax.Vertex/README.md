@@ -1,4 +1,4 @@
-﻿# OrderCloud.Catalyst.Tax.Vertex
+﻿# OrderCloud.Integrations.Tax.Vertex
 
 This project brings easy tax calculation to your ecommerce app using the [Vertex](https://www.vertexinc.com/) API. It will be published as a nuget code library and conforms to standard tax interfaces published in the base library OrderCloud.Catalyst.
 
@@ -6,9 +6,9 @@ This project brings easy tax calculation to your ecommerce app using the [Vertex
 
 1. If you haven't, please read [How to Calculate Tax with OrderCloud](https://ordercloud.io/knowledge-base/how-to-calculate-tax-with-ordercloud). In short, webhooks from the platform make requests to solution-custom API routes that contain tax calculation logic. 
 2. This library can be installed in the context of a .NET API project that responds to those webhooks. If you already have a .NET API project, great. If not, you can [follow this guide](https://ordercloud.io/knowledge-base/start-dotnet-middleware-from-scratch). After you have published your API, you will need to configure OrderCloud to point its Integration Event webhooks at your API. 
-3. In your .NET project, add the OrderCloud.Catalyst.Tax.Vertex nuget package with either the Visual Studio UI or the dotnet CLI.
+3. In your .NET project, add the OrderCloud.Integrations.Tax.Vertex nuget package with either the Visual Studio UI or the dotnet CLI.
 
-```dotnet add package OrderCloud.Catalyst.Tax.Vertex```
+```dotnet add package OrderCloud.Integrations.Tax.Vertex```
 
 ## Authentication and Injection
 

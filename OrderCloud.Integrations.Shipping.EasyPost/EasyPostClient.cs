@@ -1,10 +1,11 @@
 ﻿using Flurl.Http;
+using OrderCloud.Catalyst;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Catalyst.Shipping.EasyPost
+namespace OrderCloud.Integrations.Shipping.EasyPost
 {
 	public class EasyPostClient
 	{

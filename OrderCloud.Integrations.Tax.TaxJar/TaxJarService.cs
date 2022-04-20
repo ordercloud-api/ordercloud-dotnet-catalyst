@@ -4,8 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Tax.TaxJar
+namespace OrderCloud.Integrations.Tax.TaxJar
 {
 	public class TaxJarService : OCIntegrationService, ITaxCalculator, ITaxCodesProvider
 	{

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Tax.Avalara
+namespace OrderCloud.Integrations.Tax.Avalara
 { 
 	public class AvalaraFetchResult<T>
 	{

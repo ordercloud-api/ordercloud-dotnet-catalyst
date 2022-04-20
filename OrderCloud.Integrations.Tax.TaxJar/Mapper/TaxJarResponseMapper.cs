@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Tax.TaxJar
+namespace OrderCloud.Integrations.Tax.TaxJar
 {
 	public static class TaxJarResponseMapper
 	{

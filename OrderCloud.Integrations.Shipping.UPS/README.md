@@ -1,4 +1,4 @@
-﻿# OrderCloud.Catalyst.Shipping.UPS
+﻿# OrderCloud.Integrations.Shipping.UPS
 
 This project brings shipping rate calculation to your ecommerce app using the [UPS RESTful API](https://www.ups.com/upsdeveloperkit?loc=en_US). It will be published as a nuget code library and conforms to a standard shipping interface published in the base library OrderCloud.Catalyst.
 
@@ -6,9 +6,9 @@ This project brings shipping rate calculation to your ecommerce app using the [U
 
 1. If you haven't, please review [Order Checkout Integration Event](https://ordercloud.io/knowledge-base/order-checkout-integration) focusing on the ShippingRates event. In short, a webhook from the platform makes a request to a solution-custom API route that contains logic for estimating shipping rates. 
 2. This library can be installed in the context of a .NET API project that responds to those webhooks. If you already have a .NET API project, great. If not, you can [follow this guide](https://ordercloud.io/knowledge-base/start-dotnet-middleware-from-scratch). After you have published your API, you will need to configure OrderCloud to point its Integration Event webhooks at your API. 
-3. In your .NET project, add the OrderCloud.Catalyst.Shipping.UPS nuget package with either the Visual Studio UI or the dotnet CLI.
+3. In your .NET project, add the OrderCloud.Integrations.Shipping.UPS nuget package with either the Visual Studio UI or the dotnet CLI.
 
-```dotnet add package OrderCloud.Catalyst.Shipping.UPS```
+```dotnet add package OrderCloud.Integrations.Shipping.UPS```
 
 ## Authentication and Injection
 

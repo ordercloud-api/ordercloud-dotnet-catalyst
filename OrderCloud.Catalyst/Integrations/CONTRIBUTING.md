@@ -50,7 +50,7 @@ Feel free open issues recommending changes or additions to the interfaces.
 	- Keep the number of properties and methods on your exposed contracts to the minimum required. Do a small amount well. 
 	- Aim to follow the code patterns of existing integrations. 
  - Project Structure
-    - Create a new Visual Studio project under /libraries. It should be a .NET Standard 2.0 code library project called `OrderCloud.Catalyst.[Category].[ServiceName]`. For example, `OrderCloud.Catalyst.Tax.Avalara`.
+    - Create a new Visual Studio project under /libraries. It should be a .NET Standard 2.0 code library project called `OrderCloud.Catalyst.[Category].[ServiceName]`. For example, `OrderCloud.Integrations.Tax.Avalara`.
 	- Your new project should have a project dependency on OrderCloud.Catalyst. Also, OrderCloud.Catalyst.TestApi should depend on your new project. 
 	- At the root of your new folder include your Service, Config and a README.md with instructions. Copy the README format of existing integrations.
 	- All files and class names in the project should begin with your service name to avoid collisions.

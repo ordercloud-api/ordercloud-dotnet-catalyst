@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OrderCloud.Catalyst.Shipping.UPS
+namespace OrderCloud.Integrations.Shipping.UPS
 {
     public class UPSRestResponseBody
     {

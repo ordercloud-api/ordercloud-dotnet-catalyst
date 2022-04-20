@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrderCloud.SDK;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Tax.Vertex
+namespace OrderCloud.Integrations.Tax.Vertex
 {
 	public class VertexService : OCIntegrationService, ITaxCalculator
 	{

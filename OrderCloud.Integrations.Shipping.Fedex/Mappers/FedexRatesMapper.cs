@@ -2,9 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OrderCloud.Catalyst;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Shipping.Fedex
+namespace OrderCloud.Integrations.Shipping.Fedex
 {
 	public class FedexRatesMapper
 	{

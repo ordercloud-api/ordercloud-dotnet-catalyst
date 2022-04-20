@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Shipping.Fedex
+namespace OrderCloud.Integrations.Shipping.Fedex
 {
 	// See https://developer.fedex.com/api/en-us/catalog/rate/v1/docs.html
 	public class FedexRateRequestBody

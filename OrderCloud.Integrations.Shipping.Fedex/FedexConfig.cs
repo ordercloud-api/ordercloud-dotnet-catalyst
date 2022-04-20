@@ -1,6 +1,8 @@
 ﻿using System;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Shipping.Fedex
+
+namespace OrderCloud.Integrations.Shipping.Fedex
 {
 	public class FedexConfig : OCIntegrationConfig
 	{

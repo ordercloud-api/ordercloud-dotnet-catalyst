@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Tax.Avalara
+namespace OrderCloud.Integrations.Tax.Avalara
 {
 	public class AvalaraConfig: OCIntegrationConfig
 	{

@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Shipping.UPS
+namespace OrderCloud.Integrations.Shipping.UPS
 {
 	public static class UPSRatesMapper
     {

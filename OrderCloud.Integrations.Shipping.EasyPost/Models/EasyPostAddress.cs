@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Shipping.EasyPost
+namespace OrderCloud.Integrations.Shipping.EasyPost
 {
     // https://www.easypost.com/docs/api#address-object
     public class EasyPostAddress

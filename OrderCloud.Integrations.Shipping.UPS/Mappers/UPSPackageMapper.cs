@@ -2,8 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Shipping.UPS
+namespace OrderCloud.Integrations.Shipping.UPS
 {
 	public static class UPSPackageMapper
 	{

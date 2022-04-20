@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace OrderCloud.Catalyst.Tax.Avalara
+namespace OrderCloud.Integrations.Tax.Avalara
 {
 	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public enum AvalaraDocumentType

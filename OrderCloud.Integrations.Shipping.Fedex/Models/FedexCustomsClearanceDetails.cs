@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Shipping.Fedex
+namespace OrderCloud.Integrations.Shipping.Fedex
 {
 	public class FedexCustomsClearanceDetails
 	{

@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Shipping.UPS
+namespace OrderCloud.Integrations.Shipping.UPS
 {
 	public class UPSClient
 	{

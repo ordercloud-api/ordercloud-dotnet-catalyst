@@ -4,7 +4,7 @@ using System.Linq;
 using OrderCloud.Catalyst;
 using System.Collections.Generic;
 
-namespace OrderCloud.Catalyst.Tax.Avalara
+namespace OrderCloud.Integrations.Tax.Avalara
 {
 	public static class AvalaraTaxCodeMapper
 	{

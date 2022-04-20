@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using Flurl.Http.Testing;
 using NUnit.Framework;
-using OrderCloud.Catalyst.Shipping.EasyPost;
+using OrderCloud.Integrations.Shipping.EasyPost;
 using System;
 using System.Collections.Generic;
 using System.Text;

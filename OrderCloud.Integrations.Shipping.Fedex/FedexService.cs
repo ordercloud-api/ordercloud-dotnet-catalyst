@@ -1,11 +1,12 @@
 ﻿using OrderCloud.SDK;
+using OrderCloud.Catalyst;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Catalyst.Shipping.Fedex
+namespace OrderCloud.Integrations.Shipping.Fedex
 {
 	public class FedexService : OCIntegrationService, IShippingRatesCalculator
 	{

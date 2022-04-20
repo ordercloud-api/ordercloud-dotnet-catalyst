@@ -1,11 +1,12 @@
 ﻿using Flurl.Http;
+using OrderCloud.Catalyst;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Catalyst.Tax.Avalara
+namespace OrderCloud.Integrations.Tax.Avalara
 {
 	public class AvalaraClient
 	{

@@ -1,11 +1,12 @@
-﻿using OrderCloud.SDK;
+﻿using OrderCloud.Catalyst;
+using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Catalyst.Shipping.EasyPost
+namespace OrderCloud.Integrations.Shipping.EasyPost
 {
 	public class EasyPostService : OCIntegrationService, IShippingRatesCalculator
 	{ 

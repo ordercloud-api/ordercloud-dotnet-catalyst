@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Tax.Vertex
+namespace OrderCloud.Integrations.Tax.Vertex
 {
 	public class VertexSeller
 	{

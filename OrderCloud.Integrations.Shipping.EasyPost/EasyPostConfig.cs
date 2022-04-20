@@ -1,7 +1,8 @@
-﻿using System;
+﻿using OrderCloud.Catalyst;
+using System;
 using System.Collections.Generic;
 
-namespace OrderCloud.Catalyst.Shipping.EasyPost
+namespace OrderCloud.Integrations.Shipping.EasyPost
 {
 	public class EasyPostConfig : OCIntegrationConfig
 	{

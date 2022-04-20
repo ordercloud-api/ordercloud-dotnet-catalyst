@@ -1,6 +1,7 @@
 ﻿using System;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Tax.Vertex
+namespace OrderCloud.Integrations.Tax.Vertex
 {
 	public class VertexConfig : OCIntegrationConfig
 	{

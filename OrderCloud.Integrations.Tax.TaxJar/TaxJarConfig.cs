@@ -1,6 +1,7 @@
 ﻿using System;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Tax.TaxJar
+namespace OrderCloud.Integrations.Tax.TaxJar
 {
 	public class TaxJarConfig : OCIntegrationConfig
 	{

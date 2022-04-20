@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Tax.TaxJar
+namespace OrderCloud.Integrations.Tax.TaxJar
 {
 	public class TaxJarOrder
 	{

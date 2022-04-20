@@ -4,8 +4,10 @@ using System;
 using System.Threading.Tasks;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Shipping.Fedex
+
+namespace OrderCloud.Integrations.Shipping.Fedex
 {
 	public class FedexClient
 	{

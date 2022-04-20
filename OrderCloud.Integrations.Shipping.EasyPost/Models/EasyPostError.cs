@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Shipping.EasyPost
+namespace OrderCloud.Integrations.Shipping.EasyPost
 {
 	/// <summary>
 	/// https://www.easypost.com/docs/api#error-object

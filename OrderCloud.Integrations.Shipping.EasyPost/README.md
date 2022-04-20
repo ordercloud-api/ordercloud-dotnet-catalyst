@@ -23,7 +23,7 @@ var easyPostService = new EasyPostService(new EasyPostConfig()
 });
 ```
 
-For efficient use of compute resources and clean code, create 1 EasyPostommand object and make it available throughout your project using inversion of control dependency injection. 
+For efficient use of compute resources and clean code, create 1 EasyPostCommand object and make it available throughout your project using inversion of control dependency injection. 
 
 ```c#
 services.AddSingleton<IShippingRatesCalculator>(easyPostService);

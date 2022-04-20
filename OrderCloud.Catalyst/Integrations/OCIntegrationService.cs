@@ -6,13 +6,13 @@ using System.Text;
 namespace OrderCloud.Catalyst
 {
 	/// <summary>
-	/// A base class that all Integration Command classes should extend. Exposes methods that are the behaviors of the integration.
+	/// A base class that all Integration Service classes should extend. Exposes methods that are the behaviors of the integration.
 	/// </summary>
-	public abstract class OCIntegrationCommand
+	public abstract class OCIntegrationService
 	{
 		protected readonly OCIntegrationConfig _defaultConfig;
 
-		public OCIntegrationCommand(OCIntegrationConfig defaultConfig)
+		public OCIntegrationService(OCIntegrationConfig defaultConfig)
 		{
 			ValidateConfigData(defaultConfig);
 			_defaultConfig = defaultConfig;
@@ -44,7 +44,7 @@ namespace OrderCloud.Catalyst
 			var type = config.GetType();
 			if (type != typeof(T))
 			{
-				throw new ArgumentException($"Integration configuration must be of type {typeof(T).Name} to match this command. Found {type.Name} instead.", "configOverride");
+				throw new ArgumentException($"Integration configuration must be of type {typeof(T).Name} to match this service. Found {type.Name} instead.", "configOverride");
 			}
 		}
 

@@ -20,7 +20,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			ApiKey = _fixture.Create<string>(),
 			BaseUrl = "https://api.fake.com"
 		};
-		private UPSCommand _command = new UPSCommand(_config);
+		private UPSService _command = new UPSService(_config);
 		private List<ShippingPackage> _packages = _fixture.Create<List<ShippingPackage>>();
 
 		[SetUp]

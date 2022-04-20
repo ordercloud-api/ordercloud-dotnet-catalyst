@@ -15,26 +15,26 @@ This project brings easy tax calculation to your ecommerce app using the [TaxJar
 You will need these configuration data points to authneticate to the TaxJar API - *BaseUrl*, and *APIToken*. Create an account with taxjar and get these from the admin portal.
 
 ```c#
-var taxJarCommand = new TaxJarCommand(new TaxJarConfig()
+var taxJarService = new TaxJarService(new TaxJarConfig()
 {
 	BaseUrl = "https://api.sandbox.taxjar.com/v2",
 	APIToken = "...",
 });
 ```
 
-For efficient use of compute resources and clean code, create 1 TaxJarCommand object and make it available throughout your project using inversion of control dependency injection. 
+For efficient use of compute resources and clean code, create 1 TaxJarService object and make it available throughout your project using inversion of control dependency injection. 
 
 ```c#
-services.AddSingleton<ITaxCalculator>(taxJarCommand);
-services.AddSingleton<ITaxCodeProvider>(taxJarCommand);
+services.AddSingleton<ITaxCalculator>(taxJarService);
+services.AddSingleton<ITaxCodeProvider>(taxJarService);
 ```
 
-Notice that the interfaces being used to register taxJarCommand are not specific to TaxJar. They are general to the domain of tax and come from the upstream OrderCloud.Catalyst package. 
+Notice that the interfaces being used to register taxJarService are not specific to TaxJar. They are general to the domain of tax and come from the upstream OrderCloud.Catalyst package. 
 
 
 ## Usage 
 
-Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the tax interfaces like ITaxCalculator and use them within the logic of the route. It is not recommended to rely directly on TaxJarCommand anywhere. The layer of abstraction that ITaxCalculator provides decouples your code from TaxJar as a specific provider and hides some internal complexity of tax calculation.
+Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the tax interfaces like ITaxCalculator and use them within the logic of the route. It is not recommended to rely directly on TaxJarService anywhere. The layer of abstraction that ITaxCalculator provides decouples your code from TaxJar as a specific provider and hides some internal complexity of tax calculation.
 
 ```c#
 public class CheckoutIntegrationEventController : CatalystController
@@ -43,7 +43,7 @@ public class CheckoutIntegrationEventController : CatalystController
 
 	public CheckoutIntegrationEventController(ITaxCalculator taxCalculator)
 	{
-		// Inject interface. Implementation will depend on how services were registered, TaxJarCommand in this case.
+		// Inject interface. Implementation will depend on how services were registered, TaxJarService in this case.
 		_taxCalculator = taxCalculator; 
 	}
 
@@ -76,7 +76,7 @@ public class CheckoutIntegrationEventController : CatalystController
 }
 ```
 
-This library also supports more complex cases that require mulitple tax accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of TaxJarCommand exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
+This library also supports more complex cases that require mulitple tax accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of TaxJarService exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
 
 ```c#
 TaxJarConfig configOverride = await FetchTaxAccountCredentials(supplierID);

@@ -15,7 +15,7 @@ This project brings easy tax calculation to your ecommerce app using the [Vertex
 You will need these configuration data points to authneticate to the Vertex API - *CompanyName*, *ClientID*, *ClientSecret*, *Username*, and *Password*. Create an account with vertex and get these from the admin portal.
 
 ```c#
-var vertexCommand = new VertexCommand(new VertexConfig()
+var vertexService = new VertexService(new VertexConfig()
 {
 	CompanyName = "...",
 	ClientID = "...",
@@ -25,18 +25,18 @@ var vertexCommand = new VertexCommand(new VertexConfig()
 });
 ```
 
-For efficient use of compute resources and clean code, create 1 VertexCommand object and make it available throughout your project using inversion of control dependency injection. 
+For efficient use of compute resources and clean code, create 1 VertexService object and make it available throughout your project using inversion of control dependency injection. 
 
 ```c#
-services.AddSingleton<ITaxCalculator>(vertexCommand);
+services.AddSingleton<ITaxCalculator>(vertexService);
 ```
 
-Notice that the interfaces being used to register vertexCommand are not specific to Vertex. They are general to the domain of tax and come from the upstream OrderCloud.Catalyst package. 
+Notice that the interfaces being used to register vertexService are not specific to Vertex. They are general to the domain of tax and come from the upstream OrderCloud.Catalyst package. 
 
 
 ## Usage 
 
-Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the tax interfaces like ITaxCalculator and use them within the logic of the route. It is not recommended to rely directly on VertexCommand anywhere. The layer of abstraction that ITaxCalculator provides decouples your code from Vertex as a specific provider and hides some internal complexity of tax calculation.
+Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the tax interfaces like ITaxCalculator and use them within the logic of the route. It is not recommended to rely directly on VertexService anywhere. The layer of abstraction that ITaxCalculator provides decouples your code from Vertex as a specific provider and hides some internal complexity of tax calculation.
 
 ```c#
 public class CheckoutIntegrationEventController : CatalystController
@@ -45,7 +45,7 @@ public class CheckoutIntegrationEventController : CatalystController
 
 	public CheckoutIntegrationEventController(ITaxCalculator taxCalculator)
 	{
-		// Inject interface. Implementation will depend on how services were registered, VertexCommand in this case.
+		// Inject interface. Implementation will depend on how services were registered, VertexService in this case.
 		_taxCalculator = taxCalculator; 
 	}
 
@@ -78,7 +78,7 @@ public class CheckoutIntegrationEventController : CatalystController
 }
 ```
 
-This library also supports more complex cases that require mulitple tax accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of VertexCommand exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
+This library also supports more complex cases that require mulitple tax accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of VertexService exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
 
 ```c#
 VertexConfig configOverride = await FetchTaxAccountCredentials(supplierID);

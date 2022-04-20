@@ -15,7 +15,7 @@ This project brings easy tax calculation to your ecommerce app using the [Avalar
 You will need these configuration data points to authneticate to the Avalara API - *BaseUrl*, *AccountID*, *LicenseKey*, and *CompanyCode*. Create an account with avalara and get these from the admin portal.
 
 ```c#
-var avalaraCommand = new AvalaraCommand(new AvalaraConfig()
+var avalaraService = new AvalaraService(new AvalaraConfig()
 {
 	BaseUrl = "https://sandbox-rest.avatax.com/api/v2",
 	LicenseKey = "...",
@@ -24,19 +24,19 @@ var avalaraCommand = new AvalaraCommand(new AvalaraConfig()
 });
 ```
 
-For efficient use of compute resources and clean code, create 1 AvalaraCommand object and make it available throughout your project using inversion of control dependency injection. 
+For efficient use of compute resources and clean code, create 1 AvalaraService object and make it available throughout your project using inversion of control dependency injection. 
 
 ```c#
-services.AddSingleton<ITaxCalculator>(avalaraCommand);
-services.AddSingleton<ITaxCodeProvider>(avalaraCommand);
+services.AddSingleton<ITaxCalculator>(avalaraService);
+services.AddSingleton<ITaxCodeProvider>(avalaraService);
 ```
 
-Notice that the interfaces being used to register avalaraCommand are not specific to Avalara. They are general to the domain of tax and come from the upstream OrderCloud.Catalyst package. 
+Notice that the interfaces being used to register avalaraService are not specific to Avalara. They are general to the domain of tax and come from the upstream OrderCloud.Catalyst package. 
 
 
 ## Usage 
 
-Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the tax interfaces like ITaxCalculator and use them within the logic of the route. It is not recommended to rely directly on AvalaraCommand anywhere. The layer of abstraction that ITaxCalculator provides decouples your code from Avalara as a specific provider and hides some internal complexity of tax calculation.
+Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the tax interfaces like ITaxCalculator and use them within the logic of the route. It is not recommended to rely directly on AvalaraService anywhere. The layer of abstraction that ITaxCalculator provides decouples your code from Avalara as a specific provider and hides some internal complexity of tax calculation.
 
 ```c#
 public class CheckoutIntegrationEventController : CatalystController
@@ -45,7 +45,7 @@ public class CheckoutIntegrationEventController : CatalystController
 
 	public CheckoutIntegrationEventController(ITaxCalculator taxCalculator)
 	{
-		// Inject interface. Implementation will depend on how services were registered, AvalaraCommand in this case.
+		// Inject interface. Implementation will depend on how services were registered, AvalaraService in this case.
 		_taxCalculator = taxCalculator; 
 	}
 
@@ -78,7 +78,7 @@ public class CheckoutIntegrationEventController : CatalystController
 }
 ```
 
-This library also supports more complex cases that require mulitple tax accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of AvalaraCommand exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
+This library also supports more complex cases that require mulitple tax accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of AvalaraService exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
 
 ```c#
 AvalaraConfig configOverride = await FetchTaxAccountCredentials(supplierID);

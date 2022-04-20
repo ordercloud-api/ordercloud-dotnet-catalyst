@@ -20,7 +20,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			BaseUrl = "https://api.fake.com",
 			CarrierAccountIDs = new List<string> { "fake" }
 		};
-		private EasyPostCommand _command = new EasyPostCommand(_config);
+		private EasyPostService _command = new EasyPostService(_config);
 		private List<ShippingPackage> _packages = _fixture.Create<List<ShippingPackage>>();
 
 		[SetUp]

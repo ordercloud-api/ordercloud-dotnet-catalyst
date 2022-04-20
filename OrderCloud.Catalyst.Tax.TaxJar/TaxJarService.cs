@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst.Tax.TaxJar
 {
-	public class TaxJarCommand : OCIntegrationCommand, ITaxCalculator, ITaxCodesProvider
+	public class TaxJarService : OCIntegrationService, ITaxCalculator, ITaxCodesProvider
 	{
-		public TaxJarCommand(TaxJarConfig defaultConfig) : base(defaultConfig) { }
+		public TaxJarService(TaxJarConfig defaultConfig) : base(defaultConfig) { }
 
 		public async Task<TaxCategorizationResponse> ListTaxCodesAsync(string filterTerm = "", OCIntegrationConfig overrideConfig = null)
 		{

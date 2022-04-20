@@ -20,7 +20,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			APIToken = _fixture.Create<string>(),
 			BaseUrl = "https://api.fake.com"
 		};
-		private TaxJarCommand _command = new TaxJarCommand(_config);
+		private TaxJarService _command = new TaxJarService(_config);
 		private OrderSummaryForTax _order = _fixture.Create<OrderSummaryForTax>();
 
 		[SetUp]

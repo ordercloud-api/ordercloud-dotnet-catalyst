@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst.Shipping.Fedex
 {
-	public class FedexCommand : OCIntegrationCommand, IShippingRatesCalculator
+	public class FedexService : OCIntegrationService, IShippingRatesCalculator
 	{
 		protected readonly FedexClient _client;
 
-		public FedexCommand(FedexConfig defaultConfig) : base(defaultConfig) 
+		public FedexService(FedexConfig defaultConfig) : base(defaultConfig) 
 		{
 			_client = new FedexClient(defaultConfig);
 		}

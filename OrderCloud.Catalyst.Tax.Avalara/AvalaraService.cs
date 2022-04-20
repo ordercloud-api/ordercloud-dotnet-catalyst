@@ -2,9 +2,9 @@
 
 namespace OrderCloud.Catalyst.Tax.Avalara
 {
-	public class AvalaraCommand : OCIntegrationCommand , ITaxCodesProvider, ITaxCalculator
+	public class AvalaraService : OCIntegrationService , ITaxCodesProvider, ITaxCalculator
 	{
-		public AvalaraCommand(AvalaraConfig defaultConfig) : base(defaultConfig) { }
+		public AvalaraService(AvalaraConfig defaultConfig) : base(defaultConfig) { }
 
 		public async Task<OrderTaxCalculation> CalculateEstimateAsync(OrderSummaryForTax orderSummary, OCIntegrationConfig overrideConfig = null) => 
 			await CreateTransactionAsync(AvalaraDocumentType.SalesOrder, orderSummary, overrideConfig);

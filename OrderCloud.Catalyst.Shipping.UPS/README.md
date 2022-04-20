@@ -15,24 +15,24 @@ This project brings shipping rate calculation to your ecommerce app using the [U
 You will need these configuration data points to authneticate to the UPS API - *ApiKey*, and *BaseUrl*. Create a UPS account to get an ApiKey.
 
 ```c#
-var upsCommand = new UPSCommand(new UPSConfig()
+var upsService = new UPSService(new UPSConfig()
 {
 	BaseUrl = "https://onlinetools.ups.com/ship/v1",
 	ApiKey = "...",
 });
 ```
 
-For efficient use of compute resources and clean code, create 1 UPSCommand object and make it available throughout your project using inversion of control dependency injection. 
+For efficient use of compute resources and clean code, create 1 UPSService object and make it available throughout your project using inversion of control dependency injection. 
 
 ```c#
-services.AddSingleton<IShipMethodCalculator>(upsCommand);
+services.AddSingleton<IShipMethodCalculator>(upsService);
 ```
 
 Notice that the interface IShipMethodCalculator is not specific to UPS. It is general across providers and comes from the upstream OrderCloud.Catalyst package. 
 
 ## Usage 
 
-Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the shipping interface IShipMethodCalculator and use it within the logic of the route. It is not recommended to rely directly on UPSCommand anywhere. The layer of abstraction that IShipMethodCalculator provides decouples your code from UPS as a specific provider and hides some internal complexity.
+Create routes that respond to the OrderCloud platform's Integration Event webhooks. Inject the shipping interface IShipMethodCalculator and use it within the logic of the route. It is not recommended to rely directly on UPSService anywhere. The layer of abstraction that IShipMethodCalculator provides decouples your code from UPS as a specific provider and hides some internal complexity.
 
 ```c#
 public class CheckoutIntegrationEventController : CatalystController
@@ -41,7 +41,7 @@ public class CheckoutIntegrationEventController : CatalystController
 
 	public CheckoutIntegrationEventController(IShipMethodCalculator shipMethodCalculator)
 	{
-		// Inject interface. Implementation will depend on how services were registered, UPSCommand in this case.
+		// Inject interface. Implementation will depend on how services were registered, UPSService in this case.
 		_shipMethodCalculator = shipMethodCalculator; 
 	}
 
@@ -71,7 +71,7 @@ public class CheckoutIntegrationEventController : CatalystController
 }
 ```
 
-This library also supports more complex cases that require mulitple shipping accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of UPSCommand exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
+This library also supports more complex cases that require mulitple shipping accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of UPSService exactly as above. You can provide empty strings for the fields. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
 
 ```c#
 UPSConfig configOverride = await FetchShippingAccountCredentials(supplierID);

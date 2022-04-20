@@ -4,9 +4,9 @@ using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst.Tax.Vertex
 {
-	public class VertexCommand : OCIntegrationCommand, ITaxCalculator
+	public class VertexService : OCIntegrationService, ITaxCalculator
 	{
-		public VertexCommand(VertexConfig defaultConfig) : base(defaultConfig) { }
+		public VertexService(VertexConfig defaultConfig) : base(defaultConfig) { }
 
 		/// <summary>
 		/// Calculates tax for an order without creating any records. Use this to display tax amount to user prior to order submit.

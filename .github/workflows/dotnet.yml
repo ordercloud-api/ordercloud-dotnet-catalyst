@@ -1,0 +1,27 @@
+name: .NET
+
+on:
+  pull_request:
+    branches: [ dev ]
+    
+env:
+  PROJECT_PATH: 'OrderCloud.Catalyst.Tests/OrderCloud.Catalyst.Tests.csproj'
+
+jobs:
+  build:
+    name: 'Build'
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v3
+     
+    - name: 'Install dotnet'
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+
+    - name: 'Restore packages'
+      run: dotnet restore ${{ env.PROJECT_PATH }}
+      
+    - name: 'Run Unit Tests'
+      run: dotnet test ${{ env.PROJECT_PATH }}

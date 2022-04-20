@@ -8,7 +8,7 @@ namespace OrderCloud.Catalyst.Shipping.EasyPost
 {
 	public static class EasyPostPackageMapper
 	{
-		public static EasyPostShipment ToEasyPostShipment(ShipPackage package, List<string> carrierAccountIDs)
+		public static EasyPostShipment ToEasyPostShipment(ShippingPackage package, List<string> carrierAccountIDs)
 		{
 			return new EasyPostShipment()
 			{
@@ -31,7 +31,7 @@ namespace OrderCloud.Catalyst.Shipping.EasyPost
 			};
 		}
 
-		private static EasyPostInsurance ToEasyPostInsurance(ShipPackage shipment)
+		private static EasyPostInsurance ToEasyPostInsurance(ShippingPackage shipment)
 		{
 			return new EasyPostInsurance()
 			{

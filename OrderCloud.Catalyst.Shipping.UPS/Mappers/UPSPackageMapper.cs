@@ -7,7 +7,7 @@ namespace OrderCloud.Catalyst.Shipping.UPS
 {
 	public static class UPSPackageMapper
 	{
-        public static UPSRestRequestBody ToRateRequest(ShipPackage shipPackage)
+        public static UPSRestRequestBody ToRateRequest(ShippingPackage shipPackage)
         {
             return new UPSRestRequestBody
             {

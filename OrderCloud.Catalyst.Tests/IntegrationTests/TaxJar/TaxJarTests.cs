@@ -107,7 +107,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 		{
 			// Arrange
 			var lineItems = _order.LineItems;
-			var shipEstimates = _order.ShipEstimates;
+			var shipEstimates = _order.ShippingCosts;
 			var response = _fixture.Create<TaxJarCalcResponse>();
 			_httpTest.RespondWithJson(response);
 			// Act
@@ -121,7 +121,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 		{
 			// Arrange
 			var lineItems = _order.LineItems;
-			var shipEstimates = _order.ShipEstimates;
+			var shipEstimates = _order.ShippingCosts;
 			var response = _fixture.Create<TaxJarCalcResponse>();
 			_httpTest.RespondWithJson(response);
 			// Act
@@ -136,7 +136,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 		{
 			// Arrange
 			var lineItems = _order.LineItems;
-			var shipEstimates = _order.ShipEstimates;
+			var shipEstimates = _order.ShippingCosts;
 			var response = _fixture.Create<TaxJarCalcResponse>();
 			_httpTest.RespondWithJson(response);
 			// Act

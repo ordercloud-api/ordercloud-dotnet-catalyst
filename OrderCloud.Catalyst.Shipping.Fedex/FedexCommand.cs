@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst.Shipping.Fedex
 {
-	public class FedexCommand : OCIntegrationCommand, IShipMethodCalculator
+	public class FedexCommand : OCIntegrationCommand, IShippingRatesCalculator
 	{
 		protected readonly FedexClient _client;
 
@@ -16,10 +16,9 @@ namespace OrderCloud.Catalyst.Shipping.Fedex
 			_client = new FedexClient(defaultConfig);
 		}
 
-		public async Task<List<List<ShipMethod>>> CalculateShipMethodsAsync(IEnumerable<ShipPackage> shippingPackages, OCIntegrationConfig overrideConfig = null)
+		public async Task<List<List<ShippingRate>>> CalculateShippingRatesAsync(IEnumerable<ShippingPackage> shippingPackages, OCIntegrationConfig overrideConfig = null)
 		{
 			// validating the config override. We don't need the result though b/c the logic of which config to use is in FedexClient
-
 			var validatedOverrideConfig = ValidateConfig<FedexConfig>(overrideConfig);
 			var accountNumber = (validatedOverrideConfig ?? (_defaultConfig as FedexConfig)).AccountNumber;
 			var rateRequests = shippingPackages.Select(p => FedexPackageMapper.ToRateRequest(p, accountNumber));

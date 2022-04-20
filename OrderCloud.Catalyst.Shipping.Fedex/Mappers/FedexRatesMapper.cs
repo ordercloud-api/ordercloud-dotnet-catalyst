@@ -8,23 +8,20 @@ namespace OrderCloud.Catalyst.Shipping.Fedex
 {
 	public class FedexRatesMapper
 	{
-		public static List<ShipMethod> ToOrderCloudShipMethods(FedexRateResponse fedexRatesResponse)
+		public static List<ShippingRate> ToOrderCloudShipMethods(FedexRateResponse fedexRatesResponse)
 		{
 			return fedexRatesResponse.output.rateReplyDetails.Select(ToOrderCloudShipMethods).ToList();
 		}
 
-		public static ShipMethod ToOrderCloudShipMethods(FedexRateReplyDetails rate)
+		public static ShippingRate ToOrderCloudShipMethods(FedexRateReplyDetails rate)
 		{
-			var shipMethod = new ShipMethod()
+			var shipMethod = new ShippingRate()
 			{
 				ID = rate.serviceDescription.serviceId,
 				Name = rate.serviceName,
 				Cost = rate.ratedShipmentDetails.FirstOrDefault().totalNetCharge,
 				EstimatedTransitDays = GetDaysFromNow(DateTime.Parse(rate.operationalDetail.deliveryDate)),
-				xp = new
-				{
-					Carrier = "Fedex"
-				}
+				Carrier = "Fedex"
 			};
 			return shipMethod;
 		}

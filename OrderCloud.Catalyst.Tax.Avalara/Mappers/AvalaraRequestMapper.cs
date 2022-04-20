@@ -10,7 +10,7 @@ namespace OrderCloud.Catalyst.Tax.Avalara
 	{
 		public static AvalaraCreateTransactionModel ToAvalaraTransactionModel(OrderSummaryForTax order, string companyCode, AvalaraDocumentType docType)
 		{
-			var shippingLines = order.ShipEstimates.Select(ToLineItemModel);
+			var shippingLines = order.ShippingCosts.Select(ToLineItemModel);
 			var productLines = order.LineItems.Select(ToLineItemModel);
 			return new AvalaraCreateTransactionModel()
 			{

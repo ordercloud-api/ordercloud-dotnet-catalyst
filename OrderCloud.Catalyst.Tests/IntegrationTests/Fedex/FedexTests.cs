@@ -19,7 +19,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			AccountNumber = _fixture.Create<string>(),
 			BaseUrl = "https://api.fake.com",
 		};
-		private List<ShipPackage> _packages = _fixture.Create<List<ShipPackage>>();
+		private List<ShippingPackage> _packages = _fixture.Create<List<ShippingPackage>>();
 
 		[SetUp]
 		public void CreateHttpTest()
@@ -40,7 +40,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			var config = new FedexConfig();
 			// Act 
 			var ex = Assert.ThrowsAsync<IntegrationMissingConfigsException>(async () =>
-				await new FedexCommand(_config).CalculateShipMethodsAsync(_packages, config)
+				await new FedexCommand(_config).CalculateShippingRatesAsync(_packages, config)
 			);
 			// Assert
 			var data = (IntegrationMissingConfigs)ex.Errors[0].Data;
@@ -70,7 +70,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			var config = new EasyPostConfig();
 			// Act 
 			var ex = Assert.ThrowsAsync<ArgumentException>(async () =>
-				await new FedexCommand(_config).CalculateShipMethodsAsync(_packages, config)
+				await new FedexCommand(_config).CalculateShippingRatesAsync(_packages, config)
 			);
 			// Assert
 			Assert.AreEqual("Integration configuration must be of type FedexConfig to match this command. Found EasyPostConfig instead. (Parameter 'configOverride')", ex.Message);
@@ -84,7 +84,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			var ex = Assert.ThrowsAsync<IntegrationAuthFailedException>(async () =>
 				// Act 
-				await new FedexCommand(_config).CalculateShipMethodsAsync(_packages)
+				await new FedexCommand(_config).CalculateShippingRatesAsync(_packages)
 			);
 
 			var data = (IntegrationAuthFailedError)ex.Errors[0].Data;
@@ -101,7 +101,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			var ex = Assert.ThrowsAsync<IntegrationAuthFailedException>(async () =>
 				// Act 
-				await new FedexCommand(_config).CalculateShipMethodsAsync(_packages)
+				await new FedexCommand(_config).CalculateShippingRatesAsync(_packages)
 			);
 
 			var data = (IntegrationAuthFailedError)ex.Errors[0].Data;
@@ -122,7 +122,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			var ex = Assert.ThrowsAsync<IntegrationErrorResponseException>(async () =>
 				// Act 
-				await new FedexCommand(_config).CalculateShipMethodsAsync(_packages)
+				await new FedexCommand(_config).CalculateShippingRatesAsync(_packages)
 			);
 
 			var data = (IntegrationErrorResponseError)ex.Errors[0].Data;
@@ -140,7 +140,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			var ex = Assert.ThrowsAsync<IntegrationNoResponseException>(async () =>
 			// Act 
-			await new FedexCommand(_config).CalculateShipMethodsAsync(_packages));
+			await new FedexCommand(_config).CalculateShippingRatesAsync(_packages));
 
 			var data = (IntegrationNoResponseError)ex.Errors[0].Data;
 			Assert.AreEqual(data.ServiceName, "Fedex");
@@ -161,7 +161,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			var ex = Assert.ThrowsAsync<IntegrationErrorResponseException>(async () =>
 				// Act 
-				await new FedexCommand(_config).CalculateShipMethodsAsync(_packages)
+				await new FedexCommand(_config).CalculateShippingRatesAsync(_packages)
 			);
 
 			var data = (IntegrationErrorResponseError)ex.Errors[0].Data;

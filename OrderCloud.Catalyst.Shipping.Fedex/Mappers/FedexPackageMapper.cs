@@ -8,7 +8,7 @@ namespace OrderCloud.Catalyst.Shipping.Fedex
 {
 	public class FedexPackageMapper
 	{
-		public static FedexRateRequestBody ToRateRequest(ShipPackage shipPackage, string accountNumber)
+		public static FedexRateRequestBody ToRateRequest(ShippingPackage shipPackage, string accountNumber)
 		{
 			return new FedexRateRequestBody()
 			{

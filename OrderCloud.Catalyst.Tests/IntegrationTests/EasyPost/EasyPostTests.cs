@@ -21,7 +21,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			CarrierAccountIDs = new List<string> { "fake" }
 		};
 		private EasyPostCommand _command = new EasyPostCommand(_config);
-		private List<ShipPackage> _packages = _fixture.Create<List<ShipPackage>>();
+		private List<ShippingPackage> _packages = _fixture.Create<List<ShippingPackage>>();
 
 		[SetUp]
 		public void CreateHttpTest()
@@ -42,7 +42,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			var config = new EasyPostConfig();
 			// Act 
 			var ex = Assert.ThrowsAsync<IntegrationMissingConfigsException>(async () =>
-				await _command.CalculateShipMethodsAsync(_packages, config)
+				await _command.CalculateShippingRatesAsync(_packages, config)
 			);
 			// Assert
 			var data = (IntegrationMissingConfigs)ex.Errors[0].Data;
@@ -58,7 +58,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			var ex = Assert.ThrowsAsync<IntegrationAuthFailedException>(async () =>
 				// Act 
-				await _command.CalculateShipMethodsAsync(_packages)
+				await _command.CalculateShippingRatesAsync(_packages)
 			);
 
 			var data = (IntegrationAuthFailedError)ex.Errors[0].Data;
@@ -75,7 +75,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			var ex = Assert.ThrowsAsync<IntegrationNoResponseException>(async () =>
 			// Act 
-			await _command.CalculateShipMethodsAsync(_packages));
+			await _command.CalculateShippingRatesAsync(_packages));
 
 			var data = (IntegrationNoResponseError)ex.Errors[0].Data;
 			Assert.AreEqual(data.ServiceName, "EasyPost");
@@ -91,7 +91,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			var ex = Assert.ThrowsAsync<IntegrationErrorResponseException>(async () =>
 				// Act 
-				await _command.CalculateShipMethodsAsync(_packages)
+				await _command.CalculateShippingRatesAsync(_packages)
 			);
 
 			var data = (IntegrationErrorResponseError)ex.Errors[0].Data;
@@ -114,7 +114,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			_httpTest.RespondWithJson(shipmentResponse);
 			// Act
-			var result = await _command.CalculateShipMethodsAsync(_packages);
+			var result = await _command.CalculateShippingRatesAsync(_packages);
 
 			// Assert
 			Assert.AreEqual(_packages.Count, result.Count);

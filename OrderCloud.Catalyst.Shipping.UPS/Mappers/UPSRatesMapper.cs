@@ -8,9 +8,9 @@ namespace OrderCloud.Catalyst.Shipping.UPS
 {
 	public static class UPSRatesMapper
     {
-        public static List<ShipMethod> ToOrderCloudShipMethods(UPSRestResponseBody upsRatesResponse)
+        public static List<ShippingRate> ToOrderCloudShipMethods(UPSRestResponseBody upsRatesResponse)
         {
-            var shipMethods = new List<ShipMethod>();
+            var shipMethods = new List<ShippingRate>();
             foreach (var rate in upsRatesResponse.RateResponse.RatedShipment)
 			{
                 if (rate?.GuaranteedDelivery?.BusinessDaysInTransit != null)
@@ -21,18 +21,15 @@ namespace OrderCloud.Catalyst.Shipping.UPS
             return shipMethods;
         }
 
-        public static ShipMethod ToOrderCloudShipMethod(UPSRatedShipment rate)
+        public static ShippingRate ToOrderCloudShipMethod(UPSRatedShipment rate)
 		{
-            var shipMethod = new ShipMethod
+            var shipMethod = new ShippingRate
             {
                 ID = rate.Service.Code,
                 Cost = decimal.Parse(rate.TotalCharges.MonetaryValue),
                 EstimatedTransitDays = int.Parse(rate.GuaranteedDelivery.BusinessDaysInTransit),
                 Name = ToUPSServiceName(rate.Service.Code),
-                xp = new
-                {
-                    Carrier = "UPS",
-                }
+                Carrier = "UPS"
             };
             return shipMethod;
         }

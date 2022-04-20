@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst.Shipping.UPS
 {
-	public class UPSCommand : OCIntegrationCommand, IShipMethodCalculator
+	public class UPSCommand : OCIntegrationCommand, IShippingRatesCalculator
 	{
 		public UPSCommand(UPSConfig defaultConfig) : base(defaultConfig) { }
 
-		public async Task<List<List<ShipMethod>>> CalculateShipMethodsAsync(IEnumerable<ShipPackage> shippingPackages, OCIntegrationConfig overrideConfig = null)
+		public async Task<List<List<ShippingRate>>> CalculateShippingRatesAsync(IEnumerable<ShippingPackage> shippingPackages, OCIntegrationConfig overrideConfig = null)
 		{
 			var config = ValidateConfig<UPSConfig>(overrideConfig ?? _defaultConfig);
 			var rateRequests = shippingPackages.Select(UPSPackageMapper.ToRateRequest);

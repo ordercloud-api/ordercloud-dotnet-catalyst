@@ -6,12 +6,21 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst
 {
-	public interface IShipMethodCalculator
+	public interface IShippingRatesCalculator
 	{
-		Task<List<List<ShipMethod>>> CalculateShipMethodsAsync(IEnumerable<ShipPackage> shippingPackages, OCIntegrationConfig configOverride = null);
+		Task<List<List<ShippingRate>>> CalculateShippingRatesAsync(IEnumerable<ShippingPackage> shippingPackages, OCIntegrationConfig configOverride = null);
 	}
 
-	public class ShipPackage
+	public class ShippingRate
+	{
+		public string ID { get; set; }
+		public string Name { get; set; }
+		public decimal Cost { get; set; }
+		public int EstimatedTransitDays { get; set; }
+		public string Carrier { get; set; }
+	}
+
+	public class ShippingPackage
 	{
 		public decimal Length { get; set; }
 		public decimal Width { get; set; } 

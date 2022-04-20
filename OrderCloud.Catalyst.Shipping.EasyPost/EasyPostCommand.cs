@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst.Shipping.EasyPost
 {
-	public class EasyPostCommand : OCIntegrationCommand, IShipMethodCalculator
+	public class EasyPostCommand : OCIntegrationCommand, IShippingRatesCalculator
 	{ 
 		public EasyPostCommand(EasyPostConfig defaultConfig) : base(defaultConfig) { }
 
-		public async Task<List<List<ShipMethod>>> CalculateShipMethodsAsync(IEnumerable<ShipPackage> shippingPackages, OCIntegrationConfig overrideConfig = null)
+		public async Task<List<List<ShippingRate>>> CalculateShippingRatesAsync(IEnumerable<ShippingPackage> shippingPackages, OCIntegrationConfig overrideConfig = null)
 		{
 			var config = ValidateConfig<EasyPostConfig>(overrideConfig ?? _defaultConfig);
 			var easyPostShipments = shippingPackages.Select(p => EasyPostPackageMapper.ToEasyPostShipment(p, config.CarrierAccountIDs));

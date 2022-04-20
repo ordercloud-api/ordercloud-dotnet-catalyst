@@ -18,7 +18,7 @@ namespace OrderCloud.Catalyst.Tax.TaxJar
 		public static List<TaxJarOrder> ToOrders(OrderSummaryForTax order)
 		{
 			var itemLines = order.LineItems.Select(li => ToTaxJarLineOrder(li, order.OrderID));
-			var shippingLines = order.ShipEstimates.Select(se => ToTaxJarShipOrder(se, order.OrderID));
+			var shippingLines = order.ShippingCosts.Select(se => ToTaxJarShipOrder(se, order.OrderID));
 			return itemLines.Concat(shippingLines).ToList();
 		}
 

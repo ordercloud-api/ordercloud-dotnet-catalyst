@@ -15,7 +15,7 @@ namespace OrderCloud.Catalyst.Tax.Vertex
 		public static VertexCalculateTaxRequest ToVertexCalculateTaxRequest(OrderSummaryForTax order, string companyCode, VertexSaleMessageType type)
 		{
 			var itemLines = order.LineItems.Select(ToVertexLineItem);
-			var shippingLines = order.ShipEstimates.Select(ToVertexShipLineItem);
+			var shippingLines = order.ShippingCosts.Select(ToVertexShipLineItem);
 
 			return new VertexCalculateTaxRequest()
 			{

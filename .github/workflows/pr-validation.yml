@@ -1,4 +1,4 @@
-name: .NET
+name: "Pull Request Validation"
 
 on:
   pull_request:
@@ -22,6 +22,9 @@ jobs:
 
     - name: 'Restore packages'
       run: dotnet restore ${{ env.PROJECT_PATH }}
+      
+    - name: 'Increase max user instances'
+      run: echo fs.inotify.max_user_instances=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
       
     - name: 'Run Unit Tests'
       run: dotnet test ${{ env.PROJECT_PATH }}

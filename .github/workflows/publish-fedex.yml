@@ -1,11 +1,11 @@
-name: publish OrderCloud.Integrations.Shipping.EasyPost to nuget
+name: publish OrderCloud.Integrations.Shipping.Fedex to nuget
 on:
   push:
     branches:
       - dev
 
 env:
-  PROJECT_PATH: OrderCloud.Integrations.Shipping.EasyPost/OrderCloud.Integrations.Shipping.EasyPost.csproj
+  PROJECT_PATH: OrderCloud.Integrations.Shipping.Fedex/OrderCloud.Integrations.Shipping.Fedex.csproj
   
 jobs:
   publish:
@@ -28,7 +28,7 @@ jobs:
           PROJECT_FILE_PATH: ${{ env.PROJECT_PATH }}
           
           # NuGet package id, used for version detection & defaults to project name
-          PACKAGE_NAME: OrderCloud.Integrations.Shipping.EasyPost
+          PACKAGE_NAME: OrderCloud.Integrations.Shipping.Fedex
           
           # Filepath with version info, relative to root of repository & defaults to PROJECT_FILE_PATH
           VERSION_FILE_PATH: ${{ env.PROJECT_PATH }}

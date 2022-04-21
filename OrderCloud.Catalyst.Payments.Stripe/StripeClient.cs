@@ -54,8 +54,6 @@ namespace OrderCloud.Catalyst.Payments.Stripe
             return await service.CreateAsync(options);
         }
 
-        //public async Task CreatePaymentMethodAsync(PaymentMethod)
-
         public async Task<PaymentIntent> ConfirmPaymentIntentAsync(string paymentMethodID, PaymentIntentConfirmOptions options, StripeConfig optionalOverride = null)
         {
             StripeConfig config = optionalOverride ?? _defaultConfig;
@@ -66,16 +64,15 @@ namespace OrderCloud.Catalyst.Payments.Stripe
             return await service.ConfirmAsync(paymentMethodID, options);
         }
 
-        //public async Task<StripePaymentIntentResponse> CapturePaymentIntentAsync(string paymentID, StripePaymentIntentRequest stripeRequest, StripeConfig optionalOverride = null)
-        //{
-        //    // instead of passing in paymentID here can we use stripeRequest.client_secret?
-        //    StripeConfig config = optionalOverride ?? _defaultConfig;
+        public async Task<PaymentIntent> CapturePaymentIntentAsync(string paymentIntentID, PaymentIntentCaptureOptions options, StripeConfig optionalOverride = null)
+        {
+            // instead of passing in paymentID here can we use stripeRequest.client_secret?
+            StripeConfig config = optionalOverride ?? _defaultConfig;
 
-        //    var flurlRequest = config.BaseUrl
-        //        .AppendPathSegments("v1", "payment_intents", paymentID)
-        //        .WithOAuthBearerToken(config.SecretKey);
+            StripeConfiguration.ApiKey = config.SecretKey;
 
-        //    return await PostPaymentIntentRequestAsync(flurlRequest, stripeRequest, config);
-        //}
+            var service = new PaymentIntentService();
+            return await service.CaptureAsync(paymentIntentID, options);
+        }
     }
 }

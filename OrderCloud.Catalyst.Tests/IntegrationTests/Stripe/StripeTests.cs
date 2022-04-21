@@ -64,8 +64,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
                 Email = "alexa.snyder@sitecore.net"
             };
             var customer = await _client.CreateCustomerAsync(createRequest, _config);
-
-            var paymentIntents = new[] { "card" }.ToArray();
+            
             var createPaymentIntentRequest = new PaymentIntentCreateOptions()
             {
                 Amount = 500,
@@ -76,7 +75,8 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
                 AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions()
                 {
                     Enabled = true
-                }
+                },
+                CaptureMethod = "manual"
             };
             var paymentIntent = await _client.CreatePaymentIntentAsync(createPaymentIntentRequest, _config);
 
@@ -103,7 +103,16 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
 
             paymentIntent = await _client.ConfirmPaymentIntentAsync(paymentIntent.Id, confirmPaymentIntentRequest, _config);
 
-            Assert.AreEqual(createPaymentIntentRequest.Amount, paymentIntent.AmountReceived);
+            // paymentIntent.CaptureMethod == "manual"
+            Assert.AreEqual("requires_capture", paymentIntent.Status);
+
+            //var capturePaymentIntentOptions = new PaymentIntentCaptureOptions()
+            //{
+            //    AmountToCapture = 200 // this defaults to full value if excluded
+            //};
+
+            paymentIntent = await _client.CapturePaymentIntentAsync(paymentIntent.Id, new PaymentIntentCaptureOptions());
+            Assert.AreEqual("succeeded", paymentIntent.Status);
         }
     }
 }

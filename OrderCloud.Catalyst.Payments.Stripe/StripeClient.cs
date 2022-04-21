@@ -44,10 +44,8 @@ namespace OrderCloud.Catalyst.Payments.Stripe
             return await service.CreateAsync(options);
         }
 
-        public async Task<PaymentIntent> CreatePaymentIntentAsync(PaymentIntentCreateOptions options, StripeConfig optionalOverride = null)
+        public static async Task<PaymentIntent> CreatePaymentIntentAsync(PaymentIntentCreateOptions options, StripeConfig config)
         {
-            StripeConfig config = optionalOverride ?? _defaultConfig;
-
             StripeConfiguration.ApiKey = config.SecretKey;
 
             var service = new PaymentIntentService();

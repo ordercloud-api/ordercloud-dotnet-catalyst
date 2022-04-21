@@ -138,9 +138,9 @@ Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/I
 
 | Name | Project Guide | Nuget Library | Contributed By | Categories |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
-| **EasyPost** | [OrderCloud.Integrations.Shipping.EasyPost](./OrderCloud.Integrations.Shipping.EasyPost) | [Live](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Avalara) | OrderCloud Team | Shipping
+| **EasyPost** | [OrderCloud.Integrations.Shipping.EasyPost](./OrderCloud.Integrations.Shipping.EasyPost) | Coming | OrderCloud Team | Shipping
 | **Fedex** | [OrderCloud.Integrations.Shipping.Fedex](./OrderCloud.Integrations.Shipping.Fedex) | Coming | OrderCloud Team | Shipping
 | **UPS** | [OrderCloud.Integrations.Shipping.UPS](./OrderCloud.Integrations.Shipping.UPS) | Coming | OrderCloud Team | Shipping
 | **Vertex** | [OrderCloud.Integrations.Tax.Vertex](./OrderCloud.Integrations.Tax.Vertex) | Coming | OrderCloud Team | Tax
-| **Avalara** | [OrderCloud.Integrations.Tax.Avalara](./OrderCloud.Integrations.Tax.Avalara) | Coming | OrderCloud Team | Tax
+| **Avalara** | [OrderCloud.Integrations.Tax.Avalara](./OrderCloud.Integrations.Tax.Avalara) | [Live](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Avalara) | OrderCloud Team | Tax
 | **TaxJar** | [OrderCloud.Integrations.Tax.TaxJar](./OrderCloud.Integrations.Tax.TaxJar) | Coming | OrderCloud Team | Tax

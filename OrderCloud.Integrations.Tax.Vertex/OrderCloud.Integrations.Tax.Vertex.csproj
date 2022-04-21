@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.0.1-alpha</Version>
+    <Version>1.0.2-alpha</Version>
     <PackageId>OrderCloud.Integrations.Tax.Vertex</PackageId>
     <Title>OrderCloud Tax Integration with Vertex</Title>
     <Authors>Oliver Heywood</Authors>

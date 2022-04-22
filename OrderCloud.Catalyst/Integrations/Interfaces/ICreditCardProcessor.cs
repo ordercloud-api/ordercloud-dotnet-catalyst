@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Catalyst.Integrations.Interfaces
+namespace OrderCloud.Catalyst
 {
 
 	//This interface does not accept card details.Instead it accept tokens representing cards, with the assumption a FE iframe solution is tokenizing cards securely.
 	//Only for credit cards. Not thinking about digital wallets, paypall, ACH, ect.These are great, but can be optional, additions.Every site needs to accept credit cards.
 	public interface ICreditCardProcessor
 	{
-		Task<CardTransactionResult> AuthorizeOnlyAsync(CreateCardTransaction transaction, OCIntegrationConfig configOverride = null);
-		Task<CardTransactionResult> AuthorizeAndCaptureAsync(CreateCardTransaction transaction, OCIntegrationConfig configOverride = null);
-		Task<CardTransactionResult> CapturePriorAuthorizeAsync(ModifyCardTransaction transactionID, OCIntegrationConfig configOverride = null);
-		Task<CardTransactionResult> VoidAuthorizationAsync(ModifyCardTransaction transactionID, OCIntegrationConfig configOverride = null);
-		Task<CardTransactionResult> RefundCaptureAsync(ModifyCardTransaction transactionID, OCIntegrationConfig configOverride = null);
-		Task<CardTransactionStatus> GetTransactionAsync(string transactionID, OCIntegrationConfig configOverride = null);
+		Task<CardTransactionResult> AuthorizeOnlyAsync(CreateCardTransaction transaction, OCIntegrationConfig overrideConfig = null);
+		Task<CardTransactionResult> AuthorizeAndCaptureAsync(CreateCardTransaction transaction, OCIntegrationConfig overrideConfig = null);
+		Task<CardTransactionResult> CapturePriorAuthorizationAsync(ModifyCardTransaction transaction, OCIntegrationConfig overrideConfig = null);
+		Task<CardTransactionResult> VoidAuthorizationAsync(ModifyCardTransaction transaction, OCIntegrationConfig overrideConfig = null);
+		Task<CardTransactionResult> RefundCaptureAsync(ModifyCardTransaction transaction, OCIntegrationConfig overrideConfig = null);
+		Task<CardTransactionStatus> GetTransactionAsync(string transactionID, OCIntegrationConfig overrideConfig = null);
 	}
 
 	public class CardTransactionResult
@@ -51,7 +51,7 @@ namespace OrderCloud.Catalyst.Integrations.Interfaces
 		/// <summary>
 		/// The amount to capture, void, or refund. If null, will default to the full amount of the existing transaction.
 		/// </summary>
-		public string Amount { get; set; }
+		public decimal Amount { get; set; }
 	}
 
 	public class CreateCardTransaction
@@ -81,6 +81,7 @@ namespace OrderCloud.Catalyst.Integrations.Interfaces
 	// Lots of details here. See
 	// https://developer.cardpointe.com/cardconnect-api#inquire
 	// https://developers.bluesnap.com/v8976-JSON/docs/retrieve
+	// https://developer.authorize.net/api/reference/index.html#transaction-reporting-get-transaction-details
 	public class CardTransactionStatus
 	{
 

@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Shi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Shipping.Fedex", "OrderCloud.Integrations.Shipping.Fedex\OrderCloud.Integrations.Shipping.Fedex.csproj", "{C32A3102-2CEB-4042-8F37-3EA4D66D743F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderCloud.Integrations.Payment.BlueSnap", "OrderCloud.Integrations.Payment.BlueSnap\OrderCloud.Integrations.Payment.BlueSnap.csproj", "{72AFA9D4-4767-4BA7-A467-91A4743FA5EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{C32A3102-2CEB-4042-8F37-3EA4D66D743F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C32A3102-2CEB-4042-8F37-3EA4D66D743F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C32A3102-2CEB-4042-8F37-3EA4D66D743F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72AFA9D4-4767-4BA7-A467-91A4743FA5EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72AFA9D4-4767-4BA7-A467-91A4743FA5EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72AFA9D4-4767-4BA7-A467-91A4743FA5EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72AFA9D4-4767-4BA7-A467-91A4743FA5EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,6 +87,7 @@ Global
 		{636F46DB-6475-4C41-B5CB-8DCF77615096} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
 		{EE03A8ED-B316-47E4-B89E-DC3C9019D16E} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
 		{C32A3102-2CEB-4042-8F37-3EA4D66D743F} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
+		{72AFA9D4-4767-4BA7-A467-91A4743FA5EE} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A5996C63-5092-41D0-9499-2B3B330BA82E}

@@ -13,6 +13,7 @@ namespace OrderCloud.Catalyst.TestApi
 	public class Startup
 	{
 		private readonly TestSettings _settings;
+		public const string UnitTestClientID = "mYcLiEnTiD";
 
 		public Startup(TestSettings settings)
 		{
@@ -42,7 +43,7 @@ namespace OrderCloud.Catalyst.TestApi
 			services.AddCors(o => o.AddPolicy("integrationcors",
 				builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }));
 			services
-				.AddOrderCloudUserAuth()
+				.AddOrderCloudUserAuth(opts => opts.AddValidClientIDs(UnitTestClientID))
 				.AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
 				.AddSingleton<ISimpleCache, LazyCacheService>() // Replace LazyCacheService with RedisService if you have multiple server instances.
 				.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig()
@@ -52,7 +53,6 @@ namespace OrderCloud.Catalyst.TestApi
 					ClientId = _settings.OrderCloudSettings.ClientID,
 					ClientSecret = _settings.OrderCloudSettings.ClientSecret,
 				}))
-				.AddSingleton<ExampleCommand>()
 				.AddSwaggerGen(c =>
 				 {
 					 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cataylst Test API", Version = "v1" });
@@ -94,6 +94,11 @@ namespace OrderCloud.Catalyst.TestApi
 
 			// then replace some of them with fakes
 			oc = Substitute.For<IOrderCloudClient>();
+			oc.Config.ReturnsForAnyArgs(new OrderCloudClientConfig() 
+			{
+				ApiUrl = "mockdomain.com",
+				AuthUrl = "mockdomain.com",
+			});
 			oc.Me.GetAsync(Arg.Any<string>()).Returns(new MeUser { Username = "joe", Active = true, AvailableRoles = new[] { "Shopper" } });
 			services.AddSingleton(oc);
 		}

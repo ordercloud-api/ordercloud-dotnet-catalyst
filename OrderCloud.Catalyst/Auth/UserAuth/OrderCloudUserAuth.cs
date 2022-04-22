@@ -64,7 +64,7 @@ namespace OrderCloud.Catalyst
 			try {
 				var requiredRoles = Context.GetRequiredOrderCloudRoles();
 				var allowedUserTypes = Context.GetAllowedUserTypes();
-				var token = await _tokenProvider.VerifyTokenAsync(Request, requiredRoles, allowedUserTypes);
+				var token = await _tokenProvider.VerifyTokenAsync(Request, Options, requiredRoles, allowedUserTypes);
 				var cid = new ClaimsIdentity("OcUser");
 				cid.AddClaims(token.Roles.Select(r => new Claim(ClaimTypes.Role, r)));
 				cid.AddClaim(new Claim("AccessToken", token.AccessToken));
@@ -86,5 +86,24 @@ namespace OrderCloud.Catalyst
 		}
 	}
 
-	public class OrderCloudUserAuthOptions : AuthenticationSchemeOptions { }
+	public class OrderCloudUserAuthOptions : AuthenticationSchemeOptions
+	{
+		public bool AnyClientIDCanAccess { get; set; } = false;
+		public List<string> ValidClientIDs { get; set; } = new List<string>();
+
+		/// <summary>
+		/// Enforce that only tokens associated with specific OrderCloud client ID(s) are allowed to access endpoints marked with [OrderCloudUserAuth].
+		/// </summary>
+		public OrderCloudUserAuthOptions AddValidClientIDs(params string[] clientIDs)
+		{
+			ValidClientIDs.AddRange(clientIDs);
+			return this;
+		}
+
+		public OrderCloudUserAuthOptions AllowAnyClientID()
+		{
+			AnyClientIDCanAccess = true;
+			return this;
+		}
+	}
 }

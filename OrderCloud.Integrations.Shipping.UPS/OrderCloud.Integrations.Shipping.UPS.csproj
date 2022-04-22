@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>1.0.2-alpha</Version>
+    <PackageId>OrderCloud.Integrations.Shipping.UPS</PackageId>
+    <Title>OrderCloud Shipping Integration with UPS</Title>
+    <Authors>Oliver Heywood</Authors>
+    <Description>Integrate the OrderCloud ecommerce platform with UPS for Shipping.</Description>
+    <Copyright>Copyright 2021 Four51, Inc.</Copyright>
+    <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageIcon>ordercloud-logo-blue.png</PackageIcon>
+    <PackageTags>ordercloud ecommerce shipping webjobs sitecore ups</PackageTags>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Company>Sitecore</Company>
+    <Product>OrderCloud</Product>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\ordercloud-logo-blue.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OrderCloud.Catalyst\OrderCloud.Catalyst.csproj" />
+  </ItemGroup>
+
+</Project>
+

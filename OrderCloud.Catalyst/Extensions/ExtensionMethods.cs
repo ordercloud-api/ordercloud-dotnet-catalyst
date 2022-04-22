@@ -29,14 +29,14 @@ namespace OrderCloud.Catalyst
 		/// OrderCloud access token in the Authorization header. Add [OrderCloudUserAuth] attribute to specific controllers or actions
 		/// where this should be enforced. Typical use case is custom endpoints for front-end user apps.
 		/// </summary>
-		public static IServiceCollection AddOrderCloudUserAuth(this IServiceCollection services)
+		public static IServiceCollection AddOrderCloudUserAuth(this IServiceCollection services, Action<OrderCloudUserAuthOptions> configureOptions)
 		{
 			services
 				.AddHttpContextAccessor()
 				.AddSingleton<RequestAuthenticationService>()
 				.AddSingleton<ISimpleCache, LazyCacheService>() // Can override by registering own implmentation
 				.AddAuthentication()
-				.AddScheme<OrderCloudUserAuthOptions, OrderCloudUserAuthHandler>("OrderCloudUser", null);
+				.AddScheme<OrderCloudUserAuthOptions, OrderCloudUserAuthHandler>("OrderCloudUser", null, configureOptions);
 			return services;
 		}
 

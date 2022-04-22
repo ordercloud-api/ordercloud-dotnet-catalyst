@@ -15,13 +15,11 @@ namespace OrderCloud.Catalyst.TestApi
 	public class DemoController : CatalystController
 	{
 		private readonly RequestAuthenticationService _tokenProvider;
-		private readonly ExampleCommand _exampleCommand;
 		private readonly IOrderCloudClient _oc; 
 
-		public DemoController(RequestAuthenticationService tokenProvider, ExampleCommand exampleCommand, IOrderCloudClient oc)
+		public DemoController(RequestAuthenticationService tokenProvider, IOrderCloudClient oc)
 		{
 			_tokenProvider = tokenProvider;
-			_exampleCommand = exampleCommand;
 			_oc = oc;
 		}
 
@@ -96,17 +94,21 @@ namespace OrderCloud.Catalyst.TestApi
 			};
 		}
 
-		[HttpGet("clientid"), OrderCloudUserAuth]
-		public string GetClientID()
+		[HttpGet("username"), OrderCloudUserAuth]
+		public string GetUserName()
 		{
 			Thread.Sleep(1000); // pause for 1 sec
-			return _exampleCommand.GetClientID();
+			return UserContext.Username;
 		}
 
 		[HttpPost("usercontext/{token}")]
 		public async Task<SimplifiedUser> SetUserContext(string token)
 		{
-			var user = await _tokenProvider.VerifyTokenAsync(token);
+			var opts = new OrderCloudUserAuthOptions()
+			{
+				AnyClientIDCanAccess = true
+			};
+			var user = await _tokenProvider.VerifyTokenAsync(token, opts);
 			return new SimplifiedUser() { 
 				AvailableRoles = user.Roles.ToList(),
 				Username = user.Username, 

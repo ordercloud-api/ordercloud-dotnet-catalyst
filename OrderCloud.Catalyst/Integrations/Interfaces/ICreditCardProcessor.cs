@@ -10,12 +10,12 @@ namespace OrderCloud.Catalyst.Integrations.Interfaces
 	//Only for credit cards. Not thinking about digital wallets, paypall, ACH, ect.These are great, but can be optional, additions.Every site needs to accept credit cards.
 	public interface ICreditCardProcessor
 	{
-		Task<CardTransactionResult> AuthorizeOnlyAsync(CreateCardTransaction transaction);
-		Task<CardTransactionResult> AuthorizeAndCaptureAsync(CreateCardTransaction transaction);
-		Task<CardTransactionResult> CapturePriorAuthorizeAsync(ModifyCardTransaction transactionID);
-		Task<CardTransactionResult> VoidAuthorizationAsync(ModifyCardTransaction transactionID);
-		Task<CardTransactionResult> RefundCaptureAsync(ModifyCardTransaction transactionID);
-		Task<CardTransactionStatus> GetTransactionAsync(string transactionID);
+		Task<CardTransactionResult> AuthorizeOnlyAsync(CreateCardTransaction transaction, OCIntegrationConfig configOverride = null);
+		Task<CardTransactionResult> AuthorizeAndCaptureAsync(CreateCardTransaction transaction, OCIntegrationConfig configOverride = null);
+		Task<CardTransactionResult> CapturePriorAuthorizeAsync(ModifyCardTransaction transactionID, OCIntegrationConfig configOverride = null);
+		Task<CardTransactionResult> VoidAuthorizationAsync(ModifyCardTransaction transactionID, OCIntegrationConfig configOverride = null);
+		Task<CardTransactionResult> RefundCaptureAsync(ModifyCardTransaction transactionID, OCIntegrationConfig configOverride = null);
+		Task<CardTransactionStatus> GetTransactionAsync(string transactionID, OCIntegrationConfig configOverride = null);
 	}
 
 	public class CardTransactionResult

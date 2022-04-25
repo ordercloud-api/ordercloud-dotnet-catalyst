@@ -76,7 +76,7 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public bool Succeeded { get; set; }
 		/// <summary>
-		/// The processor-generated ID for this specific action. Null if a create attempt failed. 
+		/// The processor-generated ID for this action. Null if a create attempt failed. 
 		/// </summary>
 		public string TransactionID { get; set; }
 		/// <summary>
@@ -97,10 +97,13 @@ namespace OrderCloud.Catalyst
 		public string Message { get; set; }
 	}
 
+	/// <summary>
+	/// A credit card transaction that follows after a successfull authorization such as capture, void, or refund.
+	/// </summary>
 	public class FollowUpCCTransaction
 	{
 		/// <summary>
-		/// The processor-generated ID that represents the card transaction. 
+		/// The processor-generated ID of the original authorize transaction.
 		/// </summary>
 		public string TransactionID { get; set; }
 		/// <summary>

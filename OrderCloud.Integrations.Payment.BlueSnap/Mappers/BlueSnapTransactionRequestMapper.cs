@@ -7,16 +7,17 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 {
 	public class BlueSnapTransactionRequestMapper
 	{
-		public static BlueSnapCardTransaction ToBlueSnapCardTransaction(BlueSnapTransactionType transactionType, CreateCardTransaction transaction)
+		public static BlueSnapCardTransaction ToBlueSnapCardTransaction(BlueSnapTransactionType transactionType, AuthorizeCCTransaction transaction)
 		{
-			return new BlueSnapCardTransaction()
+			var blueSnapTransaction = new BlueSnapCardTransaction()
 			{
 				cardTransactionType = transactionType.ToString(),
 				amount = transaction.Amount,
 				currency = transaction.Currency,
 				pfToken = transaction.CardToken,
-				merchantTransactionId = transaction.OrderID
+				merchantTransactionId = transaction.OrderID,
 			};
+			return blueSnapTransaction;
 		}
 
 		public static BlueSnapCardTransaction ToBlueSnapCardTransaction(BlueSnapTransactionType transactionType, FollowUpCCTransaction transaction)

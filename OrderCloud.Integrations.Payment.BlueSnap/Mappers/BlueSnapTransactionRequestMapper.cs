@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OrderCloud.Integrations.Payment.BlueSnap
 {
-	public class CreateTransactionMapper
+	public class BlueSnapTransactionRequestMapper
 	{
 		public static BlueSnapCardTransaction ToBlueSnapCardTransaction(BlueSnapTransactionType transactionType, CreateCardTransaction transaction)
 		{
@@ -19,7 +19,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 			};
 		}
 
-		public static BlueSnapCardTransaction ToBlueSnapCardTransaction(BlueSnapTransactionType transactionType, ModifyCardTransaction transaction)
+		public static BlueSnapCardTransaction ToBlueSnapCardTransaction(BlueSnapTransactionType transactionType, FollowUpCCTransaction transaction)
 		{
 			return new BlueSnapCardTransaction()
 			{

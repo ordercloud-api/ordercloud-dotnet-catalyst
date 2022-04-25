@@ -10,7 +10,6 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 	public class BlueSnapClient
 	{
 		/// <summary>
-		/// https://developers.bluesnap.com/v8976-JSON/docs/auth-capture
 		/// https://developers.bluesnap.com/v8976-JSON/docs/auth-only
 		/// </summary>
 		public static async Task<BlueSnapCardTransactionResponse> PostCardTransaction(BlueSnapCardTransaction transaction, BlueSnapConfig config)

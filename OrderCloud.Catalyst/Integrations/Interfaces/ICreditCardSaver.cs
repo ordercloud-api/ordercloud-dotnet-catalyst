@@ -8,7 +8,8 @@ namespace OrderCloud.Catalyst.Integrations.Interfaces
 	public interface ICreditCardSaver
 	{
 		Task<List<SavedCreditCard>> ListSavedCardsAsync(string customerID, OCIntegrationConfig configOverride = null);
-		Task<SavedCreditCard> SaveCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride = null);
+		Task<SavedCreditCard> GetSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null);
+		Task<SavedCreditCard> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride = null);
 		Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null);
 	}
 
@@ -18,6 +19,7 @@ namespace OrderCloud.Catalyst.Integrations.Interfaces
 		public string Email { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
+		public bool CustomerAlreadyExists { get; set; }
 	}
 
 	public class SavedCreditCard : PCISafeCardDetails

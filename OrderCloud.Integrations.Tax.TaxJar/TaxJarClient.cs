@@ -82,4 +82,12 @@ namespace OrderCloud.Integrations.Tax.TaxJar
 			}
 		}
 	}
+
+	public class SlimFlurlClient
+	{
+
+	}
 }
+
+
+

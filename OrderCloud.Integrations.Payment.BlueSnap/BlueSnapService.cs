@@ -10,7 +10,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 	{
 		public BlueSnapService(BlueSnapConfig defaultConfig) : base(defaultConfig) { }
 
-		public async Task<CardTransactionResult> AuthorizeOnlyAsync(CreateCardTransaction transaction, OCIntegrationConfig overrideConfig)
+		public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig)
 		{
 			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
 			var trans = BlueSnapTransactionRequestMapper.ToBlueSnapCardTransaction(BlueSnapTransactionType.AUTH_ONLY, transaction);
@@ -18,15 +18,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 			return BlueSnapTransactionResponseMapper.ToCardTransactionResult(result);
 		}
 
-		public async Task<CardTransactionResult> AuthorizeAndCaptureAsync(CreateCardTransaction transaction, OCIntegrationConfig overrideConfig)
-		{
-			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
-			var trans = BlueSnapTransactionRequestMapper.ToBlueSnapCardTransaction(BlueSnapTransactionType.AUTH_CAPTURE, transaction);
-			var result = await BlueSnapClient.PostCardTransaction(trans, config);
-			return BlueSnapTransactionResponseMapper.ToCardTransactionResult(result);
-		}
-
-		public async Task<CardTransactionResult> CapturePriorAuthorizationAsync(ModifyCardTransaction transaction, OCIntegrationConfig overrideConfig)
+		public async Task<CCTransactionResult> CapturePriorAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig)
 		{
 			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
 			var trans = BlueSnapTransactionRequestMapper.ToBlueSnapCardTransaction(BlueSnapTransactionType.CAPTURE, transaction);
@@ -34,15 +26,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 			return BlueSnapTransactionResponseMapper.ToCardTransactionResult(result);
 		}
 
-		public async Task<CardTransactionStatus> GetTransactionAsync(string transactionID, OCIntegrationConfig overrideConfig)
-		{
-			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
-			var transaction = await BlueSnapClient.GetCardTransaction(transactionID, config);
-			return BlueSnapTransactionResponseMapper.ToCardTransactionStatus(transaction);
-
-		}
-
-		public async Task<CardTransactionResult> RefundCaptureAsync(ModifyCardTransaction transaction, OCIntegrationConfig overrideConfig)
+		public async Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig)
 		{
 			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
 			var refund = BlueSnapRefundMapper.ToBlueSnapRefund(transaction);
@@ -50,7 +34,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 			return BlueSnapRefundMapper.ToCardTransactionResult(result);
 		}
 
-		public async Task<CardTransactionResult> VoidAuthorizationAsync(ModifyCardTransaction transaction, OCIntegrationConfig overrideConfig)
+		public async Task<CCTransactionResult> VoidAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig)
 		{
 			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
 			var trans = BlueSnapTransactionRequestMapper.ToBlueSnapCardTransaction(BlueSnapTransactionType.AUTH_REVERSAL, transaction);

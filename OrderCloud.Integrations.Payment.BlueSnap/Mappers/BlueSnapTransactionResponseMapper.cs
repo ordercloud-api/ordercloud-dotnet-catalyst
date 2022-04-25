@@ -7,14 +7,9 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 {
 	public class BlueSnapTransactionResponseMapper
 	{
-		public static CardTransactionResult ToCardTransactionResult(BlueSnapCardTransactionResponse response)
+		public static CCTransactionResult ToCardTransactionResult(BlueSnapCardTransactionResponse response)
 		{
-			return new CardTransactionResult();
-		}
-
-		public static CardTransactionStatus ToCardTransactionStatus(BlueSnapCardTransactionResponse response)
-		{
-			return new CardTransactionStatus();
+			return new CCTransactionResult();
 		}
 	}
 }

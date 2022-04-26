@@ -33,8 +33,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 		public string originalTransactionId { get; set; }
 		public BlueSnapChargeBacks chargebacks = new BlueSnapChargeBacks();
 		public BlueSnapRefunds refunds = new BlueSnapRefunds();
-
-
+		public string avsResponseCode { get; set; }
 	}
 
 	/// <summary>

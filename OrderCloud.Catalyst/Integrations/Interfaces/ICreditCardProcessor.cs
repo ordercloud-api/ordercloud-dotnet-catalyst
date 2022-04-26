@@ -62,7 +62,7 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Address verification (AVS) is an optional layer of security for payments. It checks a customer-provided street and zip code against the records on file with the card issuer. 
 		/// </summary>
-		public Address AddressVerification {get; set; }
+		public Address AddressVerification { get; set; }
 		/// <summary>
 		/// The customer's IP address is typically not required by processors, but it provides a layer of insurance on disputed or fraudulent payments. 
 		/// </summary>
@@ -90,7 +90,7 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// A code explaining the result of address verification (AVS). Whether to perform AVS is typically configured at the processor level. Standard 1 character result codes, see https://www.merchantmaverick.com/what-is-avs-for-credit-card-processing/.  
 		/// </summary>
-		public string AddressVerificationResponseCode { get; set; }
+		public string AVSResponseCode { get; set; }
 		/// <summary>
 		/// User readable text explaining the result.
 		/// </summary>

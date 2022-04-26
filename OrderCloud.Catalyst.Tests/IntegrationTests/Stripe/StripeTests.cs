@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using OrderCloud.Catalyst.Payments.Stripe;
-using OrderCloud.Catalyst.Payments.Stripe.Models;
-using Stripe;
-using StripeClient = OrderCloud.Catalyst.Payments.Stripe.StripeClient;
+//using OrderCloud.Catalyst.Payments.Stripe;
+//using OrderCloud.Catalyst.Payments.Stripe.Models;
+//using Stripe;
+//using StripeClient = OrderCloud.Catalyst.Payments.Stripe.StripeClient;
 
 namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
 {

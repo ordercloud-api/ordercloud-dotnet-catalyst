@@ -7,7 +7,7 @@ using OrderCloud.Catalyst.Payments.Stripe.Mappers;
 
 namespace OrderCloud.Catalyst.Payments.Stripe
 {
-    public class StripeCommand : OCIntegrationCommand, ICreditCardProcessor
+    public class StripeCommand : OCIntegrationService, ICreditCardProcessor
     {
         public StripeCommand(StripeConfig defaultConfig) : base(defaultConfig) { }
 

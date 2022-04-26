@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using Flurl.Http.Testing;
 using NUnit.Framework;
-using OrderCloud.Catalyst.Tax.Vertex;
+using OrderCloud.Integrations.Tax.Vertex;
 using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst.Tests.IntegrationTests
@@ -16,7 +16,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
         private static Fixture _fixture = new Fixture();
         private HttpTest _httpTest;
         private static VertexConfig _config = _fixture.Create<VertexConfig>();
-        private VertexCommand _command = new VertexCommand(_config);
+        private VertexService _command = new VertexService(_config);
 		private OrderSummaryForTax _order = _fixture.Create<OrderSummaryForTax>();
 
 		[SetUp]

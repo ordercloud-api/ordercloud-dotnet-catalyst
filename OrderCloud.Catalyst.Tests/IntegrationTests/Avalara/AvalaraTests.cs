@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using Flurl.Http.Testing;
 using NUnit.Framework;
-using OrderCloud.Catalyst.Tax.Avalara;
+using OrderCloud.Integrations.Tax.Avalara;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,7 +20,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			CompanyCode = _fixture.Create<string>(),
 			BaseUrl = "https://api.fake.com"
 		};
-		private AvalaraCommand _command = new AvalaraCommand(_config);
+		private AvalaraService _command = new AvalaraService(_config);
 		private OrderSummaryForTax _order = _fixture.Create<OrderSummaryForTax>();
 
 		[SetUp]

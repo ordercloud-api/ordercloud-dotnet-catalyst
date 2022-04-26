@@ -21,14 +21,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrderCloud.Catalyst.Payments.Stripe\OrderCloud.Catalyst.Payments.Stripe.csproj" />
-    <ProjectReference Include="..\OrderCloud.Catalyst.Shipping.EasyPost\OrderCloud.Catalyst.Shipping.EasyPost.csproj" />
-    <ProjectReference Include="..\OrderCloud.Catalyst.Shipping.Fedex\OrderCloud.Catalyst.Shipping.Fedex.csproj" />
-    <ProjectReference Include="..\OrderCloud.Catalyst.Shipping.UPS\OrderCloud.Catalyst.Shipping.UPS.csproj" />
-    <ProjectReference Include="..\OrderCloud.Catalyst.Tax.Avalara\OrderCloud.Catalyst.Tax.Avalara.csproj" />
-    <ProjectReference Include="..\OrderCloud.Catalyst.Tax.TaxJar\OrderCloud.Catalyst.Tax.TaxJar.csproj" />
-    <ProjectReference Include="..\OrderCloud.Catalyst.Tax.Vertex\OrderCloud.Catalyst.Tax.Vertex.csproj" />
     <ProjectReference Include="..\OrderCloud.Catalyst\OrderCloud.Catalyst.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Shipping.EasyPost\OrderCloud.Integrations.Shipping.EasyPost.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Shipping.Fedex\OrderCloud.Integrations.Shipping.Fedex.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Shipping.UPS\OrderCloud.Integrations.Shipping.UPS.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Tax.Avalara\OrderCloud.Integrations.Tax.Avalara.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Tax.TaxJar\OrderCloud.Integrations.Tax.TaxJar.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Tax.Vertex\OrderCloud.Integrations.Tax.Vertex.csproj" />
   </ItemGroup>
 
 </Project>

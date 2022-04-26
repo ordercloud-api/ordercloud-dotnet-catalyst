@@ -136,11 +136,11 @@ httpClient.DefaultRequestHeaders.Authorization =
 
 Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/Integrations/CONTRIBUTING.md)
 
-| Name | Project Guide | Nuget Library | Contributed By | Categories |
+| Name | Project Guide | Nuget Library | Contributed By | Interfaces |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
-| **EasyPost** | [OrderCloud.Catalyst.Shipping.EasyPost](./OrderCloud.Catalyst.Shipping.EasyPost) | Coming | OrderCloud Team | Shipping
-| **Fedex** | [OrderCloud.Catalyst.Shipping.Fedex](./OrderCloud.Catalyst.Shipping.Fedex) | Coming | OrderCloud Team | Shipping
-| **UPS** | [OrderCloud.Catalyst.Shipping.UPS](./OrderCloud.Catalyst.Shipping.UPS) | Coming | OrderCloud Team | Shipping
-| **Vertex** | [OrderCloud.Catalyst.Tax.Vertex](./OrderCloud.Catalyst.Tax.Vertex) | Coming | OrderCloud Team | Tax
-| **Avalara** | [OrderCloud.Catalyst.Tax.Avalara](./OrderCloud.Catalyst.Tax.Avalara) | Coming | OrderCloud Team | Tax
-| **TaxJar** | [OrderCloud.Catalyst.Tax.TaxJar](./OrderCloud.Catalyst.Tax.TaxJar) | Coming | OrderCloud Team | Tax
+| **EasyPost** | [README](./OrderCloud.Integrations.Shipping.EasyPost) | [OrderCloud.Integrations.Shipping.EasyPost](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.EasyPost) | OrderCloud Team | IShippingRatesCalculator
+| **Fedex** | [README](./OrderCloud.Integrations.Shipping.Fedex) | [OrderCloud.Integrations.Shipping.Fedex](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.Fedex) | OrderCloud Team | IShippingRatesCalculator
+| **UPS** | [README](./OrderCloud.Integrations.Shipping.UPS) | [OrderCloud.Integrations.Shipping.UPS](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.UPS) | OrderCloud Team | IShippingRatesCalculator
+| **Vertex** | [README](./OrderCloud.Integrations.Tax.Vertex) | [OrderCloud.Integrations.Tax.Vertex](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Vertex) | OrderCloud Team | ITaxCalculator
+| **Avalara** | [README](./OrderCloud.Integrations.Tax.Avalara) | [OrderCloud.Integrations.Tax.Avalara](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Avalara) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider
+| **TaxJar** | [README](./OrderCloud.Integrations.Tax.TaxJar) | [OrderCloud.Integrations.Tax.TaxJar](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.TaxJar) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider

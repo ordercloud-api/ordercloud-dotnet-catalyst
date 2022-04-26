@@ -111,7 +111,7 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public decimal PromotionDiscount { get; set; }
 		public List<LineItemSummaryForTax> LineItems { get; set; }
-		public List<ShipEstimateSummaryForTax> ShipEstimates { get; set; }
+		public List<ShipEstimateSummaryForTax> ShippingCosts { get; set; }
 	}
 
 	public class LineItemSummaryForTax

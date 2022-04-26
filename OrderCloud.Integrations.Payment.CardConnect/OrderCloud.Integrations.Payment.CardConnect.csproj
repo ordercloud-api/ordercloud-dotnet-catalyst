@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Version>1.0.1-alpha</Version>
+		<PackageId>OrderCloud.Integrations.Payment.CardConnect</PackageId>
+		<Title>OrderCloud Tax Integration with CardConnect</Title>
+		<Authors>DJ Steinmetz</Authors>
+		<Description>Integrate the OrderCloud ecommerce platform with CardConnect for payments.</Description>
+		<Copyright>Copyright 2022, Sitecore.</Copyright>
+		<PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
+		<PackageIconUrl></PackageIconUrl>
+		<PackageIcon>ordercloud-logo-blue.png</PackageIcon>
+		<PackageTags>ordercloud ecommerce payment webjobs sitecore cardconnect</PackageTags>
+		<PackageLicenseUrl></PackageLicenseUrl>
+		<RepositoryUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<Company>Sitecore</Company>
+		<Product>OrderCloud</Product>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\ordercloud-logo-blue.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\OrderCloud.Catalyst\OrderCloud.Catalyst.csproj" />
+	</ItemGroup>
+
+</Project>
+

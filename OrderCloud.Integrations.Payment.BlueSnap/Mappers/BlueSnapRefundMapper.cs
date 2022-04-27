@@ -9,12 +9,20 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 	{
 		public static BlueSnapRefund ToBlueSnapRefund(FollowUpCCTransaction transaction)
 		{
-			return new BlueSnapRefund();
+			return new BlueSnapRefund()
+			{
+				amount = transaction.Amount
+			};
 		}
 
 		public static CCTransactionResult ToCardTransactionResult(BlueSnapRefundResponse refund)
 		{
-			return new CCTransactionResult();
+			return new CCTransactionResult()
+			{
+
+				Succeeded = !string.IsNullOrEmpty(refund.refundTransactionId),
+				TransactionID = refund.refundTransactionId
+			};
 		}
 	}
 }

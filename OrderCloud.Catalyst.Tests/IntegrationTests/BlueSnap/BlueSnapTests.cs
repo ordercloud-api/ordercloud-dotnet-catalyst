@@ -108,5 +108,79 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			Assert.AreEqual(responseBody.message[0].errorName, "NO_PAYMENT_DETAILS_LINKED_TO_TOKEN");
 			Assert.AreEqual(responseBody.message[0].description, "Token is not associated with a payment method, please verify your client integration or contact BlueSnap support.");
 		}
+
+		[Test]
+		public async Task AuthorizeResponseShouldBeMappedCorrectly()
+		{
+			// Arrange
+			var response = _fixture.Create<BlueSnapCardTransactionResponse>();
+
+			_httpTest.RespondWithJson(response);
+			// Act
+			var actual = await _command.AuthorizeOnlyAsync(_authorizeModel);
+
+			// Assert
+			Assert.AreEqual(false, actual.Succeeded);
+			Assert.AreEqual(response.transactionId, actual.TransactionID);
+			Assert.AreEqual(response.processingInfo.authorizationCode, actual.AuthorizationCode);
+			Assert.AreEqual(response.processingInfo.processingStatus, actual.ResponseCode);
+			Assert.AreEqual(response.processingInfo.processingStatus, actual.Message);
+			Assert.AreEqual(response.avsResponseCode, actual.AVSResponseCode);
+		}
+
+		[Test]
+		public async Task AuthorizeRequestShouldBeMappedCorrectly()
+		{
+			// Arrange
+			var request = _fixture.Create<AuthorizeCCTransaction>();
+
+			// Act
+			var actual = BlueSnapTransactionMapper.ToBlueSnapCardTransaction(BlueSnapTransactionType.AUTH_ONLY, request);
+
+			// Assert
+			Assert.AreEqual("AUTH_ONLY", actual.cardTransactionType);
+			Assert.AreEqual(request.Amount, actual.amount);
+			Assert.AreEqual(request.Currency, actual.currency);
+			Assert.AreEqual(request.CardToken, actual.pfToken);
+			Assert.AreEqual(request.OrderID, actual.merchantTransactionId);
+			Assert.AreEqual(request.CustomerIPAddress, actual.transactionFraudInfo.shopperIpAddress);
+			Assert.AreEqual(request.AddressVerification.Street1, actual.transactionFraudInfo.shippingContactInfo.address1);
+			Assert.AreEqual(request.AddressVerification.Street2, actual.transactionFraudInfo.shippingContactInfo.address2);
+			Assert.AreEqual(request.AddressVerification.City, actual.transactionFraudInfo.shippingContactInfo.city);
+			Assert.AreEqual(request.AddressVerification.Zip, actual.transactionFraudInfo.shippingContactInfo.zip);
+			Assert.AreEqual(request.AddressVerification.State, actual.transactionFraudInfo.shippingContactInfo.state);
+			Assert.AreEqual(request.AddressVerification.Country, actual.transactionFraudInfo.shippingContactInfo.country);
+
+		}
+
+		[Test]
+		public async Task SuccessAuthorizeResponse()
+		{
+			// Arrange
+			var response = _fixture.Create<BlueSnapCardTransactionResponse>();
+			response.processingInfo.processingStatus = "SuCcEsS";
+
+			_httpTest.RespondWithJson(response);
+			// Act
+			var actual = await _command.AuthorizeOnlyAsync(_authorizeModel);
+
+			// Assert
+			Assert.AreEqual(true, actual.Succeeded);
+		}
+
+		[Test]
+		public async Task ShouldGetTokenFromLocationHeader()
+		{
+			// Arrange
+			var token = _fixture.Create<string>();
+			_httpTest
+				.RespondWithJson(new { }, 200, new { Location = "https://sandbox.bluesnap.com/services/2/payment-fields-tokens/" + token });
+
+			// Act
+			var actual = await _command.GetIFrameCredentialAsync(new InitiateCCTransaction());
+
+			//Assert
+			Assert.AreEqual(token, actual);
+		}
 	}
 }

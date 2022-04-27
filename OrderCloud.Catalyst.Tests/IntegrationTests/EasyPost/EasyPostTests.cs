@@ -127,7 +127,6 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			Assert.AreEqual(mockRate.service, resultRate.Name);
 			Assert.AreEqual(mockRate.delivery_days, resultRate.EstimatedTransitDays);
 			Assert.AreEqual(decimal.Parse(mockRate.rate), resultRate.Cost);
-
 		}
 	}
 }

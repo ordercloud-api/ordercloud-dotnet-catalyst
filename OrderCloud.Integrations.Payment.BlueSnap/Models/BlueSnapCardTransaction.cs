@@ -29,6 +29,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 		public BlueSnapCardHolderInfo cardHolderInfo { get; set; }
 		public BlueSnapCreditCard creditCard { get; set; }
 		public BlueSnapWallet wallet { get; set; }
+		public BlueSnapTransactionFraudInfo transactionFraudInfo { get; set; }
 	}
 
 	public class BlueSnapWallet

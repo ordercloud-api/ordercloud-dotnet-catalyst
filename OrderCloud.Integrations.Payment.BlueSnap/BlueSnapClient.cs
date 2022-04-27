@@ -2,6 +2,7 @@
 using OrderCloud.Catalyst;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +10,22 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 {
 	public class BlueSnapClient
 	{
+		/// <summary>
+		/// https://support.bluesnap.com/docs/faqs-hosted-payment-fields#creating-a-pftoken
+		/// </summary>
+		public static async Task<string> GetHostedPaymentFieldToken(BlueSnapConfig config)
+		{
+			return await TryCatchRequestAsync(config, async (request) =>
+			{
+				var response = await request
+					.AppendPathSegments("services", "2", "payment-fields-tokens")
+					.PostAsync();
+				response.Headers.TryGetFirst("Location", out string locationResponse);
+				var token = locationResponse.Split('/').Last();
+				return token;
+			});
+		}
+
 		/// <summary>
 		/// https://developers.bluesnap.com/v8976-JSON/docs/auth-only
 		/// </summary>

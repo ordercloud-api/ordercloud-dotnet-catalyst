@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Catalyst.Integrations.Interfaces
+namespace OrderCloud.Catalyst
 {
 	/// <summary>
 	/// An interface to define the behavior of a system that can store saved credit cards. Full CC details are never passed to it, as that would put it in PCI compliance scope. Instead, it accepts iframe generated tokens.
@@ -13,15 +13,15 @@ namespace OrderCloud.Catalyst.Integrations.Interfaces
 		/// <summary>
 		/// List Saved Credit Cards
 		/// </summary>
-		Task<List<SavedCreditCard>> ListSavedCardsAsync(string customerID, OCIntegrationConfig configOverride = null);
+		Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID, OCIntegrationConfig configOverride = null);
 		/// <summary>
 		/// Get a single saved credit card
 		/// </summary>
-		Task<SavedCreditCard> GetSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null);
+		Task<PCISafeCardDetails> GetSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null);
 		/// <summary>
 		/// Save a credit card for future use
 		/// </summary>
-		Task<SavedCreditCard> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride = null);
+		Task<PCISafeCardDetails> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride = null);
 		/// <summary>
 		/// Remove a saved credit card
 		/// </summary>
@@ -55,10 +55,6 @@ namespace OrderCloud.Catalyst.Integrations.Interfaces
 		public bool CustomerAlreadyExists { get; set; }
 	}
 
-	public class SavedCreditCard : PCISafeCardDetails
-	{
-		public string ID { get; set; }
-	}
 
 	/// <summary>
 	/// Partial credit card details that do not put the solution under PCI compliance. Only the last 4 digits of the number and no CVV. Includes a token from the processor system representing the full card details.
@@ -66,7 +62,11 @@ namespace OrderCloud.Catalyst.Integrations.Interfaces
 	public class PCISafeCardDetails
 	{
 		/// <summary>
-		/// A token from the processor system representing the full card details
+		/// Left null if card is not saved in processor. During authorization if it is non-empty, it will be prefered over Token. 
+		/// </summary>
+		public string SavedCardID { get; set; }
+		/// <summary>
+		/// A token from the processor system representing the full card details. During authorization, it will be used only if SavedCardID is empty.
 		/// </summary>
 		public string Token { get; set; }
 		/// <summary>

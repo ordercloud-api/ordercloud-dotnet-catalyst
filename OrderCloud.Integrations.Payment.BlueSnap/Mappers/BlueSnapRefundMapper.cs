@@ -19,7 +19,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 		{
 			return new CCTransactionResult()
 			{
-
+				Amount = refund.amount,
 				Succeeded = !string.IsNullOrEmpty(refund.refundTransactionId),
 				TransactionID = refund.refundTransactionId
 			};

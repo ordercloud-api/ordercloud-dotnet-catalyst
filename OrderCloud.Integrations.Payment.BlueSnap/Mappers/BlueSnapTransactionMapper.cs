@@ -14,6 +14,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 			{
 				// See https://developers.bluesnap.com/v8976-JSON/docs/processing-info
 				Succeeded = response.processingInfo.processingStatus.ToLower() == "success",
+				Amount = response.amount,
 				TransactionID = response.transactionId,
 				ResponseCode = response.processingInfo.processingStatus,
 				AuthorizationCode = response.processingInfo.authorizationCode,

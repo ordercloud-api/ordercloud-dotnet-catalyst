@@ -87,6 +87,53 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 			});
 		}
 
+		/// <summary>
+		/// https://developers.bluesnap.com/v8976-JSON/docs/create-vaulted-shopper
+		/// </summary>
+		public static async Task<BlueSnapVaultedShopper> CreateVaultedShopper(BlueSnapVaultedShopper shopper, BlueSnapConfig config)
+		{
+			return await TryCatchRequestAsync(config, async (request) =>
+			{
+				var shopperResponse = await request
+					.AppendPathSegments("services", "2", "vaulted-shoppers")
+					.PostJsonAsync(shopper)
+					.ReceiveJson<BlueSnapVaultedShopper>();
+
+				return shopperResponse;
+			});
+		}
+
+		/// <summary>
+		/// https://developers.bluesnap.com/v8976-JSON/docs/retrieve-vaulted-shopper
+		/// </summary>
+		public static async Task<BlueSnapVaultedShopper> GetVaultedShopper(string vaultedShopperID, BlueSnapConfig config)
+		{
+			return await TryCatchRequestAsync(config, async (request) =>
+			{
+				var shopperResponse = await request
+					.AppendPathSegments("services", "2", "vaulted-shoppers", vaultedShopperID)
+					.GetJsonAsync<BlueSnapVaultedShopper>();
+
+				return shopperResponse;
+			});
+		}
+
+		/// <summary>
+		/// https://developers.bluesnap.com/v8976-JSON/docs/update-vaulted-shopper
+		/// </summary>
+		public static async Task<BlueSnapVaultedShopper> UpdateVaultedShopper(string vaultedShopperID, BlueSnapVaultedShopper shopper, BlueSnapConfig config)
+		{
+			return await TryCatchRequestAsync(config, async (request) =>
+			{
+				var shopperResponse = await request
+					.AppendPathSegments("services", "2", "vaulted-shoppers", vaultedShopperID)
+					.PutJsonAsync(shopper)
+					.ReceiveJson<BlueSnapVaultedShopper>();
+
+				return shopperResponse;
+			});
+		}
+
 		protected static async Task<T> TryCatchRequestAsync<T>(BlueSnapConfig config, Func<IFlurlRequest, Task<T>> run)
 		{
 			var request = config.BaseUrl.WithBasicAuth(config.APIUsername, config.APIPassword);

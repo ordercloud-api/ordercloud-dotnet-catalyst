@@ -141,7 +141,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			Assert.AreEqual("AUTH_ONLY", actual.cardTransactionType);
 			Assert.AreEqual(request.Amount, actual.amount);
 			Assert.AreEqual(request.Currency, actual.currency);
-			Assert.AreEqual(request.CardToken, actual.pfToken);
+			Assert.AreEqual(request.CardDetails.Token, actual.pfToken);
 			Assert.AreEqual(request.OrderID, actual.merchantTransactionId);
 			Assert.AreEqual(request.CustomerIPAddress, actual.transactionFraudInfo.shopperIpAddress);
 			Assert.AreEqual(request.AddressVerification.Street1, actual.transactionFraudInfo.shippingContactInfo.address1);
@@ -150,7 +150,6 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			Assert.AreEqual(request.AddressVerification.Zip, actual.transactionFraudInfo.shippingContactInfo.zip);
 			Assert.AreEqual(request.AddressVerification.State, actual.transactionFraudInfo.shippingContactInfo.state);
 			Assert.AreEqual(request.AddressVerification.Country, actual.transactionFraudInfo.shippingContactInfo.country);
-
 		}
 
 		[Test]

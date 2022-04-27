@@ -1,6 +1,7 @@
 ﻿using OrderCloud.Catalyst;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace OrderCloud.Integrations.Payment.BlueSnap
@@ -28,8 +29,14 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 				cardTransactionType = transactionType.ToString(),
 				amount = transaction.Amount,
 				currency = transaction.Currency,
-				pfToken = transaction.CardToken,
+				pfToken = transaction.CardDetails.Token,
 				merchantTransactionId = transaction.OrderID,
+				cardHolderInfo = new BlueSnapCardHolderInfo()
+				{
+					firstName = transaction.CardDetails.CardHolderName.Split(' ').First(),
+					lastName = transaction.CardDetails.CardHolderName.Split(' ').Last(),
+					zip = transaction.AddressVerification.Zip
+				}, 
 				transactionFraudInfo = new BlueSnapTransactionFraudInfo()
 				{
 					shopperIpAddress = transaction.CustomerIPAddress,

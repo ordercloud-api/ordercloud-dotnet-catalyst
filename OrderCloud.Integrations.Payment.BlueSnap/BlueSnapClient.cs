@@ -29,7 +29,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 		/// <summary>
 		/// https://developers.bluesnap.com/v8976-JSON/docs/auth-only
 		/// </summary>
-		public static async Task<BlueSnapCardTransactionResponse> PostCardTransaction(BlueSnapCardTransaction transaction, BlueSnapConfig config)
+		public static async Task<BlueSnapCardTransactionResponse> CreateCardTransaction(BlueSnapCardTransaction transaction, BlueSnapConfig config)
 		{
 			return await TryCatchRequestAsync(config, async (request) =>
 			{
@@ -45,7 +45,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 		/// https://developers.bluesnap.com/v8976-JSON/docs/capture
 		/// https://developers.bluesnap.com/v8976-JSON/docs/auth-reversal
 		/// </summary>
-		public static async Task<BlueSnapCardTransactionResponse> PutCardTransaction(BlueSnapCardTransaction transaction, BlueSnapConfig config)
+		public static async Task<BlueSnapCardTransactionResponse> UpdateCardTransaction(BlueSnapCardTransaction transaction, BlueSnapConfig config)
 		{
 			return await TryCatchRequestAsync(config, async (request) =>
 			{

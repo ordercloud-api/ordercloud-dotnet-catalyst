@@ -22,7 +22,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 		{
 			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
 			var trans = BlueSnapTransactionMapper.ToBlueSnapCardTransaction(BlueSnapTransactionType.AUTH_ONLY, transaction);
-			var result = await BlueSnapClient.PostCardTransaction(trans, config);
+			var result = await BlueSnapClient.CreateCardTransaction(trans, config);
 			return BlueSnapTransactionMapper.ToCardTransactionResult(result);
 		}
 
@@ -30,7 +30,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 		{
 			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
 			var trans = BlueSnapTransactionMapper.ToBlueSnapCardTransaction(BlueSnapTransactionType.CAPTURE, transaction);
-			var result = await BlueSnapClient.PostCardTransaction(trans, config);
+			var result = await BlueSnapClient.CreateCardTransaction(trans, config);
 			return BlueSnapTransactionMapper.ToCardTransactionResult(result);
 		}
 
@@ -46,7 +46,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 		{
 			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
 			var trans = BlueSnapTransactionMapper.ToBlueSnapCardTransaction(BlueSnapTransactionType.AUTH_REVERSAL, transaction);
-			var result = await BlueSnapClient.PostCardTransaction(trans, config);
+			var result = await BlueSnapClient.CreateCardTransaction(trans, config);
 			return BlueSnapTransactionMapper.ToCardTransactionResult(result);
 		}
 
@@ -63,24 +63,27 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
 			var shopper = await BlueSnapClient.GetVaultedShopper(customerID, config);
 			var cards = BlueSnapVaultedShopperMapper.ToCardList(shopper);
-			return cards.FirstOrDefault(BlueSnapVaultedShopperMapper.CardMatchesID);
+			return cards.FirstOrDefaultWithID(cardID);
 		}
 
-		public async Task<PCISafeCardDetails> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig overrideConfig = null)
+		public async Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig overrideConfig = null)
 		{
 			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
-			BlueSnapVaultedShopper shopper;
+			var shopper = BlueSnapVaultedShopperMapper.BuildAddCardRequest(customer, card);
 			if (customer.CustomerAlreadyExists)
 			{
-				shopper = BlueSnapVaultedShopperMapper.BuildAddCardRequest(customer, card);
+				shopper = await BlueSnapClient.UpdateVaultedShopper(customer.ID, shopper, config);
 			}
 			else
 			{
-				shopper = BlueSnapVaultedShopperMapper.BuildCreateShopperRequest(customer, card);
+				shopper = await BlueSnapClient.CreateVaultedShopper(shopper, config);
 			}
-			var result = await BlueSnapClient.CreateVaultedShopper(shopper, config);
-			var cards = BlueSnapVaultedShopperMapper.ToCardList(result);
-			return cards.FirstOrDefault(BlueSnapVaultedShopperMapper.CardMatchesID);
+			card.SavedCardID = BlueSnapVaultedShopperMapper.BuildSavedCardID(card);
+			return new CardCreatedResponse()
+			{
+				CustomerID = shopper.vaultedShopperId,
+				Card = card
+			};
 		}
 
 		public async Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig overrideConfig = null)

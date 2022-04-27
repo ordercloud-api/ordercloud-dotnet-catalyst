@@ -30,14 +30,13 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 				cardTransactionType = transactionType.ToString(),
 				amount = transaction.Amount,
 				currency = transaction.Currency,
-				pfToken = transaction.CardDetails.Token,
 				merchantTransactionId = transaction.OrderID,
 				cardHolderInfo = new BlueSnapCardHolderInfo()
 				{
 					firstName = transaction.CardDetails.CardHolderName.Split(' ').First(),
 					lastName = transaction.CardDetails.CardHolderName.Split(' ').Last(),
 					zip = transaction.AddressVerification.Zip
-				}, 
+				},
 				transactionFraudInfo = new BlueSnapTransactionFraudInfo()
 				{
 					shopperIpAddress = transaction.CustomerIPAddress,
@@ -52,6 +51,23 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 					}
 				}
 			};
+
+			if (string.IsNullOrEmpty(transaction.CardDetails.SavedCardID)) 
+			{
+				// authorize with one-time-use token
+				blueSnapTransaction.pfToken = transaction.CardDetails.Token;
+			} else
+			{
+				// authorize with saved card
+				var (type, last4) = BlueSnapVaultedShopperMapper.DeconstructCardID(transaction.CardDetails.SavedCardID);
+				blueSnapTransaction.vaultedShopperId = int.Parse(transaction.ProcessorCustomerID);
+				blueSnapTransaction.creditCard = new BlueSnapCreditCard()
+				{
+					cardType = type,
+					cardLastFourDigits = last4
+				};
+			}
+
 			return blueSnapTransaction;
 		}
 

@@ -21,7 +21,7 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Save a credit card for future use
 		/// </summary>
-		Task<PCISafeCardDetails> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride = null);
+		Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride = null);
 		/// <summary>
 		/// Remove a saved credit card
 		/// </summary>
@@ -53,6 +53,12 @@ namespace OrderCloud.Catalyst
 		/// Is a customer record with matching ID expected to exist? Use to determine whether to attempt to create a new customer.
 		/// </summary>
 		public bool CustomerAlreadyExists { get; set; }
+	}
+
+	public class CardCreatedResponse
+	{
+		public PCISafeCardDetails Card { get; set; }
+		public string CustomerID { get; set; }
 	}
 
 

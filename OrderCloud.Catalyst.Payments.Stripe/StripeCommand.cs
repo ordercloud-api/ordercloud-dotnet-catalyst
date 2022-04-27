@@ -11,57 +11,72 @@ namespace OrderCloud.Catalyst.Payments.Stripe
     {
         public StripeCommand(StripeConfig defaultConfig) : base(defaultConfig) { }
 
-        public async Task<CardTransactionResult> AuthorizeOnlyAsync(CreateCardTransaction transaction, OCIntegrationConfig overrideConfig = null) =>
+        public async Task<CCTransactionResult> GetIFrameCredentialsAsync(InitiateCCTransaction transaction = null, OCIntegrationConfig overrideConfig = null) =>
             await CreatePaymentIntentAsync(transaction, "manual", overrideConfig);
+        // captureMethod: "automatic" would be used for Authorize and Capture
 
-        //public async Task<CardTransactionResult> AuthorizeAndCaptureAsync(CreateCardTransaction transaction, OCIntegrationConfig overrideConfig = null) =>
-        //    await CreatePaymentIntentAsync(transaction, "automatic", overrideConfig);
+        public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null) =>
+            await ConfirmPaymentIntentAsync(transaction,  overrideConfig);
 
-        public async Task<CardTransactionResult> CapturePriorAuthorizeAsync(ModifyCardTransaction transaction, OCIntegrationConfig overrideConfig = null) =>
+        public async Task<CCTransactionResult> CapturePriorAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null) =>
             await CapturePaymentIntentAsync(transaction, overrideConfig);
 
-        public async Task<CardTransactionResult> RefundCaptureAsync(ModifyCardTransaction transactionID, OCIntegrationConfig configOverride = null)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig configOverride = null) =>
+            await CreateRefundAsync(transaction, configOverride);
 
-
-
-        public async Task<CardTransactionResult> CreatePaymentIntentAsync(CreateCardTransaction transaction, string captureMethod, OCIntegrationConfig overrideConfig)
+        public async Task<CCTransactionResult> CreatePaymentIntentAsync(InitiateCCTransaction transaction, string captureMethod, OCIntegrationConfig overrideConfig)
         {
             var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
             var paymentIntentCreateOptions = StripeRequestMapper.MapPaymentIntentCreateOptions(transaction, captureMethod);
             var paymentIntent = await StripeClient.CreatePaymentIntentAsync(paymentIntentCreateOptions, config);
-            // map Stripe PaymentIntentCreateOptions back to OC Model
-            return new CardTransactionResult();
+            return new CCTransactionResult()
+            {
+                CardToken = paymentIntent.ClientSecret,
+                TransactionID = paymentIntent.Id
+            };
         }
 
-        public async Task<CardTransactionResult> CapturePaymentIntentAsync(ModifyCardTransaction transaction, OCIntegrationConfig overrideConfig)
+        public async Task<CCTransactionResult> ConfirmPaymentIntentAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig)
+        {
+            var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
+            var paymentIntentConfirmOptions = StripeRequestMapper.MapPaymentIntentConfirmOptions(transaction);
+            var confirmedPaymentIntent = await StripeClient.ConfirmPaymentIntentAsync(transaction.TransactionID, paymentIntentConfirmOptions, config);
+            // map Stripe PaymentIntent back to OC Model
+            return new CCTransactionResult()
+            {
+                CardToken = confirmedPaymentIntent.ClientSecret,
+                Message = confirmedPaymentIntent.Status,
+                Succeeded = confirmedPaymentIntent.Status.ToLower() == "succeeded", // or "requires_capture"??
+                TransactionID = confirmedPaymentIntent.Id
+            };
+        }
+
+        public async Task<CCTransactionResult> CapturePaymentIntentAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig)
         {
             var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
             var paymentIntentCaptureOptions = StripeRequestMapper.MapPaymentIntentCaptureOptions(transaction);
-            var capturedPaymentIntent = await StripeClient.CapturePaymentIntentAsync("PAYMENT_ID_HERE", paymentIntentCaptureOptions, config);
-            // map Stripe PaymentIntentCaptureOptions back to OC Model
-            return new CardTransactionResult();
+            var capturedPaymentIntent = await StripeClient.CapturePaymentIntentAsync(transaction.TransactionID, paymentIntentCaptureOptions, config);
+            // map Stripe PaymentIntent back to OC Model
+            return new CCTransactionResult()
+            {
+                CardToken = capturedPaymentIntent.ClientSecret,
+                Message = capturedPaymentIntent.Status,
+                Succeeded = capturedPaymentIntent.Status.ToLower() == "succeeded",
+                TransactionID = capturedPaymentIntent.Id
+            };
         }
 
-        public async Task<CardTransactionResult> CreateRefundAsync(ModifyCardTransaction transaction, OCIntegrationConfig overrideConfig)
+        public async Task<CCTransactionResult> CreateRefundAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig)
         {
             var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
+            var refundCreateOptions = StripeRequestMapper.MapRefundCreateOptions(transaction);
+            var refund = await StripeClient.CreateRefundAsync(refundCreateOptions, config);
+            // map Stripe Refund back to OC Model
+            return new CCTransactionResult();
         }
 
         // TODO: IMPLEMENT THESE
-        Task<CardTransactionResult> ICreditCardProcessor.VoidAuthorizationAsync(ModifyCardTransaction transactionID, OCIntegrationConfig configOverride = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<CardTransactionStatus> GetTransactionAsync(string transactionID, OCIntegrationConfig configOverride = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<CardTransactionResult> AuthorizeAndCaptureAsync(CreateCardTransaction transaction, OCIntegrationConfig configOverride = null)
+        Task<CCTransactionResult> ICreditCardProcessor.VoidAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig configOverride)
         {
             throw new NotImplementedException();
         }

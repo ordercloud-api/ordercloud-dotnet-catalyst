@@ -24,43 +24,42 @@ namespace OrderCloud.Catalyst.Payments.Stripe
         // https://stripe.com/docs/payments/payment-intents
         // https://stripe.com/docs/api/payment_intents
 
-        public async Task<Customer> CreateCustomerAsync(CustomerCreateOptions options, StripeConfig optionalOverride = null)
-        {
-            StripeConfig config = optionalOverride ?? _defaultConfig;
+        //public async Task<Customer> CreateCustomerAsync(CustomerCreateOptions options, StripeConfig optionalOverride = null)
+        //{
+        //    StripeConfig config = optionalOverride ?? _defaultConfig;
 
-            StripeConfiguration.ApiKey = config.SecretKey;
+        //    StripeConfiguration.ApiKey = config.SecretKey;
 
-            var service = new CustomerService();
-            return await service.CreateAsync(options);
-        }
+        //    var service = new CustomerService();
+        //    return await service.CreateAsync(options);
+        //}
 
         // this will be done via iFrame, not handled in the integration. The FE will pass a token that we can use
-        public async Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethodCreateOptions options, StripeConfig optionalOverride = null)
-        {
-            StripeConfig config = optionalOverride ?? _defaultConfig;
+        //public async Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethodCreateOptions options, StripeConfig optionalOverride = null)
+        //{
+        //    StripeConfig config = optionalOverride ?? _defaultConfig;
 
-            StripeConfiguration.ApiKey = config.SecretKey;
+        //    StripeConfiguration.ApiKey = config.SecretKey;
 
-            var service = new PaymentMethodService();
-            return await service.CreateAsync(options);
-        }
+        //    var service = new PaymentMethodService();
+        //    return await service.CreateAsync(options);
+        //}
 
         public static async Task<PaymentIntent> CreatePaymentIntentAsync(PaymentIntentCreateOptions options, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
 
             var service = new PaymentIntentService();
+            // this should return secret and transaction ID
             return await service.CreateAsync(options);
         }
 
-        public async Task<PaymentIntent> ConfirmPaymentIntentAsync(string paymentMethodID, PaymentIntentConfirmOptions options, StripeConfig optionalOverride = null)
+        public static async Task<PaymentIntent> ConfirmPaymentIntentAsync(string paymentIntentID, PaymentIntentConfirmOptions options, StripeConfig config)
         {
-            StripeConfig config = optionalOverride ?? _defaultConfig;
-
             StripeConfiguration.ApiKey = config.SecretKey;
 
             var service = new PaymentIntentService();
-            return await service.ConfirmAsync(paymentMethodID, options);
+            return await service.ConfirmAsync(paymentIntentID, options);
         }
 
         public static async Task<PaymentIntent> CapturePaymentIntentAsync(string paymentIntentID, PaymentIntentCaptureOptions options, StripeConfig config)
@@ -69,6 +68,14 @@ namespace OrderCloud.Catalyst.Payments.Stripe
 
             var service = new PaymentIntentService();
             return await service.CaptureAsync(paymentIntentID, options);
+        }
+
+        public static async Task<Refund> CreateRefundAsync(RefundCreateOptions options, StripeConfig config)
+        {
+            StripeConfiguration.ApiKey = config.SecretKey;
+
+            var service = new RefundService();
+            return await service.CreateAsync(options);
         }
     }
 }

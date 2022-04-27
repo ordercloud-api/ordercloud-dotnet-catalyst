@@ -34,6 +34,7 @@ namespace OrderCloud.Catalyst.Payments.Stripe
             return await service.CreateAsync(options);
         }
 
+        // this will be done via iFrame, not handled in the integration. The FE will pass a token that we can use
         public async Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethodCreateOptions options, StripeConfig optionalOverride = null)
         {
             StripeConfig config = optionalOverride ?? _defaultConfig;
@@ -62,11 +63,8 @@ namespace OrderCloud.Catalyst.Payments.Stripe
             return await service.ConfirmAsync(paymentMethodID, options);
         }
 
-        public async Task<PaymentIntent> CapturePaymentIntentAsync(string paymentIntentID, PaymentIntentCaptureOptions options, StripeConfig optionalOverride = null)
+        public static async Task<PaymentIntent> CapturePaymentIntentAsync(string paymentIntentID, PaymentIntentCaptureOptions options, StripeConfig config)
         {
-            // instead of passing in paymentID here can we use stripeRequest.client_secret?
-            StripeConfig config = optionalOverride ?? _defaultConfig;
-
             StripeConfiguration.ApiKey = config.SecretKey;
 
             var service = new PaymentIntentService();

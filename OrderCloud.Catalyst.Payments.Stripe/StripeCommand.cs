@@ -14,11 +14,16 @@ namespace OrderCloud.Catalyst.Payments.Stripe
         public async Task<CardTransactionResult> AuthorizeOnlyAsync(CreateCardTransaction transaction, OCIntegrationConfig overrideConfig = null) =>
             await CreatePaymentIntentAsync(transaction, "manual", overrideConfig);
 
-        public async Task<CardTransactionResult> AuthorizeAndCaptureAsync(CreateCardTransaction transaction, OCIntegrationConfig overrideConfig = null) =>
-            await CreatePaymentIntentAsync(transaction, "automatic", overrideConfig);
+        //public async Task<CardTransactionResult> AuthorizeAndCaptureAsync(CreateCardTransaction transaction, OCIntegrationConfig overrideConfig = null) =>
+        //    await CreatePaymentIntentAsync(transaction, "automatic", overrideConfig);
 
         public async Task<CardTransactionResult> CapturePriorAuthorizeAsync(ModifyCardTransaction transaction, OCIntegrationConfig overrideConfig = null) =>
             await CapturePaymentIntentAsync(transaction, overrideConfig);
+
+        public async Task<CardTransactionResult> RefundCaptureAsync(ModifyCardTransaction transactionID, OCIntegrationConfig configOverride = null)
+        {
+            throw new NotImplementedException();
+        }
 
 
 
@@ -34,8 +39,15 @@ namespace OrderCloud.Catalyst.Payments.Stripe
         public async Task<CardTransactionResult> CapturePaymentIntentAsync(ModifyCardTransaction transaction, OCIntegrationConfig overrideConfig)
         {
             var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
-            //var paymentIntentCaptureOptions =
+            var paymentIntentCaptureOptions = StripeRequestMapper.MapPaymentIntentCaptureOptions(transaction);
+            var capturedPaymentIntent = await StripeClient.CapturePaymentIntentAsync("PAYMENT_ID_HERE", paymentIntentCaptureOptions, config);
+            // map Stripe PaymentIntentCaptureOptions back to OC Model
             return new CardTransactionResult();
+        }
+
+        public async Task<CardTransactionResult> CreateRefundAsync(ModifyCardTransaction transaction, OCIntegrationConfig overrideConfig)
+        {
+            var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
         }
 
         // TODO: IMPLEMENT THESE
@@ -44,12 +56,12 @@ namespace OrderCloud.Catalyst.Payments.Stripe
             throw new NotImplementedException();
         }
 
-        Task<CardTransactionResult> ICreditCardProcessor.RefundCaptureAsync(ModifyCardTransaction transactionID, OCIntegrationConfig configOverride = null)
+        public Task<CardTransactionStatus> GetTransactionAsync(string transactionID, OCIntegrationConfig configOverride = null)
         {
             throw new NotImplementedException();
         }
 
-        Task<CardTransactionStatus> ICreditCardProcessor.GetTransactionAsync(string transactionID, OCIntegrationConfig configOverride = null)
+        public Task<CardTransactionResult> AuthorizeAndCaptureAsync(CreateCardTransaction transaction, OCIntegrationConfig configOverride = null)
         {
             throw new NotImplementedException();
         }

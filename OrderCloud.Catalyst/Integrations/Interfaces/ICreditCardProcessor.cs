@@ -12,6 +12,10 @@ namespace OrderCloud.Catalyst
 	public interface ICreditCardProcessor
 	{
 		/// <summary>
+		/// Request token/secret required for certain integrations' iframes to collect payment details.
+		/// </summary>
+		Task<string> GetIFrameCredentialAsync(InitiateCCTransaction transaction = null, OCIntegrationConfig overrideConfig = null); 
+		/// <summary>
 		/// Attempt to verify the user can pay by placing a hold on a credit card. Funds will be captured later. Typically used as a verification step directly before order submit.
 		/// </summary>
 		Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
@@ -27,6 +31,18 @@ namespace OrderCloud.Catalyst
 		/// Refund a previously captured amount. Used if an order is canceled/returned after capture. Refunding generally incures extra processing fees, whereas voiding does not.
 		/// </summary>
 		Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
+	}
+
+	public class InitiateCCTransaction
+    {
+		/// <summary>
+		/// The ammount that will be authorized on the credit card.
+		/// </summary>
+		public decimal Amount { get; set; }
+		/// <summary>
+		/// The currency to authorize in - three letter ISO format. 
+		/// </summary>
+		public string Currency { get; set; }
 	}
 
 	public class AuthorizeCCTransaction

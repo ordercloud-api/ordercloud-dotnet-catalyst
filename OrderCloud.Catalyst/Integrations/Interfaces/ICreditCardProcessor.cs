@@ -14,7 +14,7 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Request token/secret required for certain integrations' iframes to collect payment details.
 		/// </summary>
-		Task<CCTransactionResult> GetIFrameCredentialAsync(InitiateCCTransaction transaction = null, OCIntegrationConfig overrideConfig = null); 
+		Task<CCTransactionResult> GetIFrameCredentialAsync(InitiateCCTransaction transaction, OCIntegrationConfig overrideConfig = null); 
 		/// <summary>
 		/// Attempt to verify the user can pay by placing a hold on a credit card. Funds will be captured later. Typically used as a verification step directly before order submit.
 		/// </summary>

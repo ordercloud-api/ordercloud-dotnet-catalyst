@@ -1,88 +1,130 @@
-﻿using System;
+﻿using OrderCloud.SDK;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Catalyst.Integrations.Interfaces
+namespace OrderCloud.Catalyst
 {
-
-	//This interface does not accept card details.Instead it accept tokens representing cards, with the assumption a FE iframe solution is tokenizing cards securely.
-	//Only for credit cards. Not thinking about digital wallets, paypall, ACH, ect.These are great, but can be optional, additions.Every site needs to accept credit cards.
+	/// <summary>
+	/// An interface to define the behavior of a credit card processor. Full CC details are never passed to it, as that would put it in PCI compliance scope. Instead, it accepts iframe generated tokens or saved card IDs.
+	/// </summary>
 	public interface ICreditCardProcessor
 	{
-		Task<CardTransactionResult> AuthorizeOnlyAsync(CreateCardTransaction transaction, OCIntegrationConfig configOverride = null);
-		Task<CardTransactionResult> AuthorizeAndCaptureAsync(CreateCardTransaction transaction, OCIntegrationConfig configOverride = null);
-		Task<CardTransactionResult> CapturePriorAuthorizeAsync(ModifyCardTransaction transactionID, OCIntegrationConfig configOverride = null);
-		Task<CardTransactionResult> VoidAuthorizationAsync(ModifyCardTransaction transactionID, OCIntegrationConfig configOverride = null);
-		Task<CardTransactionResult> RefundCaptureAsync(ModifyCardTransaction transactionID, OCIntegrationConfig configOverride = null);
-		Task<CardTransactionStatus> GetTransactionAsync(string transactionID, OCIntegrationConfig configOverride = null);
+		/// <summary>
+		/// Request token/secret required for certain integrations' iframes to collect payment details.
+		/// </summary>
+		Task<string> GetIFrameCredentialAsync(InitiateCCTransaction transaction = null, OCIntegrationConfig overrideConfig = null); 
+		/// <summary>
+		/// Attempt to verify the user can pay by placing a hold on a credit card. Funds will be captured later. Typically used as a verification step directly before order submit.
+		/// </summary>
+		Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
+		/// <summary>
+		/// Attempt to capture funds from a credit card. A prior authorization is required. Typically used when a shipment is created, at the end of the day, or a defined time period after submit.
+		/// </summary>
+		Task<CCTransactionResult> CapturePriorAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
+		/// <summary>
+		/// Remove an authorization hold previously placed on a credit card. Use if order submit fails, or if order is canceled/returned before capture. 
+		/// </summary>
+		Task<CCTransactionResult> VoidAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
+		/// <summary>
+		/// Refund a previously captured amount. Used if an order is canceled/returned after capture. Refunding generally incures extra processing fees, whereas voiding does not.
+		/// </summary>
+		Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
 	}
 
-	public class CardTransactionResult
-	{
+	public class InitiateCCTransaction
+    {
 		/// <summary>
-		/// Did the transaction succeed or fail?
+		/// The ammount that will be authorized on the credit card.
 		/// </summary>
-		public bool Success { get; set; }
+		public decimal Amount { get; set; }
 		/// <summary>
-		/// The processor-generated ID for this specific action. Null if a create attempt failed. 
+		/// The currency to authorize in - three letter ISO format. 
 		/// </summary>
-		public string TransactionID { get; set; }
-		/// <summary>
-		/// ID for the previous transaction being modified.
-		/// </summary>
-		public string ReferenceTransactionID { get; set; }
-		/// <summary>
-		/// The raw processor-specific response code. If the transaction failed, this should contain the reason.
-		/// </summary>
-		public string ResponseCode { get; set; }
-		/// <summary>
-		/// User readable text explaining the result.
-		/// </summary>
-		public string ResponseText { get; set; }
+		public string Currency { get; set; }
 	}
 
-	public class ModifyCardTransaction
-	{
-		/// <summary>
-		/// The processor-generated ID that represents the card transaction. 
-		/// </summary>
-		public string TransactionID { get; set; }
-		/// <summary>
-		/// The amount to capture, void, or refund. If null, will default to the full amount of the existing transaction.
-		/// </summary>
-		public string Amount { get; set; }
-	}
-
-	public class CreateCardTransaction
+	public class AuthorizeCCTransaction
 	{
 		/// <summary>
 		/// The OrderCloud Order ID that this card transaction applies to.
 		/// </summary>
 		public string OrderID { get; set; }
 		/// <summary>
-		/// The ammount that will be charged to the credit card.
+		/// The ammount that will be authorized on the credit card.
 		/// </summary>
 		public decimal Amount { get; set; }
 		/// <summary>
-		/// The currency to charge in - three letter ISO format. 
+		/// The currency to authorize in - three letter ISO format. 
 		/// </summary>
 		public string Currency { get; set; }
 		/// <summary>
-		/// A secure, tokenized representation of the credit card details. Generated by a specific processing provider. 
+		/// A secure, tokenized representation of a one-time use credit card. Generated by a specific processor system. 
 		/// </summary>
 		public string CardToken { get; set; }
 		/// <summary>
-		/// Card expiration date in MMYY format. 
+		/// If true, will attempt payment with SavedCardID. If false, will attempt payment with CardToken.
 		/// </summary>
-		public string CardExpirationDate { get; set; } // Needed for CardConnect, but not BlueSnap
+		public bool PayWithSavedCard { get; set; } = false;
+		/// <summary>
+		/// The ID of a multi-use credit card saved in the processor system.
+		/// </summary>
+		public string SavedCardID { get; set; }
+		/// <summary>
+		/// The ID of a customer record in the processor system. Needed if paying with a saved credit card.
+		/// </summary>
+		public string ProcessorCustomerID { get; set; }
+		/// <summary>
+		/// Address verification (AVS) is an optional layer of security for payments. It checks a customer-provided street and zip code against the records on file with the card issuer. 
+		/// </summary>
+		public Address AddressVerification {get; set; }
+		/// <summary>
+		/// The customer's IP address is typically not required by processors, but it provides a layer of insurance on disputed or fraudulent payments. 
+		/// </summary>
+		public string CustomerIPAddress { get; set; }
 	}
 
-	// Lots of details here. See
-	// https://developer.cardpointe.com/cardconnect-api#inquire
-	// https://developers.bluesnap.com/v8976-JSON/docs/retrieve
-	public class CardTransactionStatus
+	public class CCTransactionResult
 	{
+		/// <summary>
+		/// Did the transaction succeed?
+		/// </summary>
+		public bool Succeeded { get; set; }
+		/// <summary>
+		/// The processor-generated ID for this action. Null if a create attempt failed. 
+		/// </summary>
+		public string TransactionID { get; set; }
+		/// <summary>
+		/// The raw processor-specific response code. Depending on the processor, typical meaninings include Approved, Declined, Held For Review, Retry, Error.
+		/// </summary>
+		public string ResponseCode { get; set; }
+		/// <summary>
+		/// The authorization code granted by the card issuing bank for this transaction. Should be 6 characters, e.g. "HH5414".
+		/// </summary>
+		public string AuthorizationCode { get; set; }
+		/// <summary>
+		/// A code explaining the result of address verification (AVS). Whether to perform AVS is typically configured at the processor level. Standard 1 character result codes, see https://www.merchantmaverick.com/what-is-avs-for-credit-card-processing/.  
+		/// </summary>
+		public string AddressVerificationResponseCode { get; set; }
+		/// <summary>
+		/// User readable text explaining the result.
+		/// </summary>
+		public string Message { get; set; }
+	}
 
+	/// <summary>
+	/// A credit card transaction that follows after a successfull authorization such as capture, void, or refund.
+	/// </summary>
+	public class FollowUpCCTransaction
+	{
+		/// <summary>
+		/// The processor-generated ID of the original authorize transaction.
+		/// </summary>
+		public string TransactionID { get; set; }
+		/// <summary>
+		/// The amount to capture, void, or refund. If null, will default to the full amount of the existing transaction.
+		/// </summary>
+		public decimal Amount { get; set; }
 	}
 }

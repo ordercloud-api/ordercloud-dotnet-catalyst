@@ -70,7 +70,7 @@ Feel free open issues recommending changes or additions to the interfaces.
 	- Write unit tests against your Service methods and put them in the OrderCloud.Catalyst.Tests project under a new folder like so `/IntegrationTests/[ServiceName]/[ServiceName]Tests.cs`. 
 	- Mock API reponses from your service using [Flurl test practices](https://flurl.dev/docs/testable-http/) or something similar. 
 	- Test error scenarios as well.
-	- See [VertexTests](../../../tests.OrderCloud.Catalyst.Tests/IntegrationTests/Vertex/VertexTests.cs).
+	- See [VertexTests](../../OrderCloud.Catalyst.Tests/IntegrationTests/Vertex/VertexTests.cs).
  - Code Style
     - For every public method on the Service class use the `GetValidatedConfig()` method to authenticate. It will default to the config provided in the constructor, but safely give priority to any config specified in the method call. This supports use cases like different suppliers using different credentials.
  	- Many of the existing integrations also have a Client class. For these integrations the Client class is a pure API wrapper, handling HTTP requests and exceptions. Avoid code patterns that lead to creating multiple Http Client objects in memory.  

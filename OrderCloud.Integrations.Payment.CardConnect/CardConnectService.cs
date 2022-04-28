@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Integrations.Payment.BlueSnap
+namespace OrderCloud.Integrations.Payment.CardConnect
 {
 	public class CardConnectService : OCIntegrationService, ICreditCardProcessor
 	{

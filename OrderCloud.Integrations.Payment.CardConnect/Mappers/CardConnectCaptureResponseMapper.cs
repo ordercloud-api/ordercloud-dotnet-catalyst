@@ -14,10 +14,10 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
             {
 				//AddressVerificationResponseCode = transaction.avsresp,
 				AuthorizationCode = transaction.authcode,
-				//Message = transaction.resptext,
-				//ResponseCode = transaction.respcode,
-				//Succeeded = transaction.respcode != "C", // C is declined, A is Approved, B is Retry
-				TransactionID = transaction.retref,
+                Message = transaction.setlstat,
+                //ResponseCode = transaction.respcode,
+                Succeeded = transaction.respstat != "C", // C is declined, A is Approved, B is Retry
+                TransactionID = transaction.retref,
 				
             };
 		}

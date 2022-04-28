@@ -62,5 +62,12 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Models
         /// Automatically created and assigned unless otherwise specified
         /// </summary>
         public string batchid { get; set; }
+        /// <summary>
+        /// Indicates the status of the authorization request. Can be one of the following values:
+        /// - A: Approved
+        /// - B: Retry
+        /// - C: Declined
+        /// </summary>
+        public string respstat { get; set; }
     }
 }

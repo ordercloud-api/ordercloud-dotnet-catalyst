@@ -3,8 +3,10 @@ using OrderCloud.Catalyst;
 using OrderCloud.Integrations.Payment.CardConnect.Models;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using OrderCloud.Integrations.Payment.CardConnect.Extensions;
 
 namespace OrderCloud.Integrations.Payment.CardConnect
 {
@@ -21,6 +23,11 @@ namespace OrderCloud.Integrations.Payment.CardConnect
 					.AppendPathSegments("auth")
 					.PostJsonAsync(transaction)
 					.ReceiveJson<CardConnectAuthorizationResponse>();
+                if (!transactionResult.WasSuccessful())
+                {
+                    throw new IntegrationErrorResponseException(config, request.Url, (int)HttpStatusCode.OK,
+                        transactionResult);
+                }
 				return transactionResult;
 			});
 		}
@@ -36,6 +43,11 @@ namespace OrderCloud.Integrations.Payment.CardConnect
 					.AppendPathSegments("capture")
 					.PostJsonAsync(transaction)
 					.ReceiveJson<CardConnectCaptureResponse>();
+                if (!transactionResult.WasSuccessful())
+                {
+                    throw new IntegrationErrorResponseException(config, request.Url, (int)HttpStatusCode.OK,
+                        transactionResult);
+                }
 				return transactionResult;
 			});
 		}
@@ -51,6 +63,11 @@ namespace OrderCloud.Integrations.Payment.CardConnect
 					.AppendPathSegments("refund")
 					.PostJsonAsync(transaction)
 					.ReceiveJson<CardConnectFundReversalResponse>();
+                if (!transactionResult.WasSuccessful())
+                {
+                    throw new IntegrationErrorResponseException(config, request.Url, (int)HttpStatusCode.OK,
+                        transactionResult);
+                }
 				return transactionResult;
 			});
 		}
@@ -61,11 +78,17 @@ namespace OrderCloud.Integrations.Payment.CardConnect
 		public static async Task<CardConnectFundReversalResponse> VoidPreviousAuthorization(CardConnectFundReversalRequest transaction, CardConnectConfig config)
 		{
 			return await TryCatchRequestAsync(config, async (request) =>
-			{
-				var transactionResult = await request
-					.AppendPathSegments("void")
-					.PostJsonAsync(transaction)
-					.ReceiveJson<CardConnectFundReversalResponse>();
+            {
+                var transactionResult = await request
+                    .AppendPathSegments("void")
+                    .PostJsonAsync(transaction)
+                    .ReceiveJson<CardConnectFundReversalResponse>();
+
+				if (!transactionResult.WasSuccessful())
+                {
+                    throw new IntegrationErrorResponseException(config, request.Url, (int)HttpStatusCode.OK,
+                        transactionResult);
+                };
 				return transactionResult;
 			});
 		}

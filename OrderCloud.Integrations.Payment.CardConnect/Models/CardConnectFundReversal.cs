@@ -62,5 +62,11 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Models
         /// Text description of the 
         /// </summary>
         public string resptext { get; set; }
+        /// <summary>
+        /// Identifies if the void was successful. Can one of the following values:
+        /// - REVERS: Successful
+        /// - Null: Unsuccessful.  Refer to the respcode and resptext
+        /// </summary>
+        public string authcode { get; set; }
     }
 }

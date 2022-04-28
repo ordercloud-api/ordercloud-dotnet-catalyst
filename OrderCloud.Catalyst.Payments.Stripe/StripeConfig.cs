@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using OrderCloud.Catalyst;
 
-namespace OrderCloud.Catalyst.Payments.Stripe
+namespace OrderCloud.Integrations.Payment.Stripe
 {
     public class StripeConfig : OCIntegrationConfig
     {

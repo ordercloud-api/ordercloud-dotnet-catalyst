@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using OrderCloud.Catalyst.Payments.Stripe.Mappers;
+using OrderCloud.Catalyst;
+using OrderCloud.Integrations.Payment.Stripe.Mappers;
 
-namespace OrderCloud.Catalyst.Payments.Stripe
+namespace OrderCloud.Integrations.Payment.Stripe
 {
     public class StripeCommand : OCIntegrationService, ICreditCardProcessor
     {

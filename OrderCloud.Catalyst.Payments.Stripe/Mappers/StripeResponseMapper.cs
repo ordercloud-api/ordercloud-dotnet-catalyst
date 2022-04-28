@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Payments.Stripe.Mappers
+namespace OrderCloud.Integrations.Payment.Stripe.Mappers
 {
     public class StripeResponseMapper
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Payments.Stripe.Models
+namespace OrderCloud.Integrations.Payment.Stripe.Models
 {
     // https://stripe.com/docs/api/payment_intents/create?lang=dotnet
     public class StripePaymentIntentRequest

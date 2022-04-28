@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
 using Flurl.Util;
-using OrderCloud.Catalyst.Payments.Stripe.Models;
 using Stripe;
 
-namespace OrderCloud.Catalyst.Payments.Stripe
+namespace OrderCloud.Integrations.Payment.Stripe
 {
     public class StripeClient
     {

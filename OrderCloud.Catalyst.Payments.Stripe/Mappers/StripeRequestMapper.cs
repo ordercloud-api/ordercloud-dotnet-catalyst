@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using OrderCloud.Catalyst;
 using Stripe;
 
-namespace OrderCloud.Catalyst.Payments.Stripe.Mappers
+namespace OrderCloud.Integrations.Payment.Stripe.Mappers
 {
     public class StripeRequestMapper
     {

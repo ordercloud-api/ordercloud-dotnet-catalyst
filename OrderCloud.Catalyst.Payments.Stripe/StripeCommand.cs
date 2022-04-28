@@ -11,10 +11,6 @@ namespace OrderCloud.Catalyst.Payments.Stripe
     {
         public StripeCommand(StripeConfig defaultConfig) : base(defaultConfig) { }
 
-        public async Task<CCTransactionResult> GetIFrameCredentialsAsync(InitiateCCTransaction transaction = null, OCIntegrationConfig overrideConfig = null) =>
-            await CreatePaymentIntentAsync(transaction, "manual", overrideConfig);
-        // captureMethod: "automatic" would be used for Authorize and Capture
-
         public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null) =>
             await ConfirmPaymentIntentAsync(transaction,  overrideConfig);
 
@@ -24,17 +20,18 @@ namespace OrderCloud.Catalyst.Payments.Stripe
         public async Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig configOverride = null) =>
             await CreateRefundAsync(transaction, configOverride);
 
-        public async Task<CCTransactionResult> CreatePaymentIntentAsync(InitiateCCTransaction transaction, string captureMethod, OCIntegrationConfig overrideConfig)
-        {
-            var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
-            var paymentIntentCreateOptions = StripeRequestMapper.MapPaymentIntentCreateOptions(transaction, captureMethod);
-            var paymentIntent = await StripeClient.CreatePaymentIntentAsync(paymentIntentCreateOptions, config);
-            return new CCTransactionResult()
-            {
-                CardToken = paymentIntent.ClientSecret,
-                TransactionID = paymentIntent.Id
-            };
-        }
+        // A user's middleware will have to handle creating this and sending us the client_secret
+        //public async Task<CCTransactionResult> CreatePaymentIntentAsync(InitiateCCTransaction transaction, string captureMethod, OCIntegrationConfig overrideConfig)
+        //{
+        //    var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
+        //    var paymentIntentCreateOptions = StripeRequestMapper.MapPaymentIntentCreateOptions(transaction, captureMethod);
+        //    var paymentIntent = await StripeClient.CreatePaymentIntentAsync(paymentIntentCreateOptions, config);
+        //    return new CCTransactionResult()
+        //    {
+        //        CardToken = paymentIntent.ClientSecret,
+        //        TransactionID = paymentIntent.Id
+        //    };
+        //}
 
         public async Task<CCTransactionResult> ConfirmPaymentIntentAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig)
         {
@@ -44,7 +41,6 @@ namespace OrderCloud.Catalyst.Payments.Stripe
             // map Stripe PaymentIntent back to OC Model
             return new CCTransactionResult()
             {
-                CardToken = confirmedPaymentIntent.ClientSecret,
                 Message = confirmedPaymentIntent.Status,
                 Succeeded = confirmedPaymentIntent.Status.ToLower() == "succeeded", // or "requires_capture"??
                 TransactionID = confirmedPaymentIntent.Id
@@ -59,7 +55,6 @@ namespace OrderCloud.Catalyst.Payments.Stripe
             // map Stripe PaymentIntent back to OC Model
             return new CCTransactionResult()
             {
-                CardToken = capturedPaymentIntent.ClientSecret,
                 Message = capturedPaymentIntent.Status,
                 Succeeded = capturedPaymentIntent.Status.ToLower() == "succeeded",
                 TransactionID = capturedPaymentIntent.Id

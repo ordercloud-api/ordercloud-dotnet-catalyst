@@ -12,7 +12,7 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
 		{
 			return new CCTransactionResult()
             {
-				AddressVerificationResponseCode = transaction.avsresp,
+				AVSResponseCode = transaction.avsresp,
 				AuthorizationCode = transaction.authcode,
 				Message = transaction.resptext,
 				ResponseCode = transaction.respstat,

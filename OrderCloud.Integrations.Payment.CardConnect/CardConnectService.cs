@@ -1,5 +1,4 @@
 ﻿using OrderCloud.Catalyst;
-using OrderCloud.Catalyst.Integrations.Interfaces;
 using OrderCloud.Integrations.Payment.CardConnect;
 using OrderCloud.Integrations.Payment.CardConnect.Mappers;
 using System;

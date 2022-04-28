@@ -59,10 +59,10 @@ namespace OrderCloud.Catalyst
 		/// The customer's IP address is typically not required by processors, but it provides a layer of insurance on disputed or fraudulent payments. 
 		/// </summary>
 		public string CustomerIPAddress { get; set; }
-        /// <summary>
-        /// The processor-generated ID for this action. Null if a create attempt failed. 
-        /// </summary>
-        public string TransactionID { get; set; }
+		/// <summary>
+		/// The processor-generated transaction ID. Only use if a transaction was already created in a pre-authorize step.
+		/// </summary>
+		public string TransactionID { get; set; }
 	}
 
 	public class CCTransactionResult

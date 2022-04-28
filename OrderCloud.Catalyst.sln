@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Shi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Shipping.Fedex", "OrderCloud.Integrations.Shipping.Fedex\OrderCloud.Integrations.Shipping.Fedex.csproj", "{C32A3102-2CEB-4042-8F37-3EA4D66D743F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Payment.Stripe", "OrderCloud.Integrations.Payments.Stripe\OrderCloud.Integrations.Payment.Stripe.csproj", "{483181A7-7879-4D03-B5F3-69C5A8F40A1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Payment.Stripe", "OrderCloud.Integrations.Payment.Stripe\OrderCloud.Integrations.Payment.Stripe.csproj", "{483181A7-7879-4D03-B5F3-69C5A8F40A1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

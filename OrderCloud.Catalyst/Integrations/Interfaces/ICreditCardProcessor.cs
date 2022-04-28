@@ -28,19 +28,8 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
 	}
-	public class InitiateCCTransaction
-    {
-		/// <summary>
-		/// The ammount that will be authorized on the credit card.
-		/// </summary>
-		public decimal Amount { get; set; }
-		/// <summary>
-		/// The currency to authorize in - three letter ISO format. 
-		/// </summary>
-		public string Currency { get; set; }
-	}
 
-	public class AuthorizeCCTransaction
+    public class AuthorizeCCTransaction
 	{
 		/// <summary>
 		/// The OrderCloud Order ID that this card transaction applies to.

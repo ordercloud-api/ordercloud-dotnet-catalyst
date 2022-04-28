@@ -78,5 +78,13 @@ namespace OrderCloud.Catalyst.Payments.Stripe
             var service = new RefundService();
             return await service.CreateAsync(options);
         }
+
+        public static async Task<PaymentIntent> CancelPaymentIntentAsync(string paymentIntentID, PaymentIntentCancelOptions options, StripeConfig config)
+        {
+            StripeConfiguration.ApiKey = config.SecretKey;
+
+            var service = new PaymentIntentService();
+            return await service.CancelAsync(paymentIntentID, options);
+        }
     }
 }

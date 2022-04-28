@@ -4,7 +4,6 @@ using System.Text;
 using AutoFixture;
 using Flurl.Http.Testing;
 using NUnit.Framework;
-using OrderCloud.Integrations.Payment.BlueSnap;
 using OrderCloud.Integrations.Payment.CardConnect;
 using OrderCloud.Integrations.Payment.CardConnect.Models;
 

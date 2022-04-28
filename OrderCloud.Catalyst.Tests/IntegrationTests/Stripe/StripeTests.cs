@@ -5,11 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using OrderCloud.Integrations.Payment.Stripe;
+using Moq;
 
 namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
 {
     public class StripeTests
     {
+        //https://stackoverflow.com/questions/67705263/c-sharp-mock-stripe-services-returns-null
+        private readonly Mock<StripeCommand> _mockStripeCommand;
+ 
         [Test]
         public void ShouldThrowErrorIfDefaultConfigMissingFields()
         {

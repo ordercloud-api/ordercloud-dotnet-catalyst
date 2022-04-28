@@ -12,6 +12,19 @@ If you're building solutions for OrderCloud using .NET and find a particular tas
 
 ## Features
 
+### 3rd Party Integrations 
+
+Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/Integrations/CONTRIBUTING.md)
+
+| Name | Project Guide | Nuget Library | Contributed By | Interfaces |
+| ------------- | ------------- | ------------- | ------------- | ------------- |
+| **EasyPost** | [README](./OrderCloud.Integrations.Shipping.EasyPost) | [OrderCloud.Integrations.Shipping.EasyPost](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.EasyPost) | OrderCloud Team | IShippingRatesCalculator
+| **Fedex** | [README](./OrderCloud.Integrations.Shipping.Fedex) | [OrderCloud.Integrations.Shipping.Fedex](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.Fedex) | OrderCloud Team | IShippingRatesCalculator
+| **UPS** | [README](./OrderCloud.Integrations.Shipping.UPS) | [OrderCloud.Integrations.Shipping.UPS](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.UPS) | OrderCloud Team | IShippingRatesCalculator
+| **Vertex** | [README](./OrderCloud.Integrations.Tax.Vertex) | [OrderCloud.Integrations.Tax.Vertex](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Vertex) | OrderCloud Team | ITaxCalculator
+| **Avalara** | [README](./OrderCloud.Integrations.Tax.Avalara) | [OrderCloud.Integrations.Tax.Avalara](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Avalara) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider
+| **TaxJar** | [README](./OrderCloud.Integrations.Tax.TaxJar) | [OrderCloud.Integrations.Tax.TaxJar](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.TaxJar) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider
+
 ### [User Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Auth/UserAuth)
 
 Use Ordercloud's authentication scheme in your own APIs.
@@ -131,16 +144,3 @@ var token = FakeOrderCloudToken.Create(
 httpClient.DefaultRequestHeaders.Authorization =
     new AuthenticationHeaderValue("Bearer", token);
 ```
-
-### 3rd Party Integrations 
-
-Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/Integrations/CONTRIBUTING.md)
-
-| Name | Project Guide | Nuget Library | Contributed By | Interfaces |
-| ------------- | ------------- | ------------- | ------------- | ------------- |
-| **EasyPost** | [README](./OrderCloud.Integrations.Shipping.EasyPost) | [OrderCloud.Integrations.Shipping.EasyPost](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.EasyPost) | OrderCloud Team | IShippingRatesCalculator
-| **Fedex** | [README](./OrderCloud.Integrations.Shipping.Fedex) | [OrderCloud.Integrations.Shipping.Fedex](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.Fedex) | OrderCloud Team | IShippingRatesCalculator
-| **UPS** | [README](./OrderCloud.Integrations.Shipping.UPS) | [OrderCloud.Integrations.Shipping.UPS](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.UPS) | OrderCloud Team | IShippingRatesCalculator
-| **Vertex** | [README](./OrderCloud.Integrations.Tax.Vertex) | [OrderCloud.Integrations.Tax.Vertex](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Vertex) | OrderCloud Team | ITaxCalculator
-| **Avalara** | [README](./OrderCloud.Integrations.Tax.Avalara) | [OrderCloud.Integrations.Tax.Avalara](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Avalara) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider
-| **TaxJar** | [README](./OrderCloud.Integrations.Tax.TaxJar) | [OrderCloud.Integrations.Tax.TaxJar](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.TaxJar) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider

@@ -18,6 +18,7 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
 				ResponseCode = transaction.respstat,
 				Succeeded = transaction.respstat != "C", // C is declined, A is Approved, B is Retry
 				TransactionID = transaction.retref,
+				Amount = Convert.ToDecimal(transaction.amount)
             };
 		}
 	}

@@ -16,6 +16,7 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
 				ResponseCode = transaction.respcode,
 				Message = transaction.resptext,
 				TransactionID = transaction.retref,
+				Amount = Convert.ToDecimal(transaction.amount),
             };
 		}
 	}

@@ -45,6 +45,7 @@ namespace OrderCloud.Catalyst.Payments.Stripe
         //    return await service.CreateAsync(options);
         //}
 
+        // this will not be part of the common interface because the return type here does not match up with other integrations
         public static async Task<PaymentIntent> CreatePaymentIntentAsync(PaymentIntentCreateOptions options, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;

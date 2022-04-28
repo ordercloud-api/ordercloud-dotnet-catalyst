@@ -26,17 +26,17 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
             Assert.AreEqual(new List<string> { "SecretKey" }, data.MissingFieldNames);
         }
 
-        //[Test]
-        //public async Task should_call_create_customer()
-        //{
-        //    var createRequest = new CustomerCreateOptions()
-        //    {
-        //        Email = "alexa.snyder@sitecore.net"
-        //    };
-        //    var response = await _client.CreateCustomerAsync(createRequest, _config);
+        [Test]
+        public async Task ShouldSuccessfullyAuthAndCapture()
+        {
+            //var createRequest = new CustomerCreateOptions()
+            //{
+            //    Email = "alexa.snyder@sitecore.net"
+            //};
+            //var response = await _client.CreateCustomerAsync(createRequest, _config);
 
-        //    Assert.IsNotNull(response.Id);
-        //}
+            //Assert.IsNotNull(response.Id);
+        }
 
         //[Test]
         //public async Task should_call_create_payment_intent_and_confirm()

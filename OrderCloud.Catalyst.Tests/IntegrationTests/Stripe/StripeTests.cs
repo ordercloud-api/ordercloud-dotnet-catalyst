@@ -12,14 +12,14 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
     public class StripeTests
     {
         //https://stackoverflow.com/questions/67705263/c-sharp-mock-stripe-services-returns-null
-        private readonly Mock<StripeCommand> _mockStripeCommand;
+        private readonly Mock<StripeService> _mockStripeService;
  
         [Test]
         public void ShouldThrowErrorIfDefaultConfigMissingFields()
         {
             var config = new StripeConfig();
             var ex = Assert.Throws<IntegrationMissingConfigsException>(() =>
-                new StripeCommand(config)
+                new StripeService(config)
             );
             var data = (IntegrationMissingConfigs)ex.Errors[0].Data;
             Assert.AreEqual(data.ServiceName, "Stripe");

@@ -12,7 +12,7 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
 		{
 			return new CCTransactionResult()
             {
-				Succeeded = transaction.respstat != "C", // A is approved, B is pending, C is declined
+				Succeeded = transaction.respstat == "A",
 				ResponseCode = transaction.respcode,
 				Message = transaction.resptext,
 				TransactionID = transaction.retref,

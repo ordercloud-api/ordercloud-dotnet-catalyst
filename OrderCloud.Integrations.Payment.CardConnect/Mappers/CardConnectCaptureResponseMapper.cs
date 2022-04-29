@@ -16,7 +16,7 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
 				AuthorizationCode = transaction.authcode,
                 Message = transaction.setlstat,
                 //ResponseCode = transaction.respcode,
-                Succeeded = transaction.respstat != "C", // C is declined, A is Approved, B is Retry
+                Succeeded = transaction.respstat == "A",
                 TransactionID = transaction.retref,
 				Amount = Convert.ToDecimal(transaction.amount)
             };

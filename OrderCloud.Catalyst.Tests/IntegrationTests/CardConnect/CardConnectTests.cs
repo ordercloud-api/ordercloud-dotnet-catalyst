@@ -88,9 +88,9 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.CardConnect
         [Test]
         public void ShouldThrowErrorForBadRequest()
         {
-            // Arrange (real CardConnect 
+            // Arrange (CardConnect doesn't return errors, OrderCloud.Integrations considers response bodies with respstat = B | C to be error responses)
             _httpTest.RespondWith(
-                "{\"Errors\":[{\"ErrorCode\":\"IntegrationErrorResponse\",\"Message\":\"A request to 3rd party service CardConnect resulted in an error.See ResponseBody for details.\",\"Data\":{\"ServiceName\":\"CardConnect\",\"RequestUrl\":\"https://fts-uat.cardconnect.com/cardconnect/rest/auth\",\"ResponseStatus\":200,\"ResponseBody\":{\"token\":\"9601616143390000\",\"retref\":\"118134039900\",\"amount\":0.00,\"expiry\":null,\"merchid\":\"840000000052\",\"avsresp\":null,\"cvvresp\":null,\"signature\":null,\"bintype\":\"\",\"commcard\":\"N\",\"emv\":null,\"binInfo\":null,\"receipt\":null,\"authcode\":null,\"respcode\":\"15\",\"respproc\":\"PPS\",\"respstat\":\"C\",\"resptext\":\"Non-numeric expiry\"}}}]}");
+                "{\"amount\":\"0.00\",\"resptext\":\"Non-numeric expiry\",\"cardproc\":\"RPCT\",\"acctid\":\"1\",\"commcard\":\"N\",\"respcode\":\"15\",\"entrymode\":\"ECommerce\",\"defaultacct\":\"Y\",\"merchid\":\"840000000052\",\"token\":\"9601616143390000\",\"respproc\":\"PPS\",\"bintype\":\"\",\"binInfo\":{\"country\":\"USA\",\"product\":\"D\",\"bin\":\"\",\"purchase\":false,\"prepaid\":false,\"issuer\":\"\",\"cardusestring\":\"True credit, No PIN/Signature capability\",\"gsa\":false,\"corporate\":false,\"fsa\":false,\"subtype\":\"Consumer Credit - Rewards\",\"binlo\":\"601100X\",\"binhi\":\"601101X\"},\"retref\":\"119719045889\",\"respstat\":\"C\",\"account\":\"60XXXXXXXXXX0000\"}");
             // Act
             var ex = Assert.ThrowsAsync<IntegrationErrorResponseException>(async () =>
                 await _command.AuthorizeOnlyAsync(_authorization));

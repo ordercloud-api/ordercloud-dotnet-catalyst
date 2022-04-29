@@ -7,9 +7,9 @@ using OrderCloud.Integrations.Payment.Stripe.Mappers;
 
 namespace OrderCloud.Integrations.Payment.Stripe
 {
-    public class StripeCommand : OCIntegrationService, ICreditCardProcessor
+    public class StripeService : OCIntegrationService, ICreditCardProcessor
     {
-        public StripeCommand(StripeConfig defaultConfig) : base(defaultConfig) { }
+        public StripeService(StripeConfig defaultConfig) : base(defaultConfig) { }
 
         public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null) =>
             await ConfirmPaymentIntentAsync(transaction,  overrideConfig);

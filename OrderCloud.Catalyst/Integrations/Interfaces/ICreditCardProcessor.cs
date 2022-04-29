@@ -24,7 +24,7 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		Task<CCTransactionResult> VoidAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
 		/// <summary>
-		/// Refund previously a captured amount. Used if an order is canceled/returned after capture. Refunding generally incures extra processing fees, whereas voiding does not.
+		/// Refund a previously captured amount. Used if an order is canceled/returned after capture. Refunding generally incures extra processing fees, whereas voiding does not.
 		/// </summary>
 		Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
 	}
@@ -73,7 +73,7 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public bool Succeeded { get; set; }
 		/// <summary>
-		/// The currency amount of the transaction   
+		/// The amount of the transaction   
 		/// </summary>
 		public decimal Amount { get; set; }
 		/// <summary>

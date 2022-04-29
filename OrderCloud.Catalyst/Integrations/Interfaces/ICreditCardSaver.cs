@@ -61,7 +61,6 @@ namespace OrderCloud.Catalyst
 		public string CustomerID { get; set; }
 	}
 
-
 	/// <summary>
 	/// Partial credit card details that do not put the solution under PCI compliance. Only the last 4 digits of the number and no CVV. Includes a token from the processor system representing the full card details.
 	/// </summary>

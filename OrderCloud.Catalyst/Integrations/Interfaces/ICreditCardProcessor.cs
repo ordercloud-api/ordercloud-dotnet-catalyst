@@ -11,11 +11,7 @@ namespace OrderCloud.Catalyst
 	/// </summary>
 	public interface ICreditCardProcessor
 	{
-		/// <summary>
-		/// Request token/secret required for certain integrations' iframes to collect payment details.
-		/// </summary>
-		Task<string> GetIFrameCredentialAsync(InitiateCCTransaction transaction, OCIntegrationConfig overrideConfig = null); 
-		/// <summary>
+        /// <summary>
 		/// Attempt to verify the user can pay by placing a hold on a credit card. Funds will be captured later. Typically used as a verification step directly before order submit.
 		/// </summary>
 		Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
@@ -32,19 +28,9 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
 	}
-	public class InitiateCCTransaction
-    {
-		/// <summary>
-		/// The ammount that will be authorized on the credit card.
-		/// </summary>
-		public decimal Amount { get; set; }
-		/// <summary>
-		/// The currency to authorize in - three letter ISO format. 
-		/// </summary>
-		public string Currency { get; set; }
-	}
 
-	public class AuthorizeCCTransaction
+
+    public class AuthorizeCCTransaction
 	{
 		/// <summary>
 		/// The OrderCloud Order ID that this card transaction applies to.
@@ -74,6 +60,10 @@ namespace OrderCloud.Catalyst
 		/// The customer's IP address is typically not required by processors, but it provides a layer of insurance on disputed or fraudulent payments. 
 		/// </summary>
 		public string CustomerIPAddress { get; set; }
+		/// <summary>
+		/// The processor-generated transaction ID. Only use if a transaction was already created in a pre-authorize step.
+		/// </summary>
+		public string TransactionID { get; set; }
 	}
 
 	public class CCTransactionResult
@@ -106,7 +96,7 @@ namespace OrderCloud.Catalyst
 		/// User readable text explaining the result.
 		/// </summary>
 		public string Message { get; set; }
-	}
+    }
 
 	/// <summary>
 	/// A credit card transaction that follows after a successfull authorization such as capture, void, or refund.

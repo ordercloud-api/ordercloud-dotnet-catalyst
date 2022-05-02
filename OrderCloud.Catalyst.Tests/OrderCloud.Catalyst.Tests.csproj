@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\OrderCloud.Catalyst.TestApi\OrderCloud.Catalyst.TestApi.csproj" />
     <ProjectReference Include="..\OrderCloud.Catalyst\OrderCloud.Catalyst.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Payment.BlueSnap\OrderCloud.Integrations.Payment.BlueSnap.csproj" />
     <ProjectReference Include="..\OrderCloud.Integrations.Shipping.EasyPost\OrderCloud.Integrations.Shipping.EasyPost.csproj" />
     <ProjectReference Include="..\OrderCloud.Integrations.Shipping.Fedex\OrderCloud.Integrations.Shipping.Fedex.csproj" />
     <ProjectReference Include="..\OrderCloud.Integrations.Shipping.UPS\OrderCloud.Integrations.Shipping.UPS.csproj" />

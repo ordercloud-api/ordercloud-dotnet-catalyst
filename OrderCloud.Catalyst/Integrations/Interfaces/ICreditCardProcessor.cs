@@ -29,6 +29,7 @@ namespace OrderCloud.Catalyst
 		Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
 	}
 
+
     public class AuthorizeCCTransaction
 	{
 		/// <summary>
@@ -72,7 +73,7 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public bool Succeeded { get; set; }
 		/// <summary>
-		/// The currency amount of the transaction   
+		/// The amount of the transaction   
 		/// </summary>
 		public decimal Amount { get; set; }
 		/// <summary>

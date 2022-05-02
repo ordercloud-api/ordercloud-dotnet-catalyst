@@ -21,7 +21,7 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Save a credit card for future use
 		/// </summary>
-		Task<PCISafeCardDetails> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride = null);
+		Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride = null);
 		/// <summary>
 		/// Remove a saved credit card
 		/// </summary>
@@ -55,6 +55,11 @@ namespace OrderCloud.Catalyst
 		public bool CustomerAlreadyExists { get; set; }
 	}
 
+	public class CardCreatedResponse
+	{
+		public PCISafeCardDetails Card { get; set; }
+		public string CustomerID { get; set; }
+	}
 
 	/// <summary>
 	/// Partial credit card details that do not put the solution under PCI compliance. Only the last 4 digits of the number and no CVV. Includes a token from the processor system representing the full card details.

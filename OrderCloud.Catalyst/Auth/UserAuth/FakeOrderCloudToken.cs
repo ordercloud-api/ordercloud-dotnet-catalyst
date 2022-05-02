@@ -7,7 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
-namespace OrderCloud.Catalyst.Auth.UserAuth
+namespace OrderCloud.Catalyst
 {
 	public class FakeOrderCloudToken
 	{

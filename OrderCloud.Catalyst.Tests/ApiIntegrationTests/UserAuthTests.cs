@@ -5,6 +5,7 @@ using Flurl.Http;
 using NSubstitute;
 using NUnit.Framework;
 using OrderCloud.Catalyst;
+using OrderCloud.Catalyst.TestApi;
 using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;

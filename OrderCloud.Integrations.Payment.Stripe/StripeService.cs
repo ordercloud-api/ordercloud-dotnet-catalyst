@@ -7,24 +7,46 @@ using OrderCloud.Integrations.Payment.Stripe.Mappers;
 
 namespace OrderCloud.Integrations.Payment.Stripe
 {
-    public class StripeService : OCIntegrationService, ICreditCardProcessor
+    public class StripeService : OCIntegrationService, ICreditCardProcessor, ICreditCardSaver
     {
         public StripeService(StripeConfig defaultConfig) : base(defaultConfig) { }
 
-        public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null) =>
-            await ConfirmPaymentIntentAsync(transaction,  overrideConfig);
+        #region ICreditCardProcessor
+        public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig configOverride = null) =>
+            await ConfirmPaymentIntentAsync(transaction, configOverride);
 
-        public async Task<CCTransactionResult> CapturePriorAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null) =>
-            await CapturePaymentIntentAsync(transaction, overrideConfig);
+        public async Task<CCTransactionResult> CapturePriorAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig configOverride = null) =>
+            await CapturePaymentIntentAsync(transaction, configOverride);
 
         public async Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig configOverride = null) =>
             await CreateRefundAsync(transaction, configOverride);
+        #endregion
+
+        #region ICreditCardSaver
+
+        public async Task<PCISafeCardDetails> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride = null) =>
+            await CreateSavedCreditCardAsync(customer, card, configOverride);
+        public Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID, OCIntegrationConfig configOverride = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PCISafeCardDetails> GetSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
 
         // A user's middleware will have to handle creating this, loading the iframe, collection payment,
         // and sending us the transactionID for Confirm/Authorize, Capture, Refund, Void
-        //public async Task<CCTransactionResult> CreatePaymentIntentAsync(InitiateCCTransaction transaction, string captureMethod, OCIntegrationConfig overrideConfig)
+        //public async Task<CCTransactionResult> CreatePaymentIntentAsync(InitiateCCTransaction transaction, string captureMethod, OCIntegrationConfig configOverride)
         //{
-        //    var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
+        //    var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
         //    var paymentIntentCreateOptions = StripeRequestMapper.MapPaymentIntentCreateOptions(transaction, captureMethod);
         //    var paymentIntent = await StripeClient.CreatePaymentIntentAsync(paymentIntentCreateOptions, config);
         //    return new CCTransactionResult()
@@ -34,10 +56,10 @@ namespace OrderCloud.Integrations.Payment.Stripe
         //    };
         //}
 
-        public async Task<CCTransactionResult> ConfirmPaymentIntentAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig)
+        public async Task<CCTransactionResult> ConfirmPaymentIntentAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig configOverride)
         {
-            var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
-            var paymentIntentConfirmOptions = StripeRequestMapper.MapPaymentIntentConfirmOptions(transaction);
+            var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
+            var paymentIntentConfirmOptions = StripeConfirmPaymentIntentMapper.MapPaymentIntentConfirmOptions(transaction);
             var confirmedPaymentIntent = await StripeClient.ConfirmPaymentIntentAsync(transaction.TransactionID, paymentIntentConfirmOptions, config);
             return new CCTransactionResult()
             {
@@ -48,10 +70,10 @@ namespace OrderCloud.Integrations.Payment.Stripe
             };
         }
 
-        public async Task<CCTransactionResult> CapturePaymentIntentAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig)
+        public async Task<CCTransactionResult> CapturePaymentIntentAsync(FollowUpCCTransaction transaction, OCIntegrationConfig configOverride)
         {
-            var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
-            var paymentIntentCaptureOptions = StripeRequestMapper.MapPaymentIntentCaptureOptions(transaction);
+            var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
+            var paymentIntentCaptureOptions = StripeCapturePaymentIntentMapper.MapPaymentIntentCaptureOptions(transaction);
             var capturedPaymentIntent = await StripeClient.CapturePaymentIntentAsync(transaction.TransactionID, paymentIntentCaptureOptions, config);
             return new CCTransactionResult()
             {
@@ -62,10 +84,10 @@ namespace OrderCloud.Integrations.Payment.Stripe
             };
         }
 
-        public async Task<CCTransactionResult> CreateRefundAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig)
+        public async Task<CCTransactionResult> CreateRefundAsync(FollowUpCCTransaction transaction, OCIntegrationConfig configOverride)
         {
-            var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
-            var refundCreateOptions = StripeRequestMapper.MapRefundCreateOptions(transaction);
+            var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
+            var refundCreateOptions = StripeCreateRefundMapper.MapRefundCreateOptions(transaction);
             var refund = await StripeClient.CreateRefundAsync(refundCreateOptions, config);
             return new CCTransactionResult()
             {
@@ -76,10 +98,10 @@ namespace OrderCloud.Integrations.Payment.Stripe
             };
         }
         
-        public async Task<CCTransactionResult> VoidAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig)
+        public async Task<CCTransactionResult> VoidAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig configOverride)
         {
-            var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
-            var cancelPaymentIntentOptions = StripeRequestMapper.MapPaymentIntentCancelOptions(transaction);
+            var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
+            var cancelPaymentIntentOptions = StripeCancelPaymentIntentMapper.MapPaymentIntentCancelOptions(transaction);
             var canceledPaymentIntent = await StripeClient.CancelPaymentIntentAsync(transaction.TransactionID, cancelPaymentIntentOptions, config);
             return new CCTransactionResult()
             {
@@ -88,6 +110,14 @@ namespace OrderCloud.Integrations.Payment.Stripe
                 TransactionID = canceledPaymentIntent.Id,
                 Amount = canceledPaymentIntent.Amount
             };
+        }
+
+        public async Task<PCISafeCardDetails> CreateSavedCreditCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride)
+        {
+            var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
+            // https://stripe.com/docs/api/payment_methods/attach
+
+            return new PCISafeCardDetails();
         }
     }
 }

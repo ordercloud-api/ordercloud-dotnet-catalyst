@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using Flurl.Http;
 using NUnit.Framework;
-using OrderCloud.Catalyst.Auth.UserAuth;
 using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;

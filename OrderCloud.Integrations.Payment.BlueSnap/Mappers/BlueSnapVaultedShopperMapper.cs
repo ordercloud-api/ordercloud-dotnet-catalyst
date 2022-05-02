@@ -8,6 +8,8 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 {
 	public static class BlueSnapVaultedShopperMapper
 	{
+		public static readonly char CARD_ID_SEGMENT_CHAR = '|';
+
 		public static BlueSnapVaultedShopper BuildAddCardRequest(PaymentSystemCustomer customer, PCISafeCardDetails card)
 		{
 			return new BlueSnapVaultedShopper()
@@ -83,10 +85,10 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 
 		public static (string type, string last4) DeconstructCardID(string cardID) 
 		{
-			var split = cardID.Split('-');
+			var split = cardID.Split(CARD_ID_SEGMENT_CHAR);
 			return (split[0], split[1]);
 		}
 
-		public static string BuildSavedCardID(PCISafeCardDetails card) => $"{card.CardType}-{card.NumberLast4Digits}";
+		public static string BuildSavedCardID(PCISafeCardDetails card) => $"{card.CardType}{CARD_ID_SEGMENT_CHAR}{card.NumberLast4Digits}";
 	}
 }

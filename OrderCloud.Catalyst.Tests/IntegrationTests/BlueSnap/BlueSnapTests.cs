@@ -22,7 +22,14 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			BaseUrl = "https://api.fake.com",
 		};
 		private BlueSnapService _command = new BlueSnapService(_config);
-		private AuthorizeCCTransaction _authorizeModel = _fixture.Create<AuthorizeCCTransaction>();
+
+		private AuthorizeCCTransaction BuildAuthorizeCCTransaction()
+		{
+			var authorizeModel = _fixture.Create<AuthorizeCCTransaction>();
+			authorizeModel.ProcessorCustomerID = (_fixture.Create<int>()).ToString();
+			authorizeModel.CardDetails.SavedCardID = $"{_fixture.Create<string>()}{BlueSnapVaultedShopperMapper.CARD_ID_SEGMENT_CHAR}{_fixture.Create<string>()}";
+			return authorizeModel;
+		}
 
 		[SetUp]
 		public void CreateHttpTest()
@@ -46,7 +53,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			};
 			// Act 
 			var ex = Assert.ThrowsAsync<IntegrationMissingConfigsException>(async () =>
-				await _command.AuthorizeOnlyAsync(_authorizeModel, config)
+				await _command.AuthorizeOnlyAsync(BuildAuthorizeCCTransaction(), config)
 			);
 			// Assert
 			var data = (IntegrationMissingConfigs)ex.Errors[0].Data;
@@ -62,7 +69,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			var ex = Assert.ThrowsAsync<IntegrationAuthFailedException>(async () =>
 				// Act 
-				await _command.AuthorizeOnlyAsync(_authorizeModel)
+				await _command.AuthorizeOnlyAsync(BuildAuthorizeCCTransaction())
 			);
 
 			var data = (IntegrationAuthFailedError)ex.Errors[0].Data;
@@ -79,7 +86,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			var ex = Assert.ThrowsAsync<IntegrationNoResponseException>(async () =>
 				// Act 
-				await _command.AuthorizeOnlyAsync(_authorizeModel)
+				await _command.AuthorizeOnlyAsync(BuildAuthorizeCCTransaction())
 			);
 
 			var data = (IntegrationNoResponseError)ex.Errors[0].Data;
@@ -96,7 +103,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			var ex = Assert.ThrowsAsync<IntegrationErrorResponseException>(async () =>
 				// Act 
-				await _command.AuthorizeOnlyAsync(_authorizeModel)
+				await _command.AuthorizeOnlyAsync(BuildAuthorizeCCTransaction())
 			);
 
 			var data = (IntegrationErrorResponseError)ex.Errors[0].Data;
@@ -117,7 +124,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			_httpTest.RespondWithJson(response);
 			// Act
-			var actual = await _command.AuthorizeOnlyAsync(_authorizeModel);
+			var actual = await _command.AuthorizeOnlyAsync(BuildAuthorizeCCTransaction());
 
 			// Assert
 			Assert.AreEqual(false, actual.Succeeded);
@@ -129,10 +136,11 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 		}
 
 		[Test]
-		public async Task AuthorizeRequestShouldBeMappedCorrectly()
+		public async Task AuthorizeRequestWithCardTokenShouldBeMappedCorrectly()
 		{
 			// Arrange
-			var request = _fixture.Create<AuthorizeCCTransaction>();
+			var request = BuildAuthorizeCCTransaction();
+			request.CardDetails.SavedCardID = null;
 
 			// Act
 			var actual = BlueSnapTransactionMapper.ToBlueSnapCardTransaction(BlueSnapTransactionType.AUTH_ONLY, request);
@@ -153,6 +161,29 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 		}
 
 		[Test]
+		public async Task AuthorizeRequestWithSavedCardShouldBeMappedCorrectly()
+		{
+			// Arrange
+			var request = BuildAuthorizeCCTransaction();
+			var cardtype = _fixture.Create<string>();
+			var last4 = _fixture.Create<string>();
+			request.CardDetails.SavedCardID = $"{cardtype}{BlueSnapVaultedShopperMapper.CARD_ID_SEGMENT_CHAR}{last4}";
+			request.CardDetails.Token = null;
+
+			// Act
+			var actual = BlueSnapTransactionMapper.ToBlueSnapCardTransaction(BlueSnapTransactionType.AUTH_ONLY, request);
+
+			// Assert
+			Assert.AreEqual("AUTH_ONLY", actual.cardTransactionType);
+			Assert.AreEqual(request.Amount, actual.amount);
+			Assert.AreEqual(request.Currency, actual.currency);
+			Assert.AreEqual(null, actual.pfToken);
+			Assert.AreEqual(request.ProcessorCustomerID, actual.vaultedShopperId.ToString());
+			Assert.AreEqual(cardtype, actual.creditCard.cardType);
+			Assert.AreEqual(last4, actual.creditCard.cardLastFourDigits);
+		}
+
+		[Test]
 		public async Task SuccessAuthorizeResponse()
 		{
 			// Arrange
@@ -161,7 +192,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 
 			_httpTest.RespondWithJson(response);
 			// Act
-			var actual = await _command.AuthorizeOnlyAsync(_authorizeModel);
+			var actual = await _command.AuthorizeOnlyAsync(BuildAuthorizeCCTransaction());
 
 			// Assert
 			Assert.AreEqual(true, actual.Succeeded);

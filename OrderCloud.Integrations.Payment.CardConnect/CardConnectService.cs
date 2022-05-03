@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.Integrations.Payment.CardConnect
 {
-	public class CardConnectService : OCIntegrationService, ICreditCardProcessor
+	public class CardConnectService : OCIntegrationService, ICreditCardProcessor, ICreditCardSaver
 	{
 		public CardConnectService(CardConnectConfig defaultConfig) : base(defaultConfig) { }
 
@@ -38,6 +38,29 @@ namespace OrderCloud.Integrations.Payment.CardConnect
 			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
 			var cardConnectVoidAuthorizationResponse = await CardConnectClient.VoidPreviousAuthorization(transaction.ToCardConnectFundReversalRequest(config), config);
 			return cardConnectVoidAuthorizationResponse.ToIntegrationsCCFundReversalResponse();
+		}
+		public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerId, OCIntegrationConfig overrideConfig = null)
+		{
+			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
+			var cardConnectSavedCards = await CardConnectClient.GetSavedCardsAsync(customerId, config.MerchantId, config);
+			return cardConnectSavedCards.ToIntegrationsGetSavedCardsResponse();
+		}
+		public async Task<PCISafeCardDetails> GetSavedCardAsync(string customerId, string cardId, OCIntegrationConfig overrideConfig = null)
+		{
+			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
+			var cardConnectSavedCard = await CardConnectClient.GetSavedCardAsync(customerId, cardId, config.MerchantId, config);
+			return cardConnectSavedCard.ToIntegrationsGetSavedCardResponse();
+		}
+		public async Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig overrideConfig = null)
+		{
+			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
+			var cardConnectSavedCard = await CardConnectClient.CreateOrUpdateProfile(card.ToCardConnectCreateUpdateProfileRequest(customer), config);
+			return cardConnectSavedCard.ToIntegrationsCardCreatedResponse();
+		}
+		public async Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig overrideConfig = null)
+		{
+			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
+			await CardConnectClient.DeleteProfile(customerID, cardID, config);
 		}
 	}
 }

@@ -3,6 +3,7 @@ using OrderCloud.Catalyst;
 using OrderCloud.Integrations.Payment.CardConnect.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -83,6 +84,87 @@ namespace OrderCloud.Integrations.Payment.CardConnect
                     .AppendPathSegments("void")
                     .PostJsonAsync(transaction)
                     .ReceiveJson<CardConnectFundReversalResponse>();
+
+				if (!transactionResult.WasSuccessful())
+                {
+                    throw new IntegrationErrorResponseException(config, request.Url, (int)HttpStatusCode.OK,
+                        transactionResult);
+                };
+				return transactionResult;
+			});
+		}
+
+		/// <summary>
+		/// https://developer.cardpointe.com/cardconnect-api#get-profile-request
+		/// </summary>
+		public static async Task<CardConnectGetProfileResponse> GetSavedCardsAsync(string profileid, string merchid, CardConnectConfig config)
+		{
+			return await TryCatchRequestAsync(config, async (request) =>
+            {
+                var transactionResult = await request
+                    .AppendPathSegments("profile", profileid, null, merchid)
+                    .GetAsync()
+                    .ReceiveJson<CardConnectGetProfileResponse>();
+
+				if (!transactionResult.WasSuccessful())
+                {
+                    throw new IntegrationErrorResponseException(config, request.Url, (int)HttpStatusCode.OK,
+                        transactionResult);
+                };
+				return transactionResult;
+			});
+		}
+        /// <summary>
+		/// https://developer.cardpointe.com/cardconnect-api#get-profile-request
+		/// </summary>
+		public static async Task<CardConnectProfile> GetSavedCardAsync(string profileId, string cardId, string merchId, CardConnectConfig config)
+		{
+			return await TryCatchRequestAsync(config, async (request) =>
+            {
+                var transactionResult = await request
+                    .AppendPathSegments("profile", profileId, cardId, merchId)
+                    .GetAsync()
+                    .ReceiveJson<CardConnectGetProfileResponse>();
+
+				if (!transactionResult.WasSuccessful())
+                {
+                    throw new IntegrationErrorResponseException(config, request.Url, (int)HttpStatusCode.OK,
+                        transactionResult);
+                };
+				return transactionResult.profiles.FirstOrDefault();
+			});
+		}
+		/// <summary>
+		/// https://developer.cardpointe.com/cardconnect-api#create-update-profile-request
+		/// </summary>
+		public static async Task<CardConnectCreateUpdateProfileResponse> CreateOrUpdateProfile(CardConnectCreateUpdateProfileRequest payload, CardConnectConfig config)
+		{
+			return await TryCatchRequestAsync(config, async (request) =>
+            {
+                var transactionResult = await request
+                    .AppendPathSegments("profile")
+                    .PostJsonAsync(payload)
+                    .ReceiveJson<CardConnectCreateUpdateProfileResponse>();
+
+				if (!transactionResult.WasSuccessful())
+                {
+                    throw new IntegrationErrorResponseException(config, request.Url, (int)HttpStatusCode.OK,
+                        transactionResult);
+                };
+				return transactionResult;
+			});
+		}
+		/// <summary>
+		/// https://developer.cardpointe.com/cardconnect-api#delete-profile-request
+		/// </summary>
+		public static async Task<CardConnectDeleteProfileResponse> DeleteProfile(string customerId, string cardId, CardConnectConfig config)
+		{
+			return await TryCatchRequestAsync(config, async (request) =>
+            {
+                var transactionResult = await request
+                    .AppendPathSegments("profile")
+                    .DeleteAsync()
+                    .ReceiveJson<CardConnectDeleteProfileResponse>();
 
 				if (!transactionResult.WasSuccessful())
                 {

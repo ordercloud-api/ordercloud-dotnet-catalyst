@@ -96,7 +96,7 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Models
     /// <summary>
     /// https://developer.cardpointe.com/cardconnect-api#authorization-response
     /// </summary>
-    public class CardConnectAuthorizationResponse
+    public class CardConnectAuthorizationResponse : CardConnectResponseData
     {
         /// <summary>
         /// A token that replaces the card number in capture and settlement requests, if requested.
@@ -174,25 +174,6 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Models
         /// Authorization Code from the Issuer
         /// </summary>
         public string authcode { get; set; }
-        /// <summary>
-        /// Alpha-numeric response code that represents the description of the response.
-        /// </summary>
-        public string respcode { get; set; }
-        /// <summary>
-        /// Abbreviation that represents the platform and the processor for the transaction
-        /// </summary>
-        public string respproc { get; set; }
-        /// <summary>
-        /// Indicates the status of the authorization request. Can be one of the following values:
-        /// - A: Approved
-        /// - B: Retry
-        /// - C: Declined
-        /// </summary>
-        public string respstat { get; set; }
-        /// <summary>
-        /// Text description of response.
-        /// </summary>
-        public string resptext { get; set; }
     }
     //<summary>
     ////

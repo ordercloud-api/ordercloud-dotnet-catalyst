@@ -6,7 +6,7 @@ using Stripe;
 
 namespace OrderCloud.Integrations.Payment.Stripe.Mappers
 {
-    public class StripeCreatePaymentIntentMapper
+    public class StripePaymentIntentCreateMapper
     {
         public PaymentIntentCreateOptions MapPaymentIntentCreateAndConfirmOptions(AuthorizeCCTransaction transaction)
         {

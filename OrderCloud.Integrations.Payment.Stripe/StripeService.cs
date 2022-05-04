@@ -64,7 +64,7 @@ namespace OrderCloud.Integrations.Payment.Stripe
         public async Task<CCTransactionResult> CreateAndConfirmPaymentIntentAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig configOverride)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            var paymentIntentCreateOptions = new StripeCreatePaymentIntentMapper().MapPaymentIntentCreateAndConfirmOptions(transaction);
+            var paymentIntentCreateOptions = new StripePaymentIntentCreateMapper().MapPaymentIntentCreateAndConfirmOptions(transaction);
             var createdPaymentIntent = await StripeClient.CreateAndConfirmPaymentIntentAsync(paymentIntentCreateOptions, config);
             return new CCTransactionResult()
             {
@@ -92,7 +92,7 @@ namespace OrderCloud.Integrations.Payment.Stripe
         public async Task<CCTransactionResult> CapturePaymentIntentAsync(FollowUpCCTransaction transaction, OCIntegrationConfig configOverride)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            var paymentIntentCaptureOptions = StripeCapturePaymentIntentMapper.MapPaymentIntentCaptureOptions(transaction);
+            var paymentIntentCaptureOptions = new StripePaymentIntentCaptureMapper().MapPaymentIntentCaptureOptions(transaction);
             var capturedPaymentIntent = await StripeClient.CapturePaymentIntentAsync(transaction.TransactionID, paymentIntentCaptureOptions, config);
             return new CCTransactionResult()
             {
@@ -106,7 +106,7 @@ namespace OrderCloud.Integrations.Payment.Stripe
         public async Task<CCTransactionResult> CreateRefundAsync(FollowUpCCTransaction transaction, OCIntegrationConfig configOverride)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            var refundCreateOptions = StripeCreateRefundMapper.MapRefundCreateOptions(transaction);
+            var refundCreateOptions = StripeRefundCreateMapper.MapRefundCreateOptions(transaction);
             var refund = await StripeClient.CreateRefundAsync(refundCreateOptions, config);
             return new CCTransactionResult()
             {
@@ -120,7 +120,7 @@ namespace OrderCloud.Integrations.Payment.Stripe
         public async Task<CCTransactionResult> VoidAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig configOverride)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            var cancelPaymentIntentOptions = StripeCancelPaymentIntentMapper.MapPaymentIntentCancelOptions(transaction);
+            var cancelPaymentIntentOptions = StripePaymentIntentCancelMapper.MapPaymentIntentCancelOptions(transaction);
             var canceledPaymentIntent = await StripeClient.CancelPaymentIntentAsync(transaction.TransactionID, cancelPaymentIntentOptions, config);
             return new CCTransactionResult()
             {

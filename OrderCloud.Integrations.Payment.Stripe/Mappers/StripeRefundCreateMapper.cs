@@ -6,7 +6,7 @@ using Stripe;
 
 namespace OrderCloud.Integrations.Payment.Stripe.Mappers
 {
-    public class StripeCreateRefundMapper
+    public class StripeRefundCreateMapper
     {
         /// <summary>
         /// https://stripe.com/docs/api/refunds/create

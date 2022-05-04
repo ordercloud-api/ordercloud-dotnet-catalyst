@@ -6,7 +6,7 @@ using Stripe;
 
 namespace OrderCloud.Integrations.Payment.Stripe.Mappers
 {
-    public class StripeCancelPaymentIntentMapper
+    public class StripePaymentIntentCancelMapper
     {
         /// <summary>
         /// https://stripe.com/docs/api/payment_intents/cancel

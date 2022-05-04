@@ -6,12 +6,12 @@ using Stripe;
 
 namespace OrderCloud.Integrations.Payment.Stripe.Mappers
 {
-    public class StripeCapturePaymentIntentMapper
+    public class StripePaymentIntentCaptureMapper
     {
         /// <summary>
         /// https://stripe.com/docs/api/payment_intents/capture
         /// </summary>
-        public static PaymentIntentCaptureOptions MapPaymentIntentCaptureOptions(FollowUpCCTransaction transaction)
+        public PaymentIntentCaptureOptions MapPaymentIntentCaptureOptions(FollowUpCCTransaction transaction)
         {
             var options = new PaymentIntentCaptureOptions();
             if (transaction.Amount > 0)

@@ -6,7 +6,7 @@ using Stripe;
 
 namespace OrderCloud.Integrations.Payment.Stripe.Mappers
 {
-    public class StripeCreateCustomerMapper
+    public class StripeCustomerCreateMapper
     {
         public static Customer MapCustomerOptions(PaymentSystemCustomer customer)
         {

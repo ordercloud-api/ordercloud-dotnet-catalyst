@@ -11,7 +11,6 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
 {
     public class StripeTests
     {
-        //https://stackoverflow.com/questions/67705263/c-sharp-mock-stripe-services-returns-null
         private static StripeConfig _config = new StripeConfig()
         {
             SecretKey = ""
@@ -38,9 +37,9 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
             {
                 Amount = 500,
                 Currency = "USD",
-                PaymentMethodID = "pm_234234234234234234"
+                PaymentMethodID = "pm_234234234234234234" // payment method ID
             };
-            var paymentIntentCreateOpts = new StripeCreatePaymentIntentMapper().MapPaymentIntentCreateAndConfirmOptions(transaction);
+            var paymentIntentCreateOpts = new StripePaymentIntentCreateMapper().MapPaymentIntentCreateAndConfirmOptions(transaction);
             Assert.AreEqual(transaction.Amount, paymentIntentCreateOpts.Amount);
             Assert.AreEqual(transaction.Currency, paymentIntentCreateOpts.Currency);
             Assert.AreEqual(transaction.PaymentMethodID, paymentIntentCreateOpts.PaymentMethod);
@@ -50,7 +49,13 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
         [Test]
         public void MapCapturePaymentIntentOptions()
         {
-
+            var transaction = new FollowUpCCTransaction()
+            {
+                Amount = 500,
+                TransactionID = "pi_345345346456456" // payment intent ID
+            };
+            var paymentIntentCaptureOptions = new StripePaymentIntentCaptureMapper().MapPaymentIntentCaptureOptions(transaction);
+            Assert.AreEqual(transaction.Amount, paymentIntentCaptureOptions.AmountToCapture);
         }
 
         // local testing only

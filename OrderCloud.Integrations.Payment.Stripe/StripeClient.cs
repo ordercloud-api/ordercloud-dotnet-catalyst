@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
 using Flurl.Util;
+using Microsoft.Extensions.Options;
 using Stripe;
 
 namespace OrderCloud.Integrations.Payment.Stripe
@@ -34,21 +35,25 @@ namespace OrderCloud.Integrations.Payment.Stripe
         //}
 
         // this will be done via iFrame, not handled in the integration. The FE will pass a token that we can use
-        //public async Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethodCreateOptions options, StripeConfig optionalOverride = null)
-        //{
-        //    StripeConfig config = optionalOverride ?? _defaultConfig;
-
-        //    StripeConfiguration.ApiKey = config.SecretKey;
-
-        //    var service = new PaymentMethodService();
-        //    return await service.CreateAsync(options);
-        //}
-
-        // this will not be part of the common interface because the return type here does not match up with other integrations
-        public static async Task<PaymentIntent> CreatePaymentIntentAsync(PaymentIntentCreateOptions options, StripeConfig config)
+        public async Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethodCreateOptions options, StripeConfig optionalOverride = null)
         {
+            StripeConfig config = optionalOverride ?? _defaultConfig;
+
             StripeConfiguration.ApiKey = config.SecretKey;
 
+            var service = new PaymentMethodService();
+            return await service.CreateAsync(options);
+        }
+
+        // this will not be part of the common interface because the return type here does not match up with other integrations
+        public static async Task<PaymentIntent> CreateAndConfirmPaymentIntentAsync(PaymentIntentCreateOptions options, StripeConfig config)
+        {
+            StripeConfiguration.ApiKey = config.SecretKey;
+            if (options.PaymentMethod == null)
+            {
+                throw new StripeException("Payment Method required");
+            }
+            
             var service = new PaymentIntentService();
             // this should return secret and transaction ID
             return await service.CreateAsync(options);

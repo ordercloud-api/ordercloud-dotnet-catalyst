@@ -1,19 +1,24 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using OrderCloud.Integrations.Payment.Stripe;
-using Moq;
+using OrderCloud.Integrations.Payment.Stripe.Mappers;
+using Stripe;
+using StripeClient = OrderCloud.Integrations.Payment.Stripe.StripeClient;
 
 namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
 {
     public class StripeTests
     {
         //https://stackoverflow.com/questions/67705263/c-sharp-mock-stripe-services-returns-null
-        private readonly Mock<StripeService> _mockStripeService;
- 
+        private static StripeConfig _config = new StripeConfig()
+        {
+            SecretKey = ""
+        };
+        private readonly StripeService _service = new StripeService(_config);
+        private readonly StripeClient _client = new StripeClient(_config);
+
         [Test]
         public void ShouldThrowErrorIfDefaultConfigMissingFields()
         {
@@ -27,40 +32,63 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
         }
 
         [Test]
-        public async Task ShouldSuccessfullyAuthAndCapture()
+        public void MapCreatePaymentIntentOptions()
         {
-            //var createRequest = new CustomerCreateOptions()
-            //{
-            //    Email = "alexa.snyder@sitecore.net"
-            //};
-            //var response = await _client.CreateCustomerAsync(createRequest, _config);
-
-            //Assert.IsNotNull(response.Id);
+            var transaction = new AuthorizeCCTransaction()
+            {
+                Amount = 500,
+                Currency = "USD",
+                PaymentMethodID = "pm_234234234234234234"
+            };
+            var paymentIntentCreateOpts = new StripeCreatePaymentIntentMapper().MapPaymentIntentCreateAndConfirmOptions(transaction);
+            Assert.AreEqual(transaction.Amount, paymentIntentCreateOpts.Amount);
+            Assert.AreEqual(transaction.Currency, paymentIntentCreateOpts.Currency);
+            Assert.AreEqual(transaction.PaymentMethodID, paymentIntentCreateOpts.PaymentMethod);
+            Assert.AreEqual(transaction.ProcessorCustomerID, paymentIntentCreateOpts.Customer);
         }
 
-        //[Test]
-        //public async Task should_call_create_payment_intent_and_confirm()
-        //{
-        //    var createRequest = new PaymentIntentCreateOptions()
-        //    {
-        //        Amount = 500,
-        //        Currency = "usd",
-        //        PaymentMethodTypes = new List<string>()
-        //        {
-        //            "card"
-        //        }
-        //    };
-        //    PaymentIntent response = await _client.CreatePaymentIntentAsync(createRequest, _config);
+        [Test]
+        public void MapCapturePaymentIntentOptions()
+        {
 
-        //    Assert.IsNotNull(response.Id);
+        }
 
-        //    var confirmRequest = new PaymentIntentConfirmOptions()
-        //    { PaymentMethod = response.PaymentMethodId };
+        // local testing only
+        [Test]
+        public async Task SuccessfulPaymentFlowWithCaptureLater()
+        {
+            // this is handled in the user's middleware
+            var paymentMethodOptions = new PaymentMethodCreateOptions()
+            {
+                Type = "card",
+                Card = new PaymentMethodCardOptions
+                {
+                    Number = "4242424242424242",
+                    ExpMonth = 4,
+                    ExpYear = 2023,
+                    Cvc = "314",
+                }
+            };
+            var paymentMethod = await _client.CreatePaymentMethodAsync(paymentMethodOptions, _config);
+            // this is handled in the user's middleware
 
-        //    response = await _client.ConfirmPaymentIntentAsync(response.Id, confirmRequest, _config);
+            var transaction = new AuthorizeCCTransaction()
+            {
+                Amount = 500,
+                Currency = "USD",
+                PaymentMethodID = paymentMethod.Id
+            };
+            var paymentIntent = await _service.CreateAndConfirmPaymentIntentAsync(transaction, _config);
+            Assert.AreEqual("requires_capture", paymentIntent.Message);
 
-        //    Assert.AreEqual(createRequest.Amount, response.AmountReceived);
-        //}
+            var captureTransaction = new FollowUpCCTransaction()
+            {
+                Amount = 500,
+                TransactionID = paymentIntent.TransactionID
+            };
+            var capturePaymentIntent = await _service.CapturePaymentIntentAsync(captureTransaction, _config);
+            Assert.AreEqual("succeeded", capturePaymentIntent.Message);
+        }
 
         //[Test]
         //public async Task payment_flow_should_succeed()

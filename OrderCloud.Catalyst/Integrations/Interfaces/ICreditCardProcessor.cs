@@ -63,6 +63,10 @@ namespace OrderCloud.Catalyst
         /// The processor-generated ID for this action. Null if a create attempt failed. 
         /// </summary>
         public string TransactionID { get; set; }
+		/// <summary>
+		/// Represents the ID of a saved payment method
+		/// </summary>
+		public string PaymentMethodID { get; set; }
 	}
 
 	public class CCTransactionResult

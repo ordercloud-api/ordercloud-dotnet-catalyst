@@ -6,7 +6,7 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
     {
         public static PaymentMethod MapCreatePaymentMethodOptions()
         {
-
+            return new PaymentMethod();
         }
     }
 }

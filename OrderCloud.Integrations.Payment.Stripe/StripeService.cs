@@ -12,8 +12,12 @@ namespace OrderCloud.Integrations.Payment.Stripe
         public StripeService(StripeConfig defaultConfig) : base(defaultConfig) { }
 
         #region ICreditCardProcessor
+        // we can either call CreatePaymentIntent and ConfirmPaymentIntent separately, or CreatePaymentIntent with confirm true
+        //public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig configOverride = null) =>
+        //    await ConfirmPaymentIntentAsync(transaction, configOverride);
+
         public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig configOverride = null) =>
-            await ConfirmPaymentIntentAsync(transaction, configOverride);
+            await CreateAndConfirmPaymentIntentAsync(transaction, configOverride);
 
         public async Task<CCTransactionResult> CapturePriorAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig configOverride = null) =>
             await CapturePaymentIntentAsync(transaction, configOverride);
@@ -56,19 +60,34 @@ namespace OrderCloud.Integrations.Payment.Stripe
         //    };
         //}
 
-        public async Task<CCTransactionResult> ConfirmPaymentIntentAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig configOverride)
+
+        public async Task<CCTransactionResult> CreateAndConfirmPaymentIntentAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig configOverride)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            var paymentIntentConfirmOptions = StripeConfirmPaymentIntentMapper.MapPaymentIntentConfirmOptions(transaction);
-            var confirmedPaymentIntent = await StripeClient.ConfirmPaymentIntentAsync(transaction.TransactionID, paymentIntentConfirmOptions, config);
+            var paymentIntentCreateOptions = new StripeCreatePaymentIntentMapper().MapPaymentIntentCreateAndConfirmOptions(transaction);
+            var createdPaymentIntent = await StripeClient.CreateAndConfirmPaymentIntentAsync(paymentIntentCreateOptions, config);
             return new CCTransactionResult()
             {
-                Message = confirmedPaymentIntent.Status,
-                Succeeded = confirmedPaymentIntent.Status.ToLower() == "succeeded", // or "requires_capture"??
-                TransactionID = confirmedPaymentIntent.Id,
-                Amount = confirmedPaymentIntent.Amount
+                Message = createdPaymentIntent.Status,
+                Succeeded = createdPaymentIntent.Status.ToLower() == "requires_capture",
+                TransactionID = createdPaymentIntent.Id,
+                Amount = createdPaymentIntent.Amount
             };
         }
+
+        //public async Task<CCTransactionResult> ConfirmPaymentIntentAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig configOverride)
+        //{
+        //    var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
+        //    var paymentIntentConfirmOptions = StripeConfirmPaymentIntentMapper.MapPaymentIntentConfirmOptions(transaction);
+        //    var confirmedPaymentIntent = await StripeClient.ConfirmPaymentIntentAsync(transaction.TransactionID, paymentIntentConfirmOptions, config);
+        //    return new CCTransactionResult()
+        //    {
+        //        Message = confirmedPaymentIntent.Status,
+        //        Succeeded = confirmedPaymentIntent.Status.ToLower() == "succeeded", // or "requires_capture"??
+        //        TransactionID = confirmedPaymentIntent.Id,
+        //        Amount = confirmedPaymentIntent.Amount
+        //    };
+        //}
 
         public async Task<CCTransactionResult> CapturePaymentIntentAsync(FollowUpCCTransaction transaction, OCIntegrationConfig configOverride)
         {

@@ -101,5 +101,25 @@ namespace OrderCloud.Integrations.Payment.Stripe
             var service = new CardService();
             return await service.CreateAsync(customerID, options);
         }
+
+        /// <summary>
+        /// https://stripe.com/docs/api/cards/list
+        /// </summary>
+        public static async Task<StripeList<Card>> ListCreditCardsAsync(string customerID, StripeConfig config)
+        {
+            StripeConfiguration.ApiKey = config.SecretKey;
+            var service = new CardService();
+            return await service.ListAsync(customerID);
+        }
+
+        /// <summary>
+        /// https://stripe.com/docs/api/cards/retrieve
+        /// </summary>
+        public static async Task<Card> GetCreditCardAsync(string customerID, string creditCardID, StripeConfig config)
+        {
+            StripeConfiguration.ApiKey = config.SecretKey;
+            var service = new CardService();
+            return await service.GetAsync(customerID, creditCardID);
+        }
     }
 }

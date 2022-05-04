@@ -31,15 +31,11 @@ namespace OrderCloud.Integrations.Payment.Stripe
         public async Task<PCISafeCardDetails> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride = null) =>
             await CreateSavedCreditCardAsync(customer, card, configOverride);
         
-        public Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID, OCIntegrationConfig configOverride = null)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID, OCIntegrationConfig configOverride = null) =>
+            await ListSavedCreditCardsAsync(customerID, configOverride);
 
-        public Task<PCISafeCardDetails> GetSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<PCISafeCardDetails> GetSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null) => 
+            await GetSavedCreditCardAsync(customerID, cardID, configOverride);
 
         public Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null)
         {
@@ -120,6 +116,43 @@ namespace OrderCloud.Integrations.Payment.Stripe
                 CardType = createdCard.Brand,
                 CardHolderName = createdCard.Name,
                 Token = createdCard.Fingerprint
+            };
+        }
+
+        public async Task<List<PCISafeCardDetails>> ListSavedCreditCardsAsync(string customerID, OCIntegrationConfig configOverride)
+        {
+            var savedCardsList = new List<PCISafeCardDetails>();
+            var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
+            var cardsList = await StripeClient.ListCreditCardsAsync(customerID, config);
+            foreach (var card in cardsList.Data)
+            {
+                savedCardsList.Add(new PCISafeCardDetails()
+                {
+                    ExpirationMonth = card.ExpMonth.ToString(),
+                    ExpirationYear = card.ExpYear.ToString(),
+                    NumberLast4Digits = card.Last4,
+                    SavedCardID = card.Id,
+                    CardType = card.Brand,
+                    CardHolderName = card.Name,
+                    Token = card.Fingerprint
+                });
+            }
+            return savedCardsList;
+        }
+
+        public async Task<PCISafeCardDetails> GetSavedCreditCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride)
+        {
+            var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
+            var creditCard = await StripeClient.GetCreditCardAsync(customerID, cardID, config);
+            return new PCISafeCardDetails()
+            {
+                ExpirationMonth = creditCard.ExpMonth.ToString(),
+                ExpirationYear = creditCard.ExpYear.ToString(),
+                NumberLast4Digits = creditCard.Last4,
+                SavedCardID = creditCard.Id,
+                CardType = creditCard.Brand,
+                CardHolderName = creditCard.Name,
+                Token = creditCard.Fingerprint
             };
         }
     }

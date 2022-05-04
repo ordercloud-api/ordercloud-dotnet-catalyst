@@ -107,7 +107,7 @@ namespace OrderCloud.Integrations.Payment.Stripe
         public async Task<PCISafeCardDetails> CreateSavedCreditCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            var cardCreateOptions = new StripeCreateCardMapper().MapCardCreateOptions(card);
+            var cardCreateOptions = new StripeCardCreateMapper().MapCardCreateOptions(card);
             var createdCard = await StripeClient.CreateCardAsync(customer.ID, cardCreateOptions, config);
             // https://stripe.com/docs/api/payment_methods/attach
 

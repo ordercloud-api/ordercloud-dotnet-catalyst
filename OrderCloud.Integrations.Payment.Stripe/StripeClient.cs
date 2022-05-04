@@ -24,16 +24,6 @@ namespace OrderCloud.Integrations.Payment.Stripe
         // https://stripe.com/docs/payments/payment-intents
         // https://stripe.com/docs/api/payment_intents
 
-        //public async Task<Customer> CreateCustomerAsync(CustomerCreateOptions options, StripeConfig optionalOverride = null)
-        //{
-        //    StripeConfig config = optionalOverride ?? _defaultConfig;
-
-        //    StripeConfiguration.ApiKey = config.SecretKey;
-
-        //    var service = new CustomerService();
-        //    return await service.CreateAsync(options);
-        //}
-
         // this will be done via iFrame, not handled in the integration. The FE will pass a token that we can use
         public async Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethodCreateOptions options, StripeConfig optionalOverride = null)
         {
@@ -45,28 +35,33 @@ namespace OrderCloud.Integrations.Payment.Stripe
             return await service.CreateAsync(options);
         }
 
-        // this will not be part of the common interface because the return type here does not match up with other integrations
+        /// <summary>
+        /// https://stripe.com/docs/api/payment_intents/create
+        /// </summary>
         public static async Task<PaymentIntent> CreateAndConfirmPaymentIntentAsync(PaymentIntentCreateOptions options, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
+            // should we move this to the mapper method?
             if (options.PaymentMethod == null)
             {
                 throw new StripeException("Payment Method required");
             }
             
             var service = new PaymentIntentService();
-            // this should return secret and transaction ID
             return await service.CreateAsync(options);
         }
 
-        public static async Task<PaymentIntent> ConfirmPaymentIntentAsync(string paymentIntentID, PaymentIntentConfirmOptions options, StripeConfig config)
-        {
-            StripeConfiguration.ApiKey = config.SecretKey;
+        //public static async Task<PaymentIntent> ConfirmPaymentIntentAsync(string paymentIntentID, PaymentIntentConfirmOptions options, StripeConfig config)
+        //{
+        //    StripeConfiguration.ApiKey = config.SecretKey;
 
-            var service = new PaymentIntentService();
-            return await service.ConfirmAsync(paymentIntentID, options);
-        }
+        //    var service = new PaymentIntentService();
+        //    return await service.ConfirmAsync(paymentIntentID, options);
+        //}
 
+        /// <summary>
+        /// https://stripe.com/docs/api/payment_intents/capture
+        /// </summary>
         public static async Task<PaymentIntent> CapturePaymentIntentAsync(string paymentIntentID, PaymentIntentCaptureOptions options, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
@@ -75,6 +70,9 @@ namespace OrderCloud.Integrations.Payment.Stripe
             return await service.CaptureAsync(paymentIntentID, options);
         }
 
+        /// <summary>
+        /// https://stripe.com/docs/api/refunds/create
+        /// </summary>
         public static async Task<Refund> CreateRefundAsync(RefundCreateOptions options, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
@@ -83,12 +81,25 @@ namespace OrderCloud.Integrations.Payment.Stripe
             return await service.CreateAsync(options);
         }
 
+        /// <summary>
+        /// https://stripe.com/docs/api/payment_intents/cancel
+        /// </summary>
         public static async Task<PaymentIntent> CancelPaymentIntentAsync(string paymentIntentID, PaymentIntentCancelOptions options, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
 
             var service = new PaymentIntentService();
             return await service.CancelAsync(paymentIntentID, options);
+        }
+
+        /// <summary>
+        /// https://stripe.com/docs/api/cards/create
+        /// </summary>
+        public static async Task<Card> CreateCardAsync(string customerID, CardCreateOptions options, StripeConfig config)
+        {
+            StripeConfiguration.ApiKey = config.SecretKey;
+            var service = new CardService();
+            return await service.CreateAsync(customerID, options);
         }
     }
 }

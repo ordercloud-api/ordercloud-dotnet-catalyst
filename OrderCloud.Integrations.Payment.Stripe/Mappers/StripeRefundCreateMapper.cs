@@ -11,7 +11,7 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
         /// <summary>
         /// https://stripe.com/docs/api/refunds/create
         /// </summary>
-        public static RefundCreateOptions MapRefundCreateOptions(FollowUpCCTransaction transaction) =>
+        public RefundCreateOptions MapRefundCreateOptions(FollowUpCCTransaction transaction) =>
             new RefundCreateOptions()
             {
                 Amount = Convert.ToInt64(transaction.Amount),

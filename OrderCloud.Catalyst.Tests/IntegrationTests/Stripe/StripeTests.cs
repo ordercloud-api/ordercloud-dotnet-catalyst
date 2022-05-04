@@ -31,7 +31,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
         }
 
         [Test]
-        public void MapCreatePaymentIntentOptions()
+        public void MapPaymentIntentCreateOptions()
         {
             var transaction = new AuthorizeCCTransaction()
             {
@@ -47,7 +47,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
         }
 
         [Test]
-        public void MapCapturePaymentIntentOptions()
+        public void MapPaymentIntentCaptureOptions()
         {
             var transaction = new FollowUpCCTransaction()
             {
@@ -58,8 +58,22 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
             Assert.AreEqual(transaction.Amount, paymentIntentCaptureOptions.AmountToCapture);
         }
 
-        // local testing only
         [Test]
+        public void MapRefundCreateOptions()
+        {
+            var transaction = new FollowUpCCTransaction()
+            {
+                Amount = 500,
+                TransactionID = "pi_345345346456456" // payment intent ID
+            };
+
+            var refundCreateOptions = new StripeRefundCreateMapper().MapRefundCreateOptions(transaction);
+            Assert.AreEqual(transaction.Amount, refundCreateOptions.Amount);
+            Assert.AreEqual(transaction.TransactionID, refundCreateOptions.PaymentIntent);
+        }
+
+        // local testing only
+        //[Test]
         public async Task SuccessfulPaymentFlowWithCaptureLater()
         {
             // this is handled in the user's middleware

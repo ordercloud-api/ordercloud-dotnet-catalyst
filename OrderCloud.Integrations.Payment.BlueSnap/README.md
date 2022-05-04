@@ -16,7 +16,7 @@ The OrderCloud API does not have integration points designed specifically for pa
 ### Table of key credit card events
 
 | Description | Integration Method | BlueSnap API Route | OrderCloud Platform Context |
-| ------------- | ------------- | ------------- | ------------- | ------------- |
+| ------------- | ------------- | ------------- | ------------- |
 | Request a token needed to build the IFrame | BlueSnapService.CreateHostedPaymentFieldsTokenAsync() | [Link](https://developers.bluesnap.com/v8976-Tools/docs/create-hosted-payment-fields-token) | From the server-side when the user enters the checkout flow |
 | Attach the user's card info to the token through the Iframe | None | None | Save the token and PCI-safe card details (last 4 digits) on a Payment object attached to the Order |
 | Verify and hold funds | ICreditCardProcessor.AuthorizeOnlyAsync() | [Link](https://developers.bluesnap.com/v8976-JSON/docs/auth-only) | Within a pre-webhook or proxy route request list Payments, attempt to authorize using the token, set payment accepted true, create a payment transaction, and then submit the Order |

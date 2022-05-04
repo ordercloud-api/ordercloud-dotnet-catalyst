@@ -1,6 +1,6 @@
 ﻿# OrderCloud.Integrations.Payment.BlueSnap
 
-This project brings payment processing to your ecommerce app using the [BlueSnap](https://developers.bluesnap.com/v8976-JSON/docs) API. It will be published as a nuget code library and conforms to the standard interfaces ICreditCardProcessor and ICreditCardSaver published in the base library ordercloud-dotnet-catalyst.
+This project brings payment processing to your ecommerce app using the [BlueSnap](https://developers.bluesnap.com/v8976-JSON/docs) API. It will be published as a nuget code library and conforms to the standard interfaces `ICreditCardProcessor` and `ICreditCardSaver` published in the base library ordercloud-dotnet-catalyst.
 
 ## Payment Processing Basics
 

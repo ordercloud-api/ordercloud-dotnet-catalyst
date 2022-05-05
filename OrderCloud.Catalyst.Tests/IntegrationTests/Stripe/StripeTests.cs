@@ -139,9 +139,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
             {
                 Token = "tok_mastercard"
             };
-
-            //var cardCreateOptions = new StripeCardCreateMapper().MapCardCreateOptions(pciSafeCardDetails);
-
+            
             var createdCard = await _service.CreateSavedCardAsync(paymentSysCustomer, pciSafeCardDetails);
             Assert.IsNotNull(createdCard.Token);
         }

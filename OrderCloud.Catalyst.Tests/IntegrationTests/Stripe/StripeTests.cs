@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using OrderCloud.Integrations.Payment.Stripe;
@@ -37,12 +38,12 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
             {
                 Amount = 500,
                 Currency = "USD",
-                PaymentMethodID = "pm_234234234234234234" // payment method ID
+                TransactionID = "pm_234234234234234234" // payment method ID
             };
             var paymentIntentCreateOpts = new StripePaymentIntentCreateMapper().MapPaymentIntentCreateAndConfirmOptions(transaction);
             Assert.AreEqual(transaction.Amount, paymentIntentCreateOpts.Amount);
             Assert.AreEqual(transaction.Currency, paymentIntentCreateOpts.Currency);
-            Assert.AreEqual(transaction.PaymentMethodID, paymentIntentCreateOpts.PaymentMethod);
+            Assert.AreEqual(transaction.TransactionID, paymentIntentCreateOpts.PaymentMethod);
             Assert.AreEqual(transaction.ProcessorCustomerID, paymentIntentCreateOpts.Customer);
         }
 
@@ -72,8 +73,20 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
             Assert.AreEqual(transaction.TransactionID, refundCreateOptions.PaymentIntent);
         }
 
+        [Test]
+        public void MapCardCreateOptions()
+        {
+            var pciSafeCardDetails = new PCISafeCardDetails()
+            {
+                Token = "tok_mastercard"
+            };
+
+            var cardCreateOptions = new StripeCardCreateMapper().MapCardCreateOptions(pciSafeCardDetails);
+            Assert.AreEqual(pciSafeCardDetails.Token, cardCreateOptions.Source.Value);
+        }
+
         // local testing only
-        //[Test]
+        [Test]
         public async Task SuccessfulPaymentFlowWithCaptureLater()
         {
             // this is handled in the user's middleware
@@ -95,9 +108,9 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
             {
                 Amount = 500,
                 Currency = "USD",
-                PaymentMethodID = paymentMethod.Id
+                TransactionID = paymentMethod.Id
             };
-            var paymentIntent = await _service.CreateAndConfirmPaymentIntentAsync(transaction, _config);
+            var paymentIntent = await _service.AuthorizeOnlyAsync(transaction, _config);
             Assert.AreEqual("requires_capture", paymentIntent.Message);
 
             var captureTransaction = new FollowUpCCTransaction()
@@ -105,8 +118,61 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
                 Amount = 500,
                 TransactionID = paymentIntent.TransactionID
             };
-            var capturePaymentIntent = await _service.CapturePaymentIntentAsync(captureTransaction, _config);
+            var capturePaymentIntent = await _service.CapturePriorAuthorizationAsync(captureTransaction, _config);
             Assert.AreEqual("succeeded", capturePaymentIntent.Message);
+        }
+
+
+        [Test]
+        public async Task CreateWhenCustomerDoesNotExistCC()
+        {
+
+            var paymentSysCustomer = new PaymentSystemCustomer()
+            {
+                FirstName = "Alexa",
+                LastName = "Snyder",
+                Email = "alexa.snyder@sitecore.com",
+                CustomerAlreadyExists = false
+            };
+
+            var pciSafeCardDetails = new PCISafeCardDetails()
+            {
+                Token = "tok_mastercard"
+            };
+
+            //var cardCreateOptions = new StripeCardCreateMapper().MapCardCreateOptions(pciSafeCardDetails);
+
+            var createdCard = await _service.CreateSavedCardAsync(paymentSysCustomer, pciSafeCardDetails);
+            Assert.IsNotNull(createdCard.Token);
+        }
+
+        [Test]
+        public async Task GetAndListCCs()
+        {
+            var paymentSysCustomer = new PaymentSystemCustomer()
+            {
+                FirstName = "Alexa",
+                LastName = "Snyder",
+                Email = "alexa.snyder@sitecore.com",
+                CustomerAlreadyExists = true
+            };
+
+            var stripeCustomerOptions = StripeCustomerCreateMapper.MapCustomerOptions(paymentSysCustomer);
+
+            var stripeCustomer = await StripeClient.CreateCustomerAsync(stripeCustomerOptions, _config);
+            paymentSysCustomer.ID = stripeCustomer.Id;
+            var pciSafeCardDetails = new PCISafeCardDetails()
+            {
+                Token = "tok_mastercard"
+            };
+            
+            var createdCard = await _service.CreateSavedCardAsync(paymentSysCustomer, pciSafeCardDetails);
+
+            var listCards = await _service.ListSavedCardsAsync(paymentSysCustomer.ID, _config);
+            Assert.Contains(createdCard.SavedCardID, listCards.Select(c => c.SavedCardID).ToList());
+
+            var getCard = await _service.GetSavedCardAsync(paymentSysCustomer.ID, createdCard.SavedCardID, _config);
+            Assert.IsNotNull(getCard.Token);
         }
 
         //[Test]

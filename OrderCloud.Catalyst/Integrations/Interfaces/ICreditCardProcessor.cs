@@ -66,7 +66,7 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Represents the ID of a saved payment method
 		/// </summary>
-		public string PaymentMethodID { get; set; }
+		//public string PaymentMethodID { get; set; }
 	}
 
 	public class CCTransactionResult

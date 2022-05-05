@@ -14,10 +14,10 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
             {
                 Amount = Convert.ToInt64(transaction.Amount),
                 Confirm = true, // Creates and Confirms PaymentIntent, otherwise Confirm PaymentIntent would be a separate call
-                CaptureMethod = "manual", // required value for separate auth and capture
+                CaptureMethod = "manual", // Required value for separate auth and capture
                 Currency = transaction.Currency,
                 Customer = transaction.ProcessorCustomerID,
-                PaymentMethod = transaction.PaymentMethodID,
+                PaymentMethod = transaction.TransactionID, // Represents PaymentMethodID
             };
         }
     }

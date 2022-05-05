@@ -8,9 +8,13 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
 {
     public class StripeCustomerCreateMapper
     {
-        public static Customer MapCustomerOptions(PaymentSystemCustomer customer)
+        public static CustomerCreateOptions MapCustomerOptions(PaymentSystemCustomer customer)
         {
-            return new Customer();
+            return new CustomerCreateOptions()
+            {
+                Name = $"{customer.FirstName} {customer.LastName}",
+                Email = customer.Email
+            };
         }
     }
 }

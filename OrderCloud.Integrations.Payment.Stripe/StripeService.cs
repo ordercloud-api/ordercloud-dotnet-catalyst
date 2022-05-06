@@ -64,12 +64,7 @@ namespace OrderCloud.Integrations.Payment.Stripe
             var cardMapper = new StripeCardMapper();
             var cardCreateOptions = cardMapper.MapStripeCardCreateOptions(card);
 
-            if (customer.CustomerAlreadyExists)
-            {
-                // do we need to do anything here?
-                // https://stripe.com/docs/api/payment_methods/attach
-            }
-            else
+            if (!customer.CustomerAlreadyExists)
             {
                 var stripeCustomerOptions = StripeCustomerCreateMapper.MapCustomerOptions(customer);
                 var stripeCustomer = await StripeClient.CreateCustomerAsync(stripeCustomerOptions, config);
@@ -100,9 +95,10 @@ namespace OrderCloud.Integrations.Payment.Stripe
             return cardMapper.MapStripeCardGetResponse(card);
         }
 
-        public Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null)
+        public async Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null)
         {
-            throw new NotImplementedException();
+            var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
+            await StripeClient.DeleteCreditCardAsync(customerID, cardID, config);
         }
         #endregion
     }

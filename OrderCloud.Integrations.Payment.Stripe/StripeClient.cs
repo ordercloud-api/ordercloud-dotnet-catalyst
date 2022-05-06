@@ -102,5 +102,16 @@ namespace OrderCloud.Integrations.Payment.Stripe
             var service = new CardService();
             return await service.GetAsync(customerID, creditCardID);
         }
+
+        /// <summary>
+        /// https://stripe.com/docs/api/cards/delete
+        /// </summary>
+        public static async Task DeleteCreditCardAsync(string customerID, string creditCardID,
+            StripeConfig config)
+        {
+            StripeConfiguration.ApiKey = config.SecretKey;
+            var service = new CardService();
+            await service.DeleteAsync(customerID, creditCardID);
+        }
     }
 }

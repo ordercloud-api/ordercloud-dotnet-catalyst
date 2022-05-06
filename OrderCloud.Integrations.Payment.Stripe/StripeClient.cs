@@ -5,7 +5,7 @@ namespace OrderCloud.Integrations.Payment.Stripe
 {
     public class StripeClient
     {
-        private StripeConfig _defaultConfig;
+        private readonly StripeConfig _defaultConfig;
 
         public StripeClient(StripeConfig defaultConfig)
         {
@@ -18,9 +18,7 @@ namespace OrderCloud.Integrations.Payment.Stripe
         public async Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethodCreateOptions options, StripeConfig optionalOverride = null)
         {
             StripeConfig config = optionalOverride ?? _defaultConfig;
-
             StripeConfiguration.ApiKey = config.SecretKey;
-
             var service = new PaymentMethodService();
             return await service.CreateAsync(options);
         }
@@ -28,8 +26,9 @@ namespace OrderCloud.Integrations.Payment.Stripe
         /// <summary>
         /// https://stripe.com/docs/api/customers/create
         /// </summary>
-        public static async Task<Customer> CreateCustomerAsync(CustomerCreateOptions options, StripeConfig config)
+        public async Task<Customer> CreateCustomerAsync(CustomerCreateOptions options, StripeConfig optionalOverride = null)
         {
+            StripeConfig config = optionalOverride ?? _defaultConfig;
             StripeConfiguration.ApiKey = config.SecretKey;
             var service = new CustomerService();
             return await service.CreateAsync(options);
@@ -41,7 +40,6 @@ namespace OrderCloud.Integrations.Payment.Stripe
         public static async Task<PaymentIntent> CreateAndConfirmPaymentIntentAsync(PaymentIntentCreateOptions options, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
-            
             var service = new PaymentIntentService();
             return await service.CreateAsync(options);
         }
@@ -52,7 +50,6 @@ namespace OrderCloud.Integrations.Payment.Stripe
         public static async Task<PaymentIntent> CapturePaymentIntentAsync(string paymentIntentID, PaymentIntentCaptureOptions options, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
-
             var service = new PaymentIntentService();
             return await service.CaptureAsync(paymentIntentID, options);
         }
@@ -63,7 +60,6 @@ namespace OrderCloud.Integrations.Payment.Stripe
         public static async Task<Refund> CreateRefundAsync(RefundCreateOptions options, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
-
             var service = new RefundService();
             return await service.CreateAsync(options);
         }
@@ -74,7 +70,6 @@ namespace OrderCloud.Integrations.Payment.Stripe
         public static async Task<PaymentIntent> CancelPaymentIntentAsync(string paymentIntentID, PaymentIntentCancelOptions options, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
-
             var service = new PaymentIntentService();
             return await service.CancelAsync(paymentIntentID, options);
         }

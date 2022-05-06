@@ -15,7 +15,7 @@ The OrderCloud API does not have integration points designed specifically for pa
 
 ### Table of key credit card events
 
-Card details are collected via Stripe.js in the client. Once details are collected, a Payment Method will need to be created either in the client or in your hosted server. Once a Payment Method is created, you use that ID in your request body to ICreditCardProcessor.AuthorizeOnlyAsync().
+Card details are collected via Stripe.js in the client. Once details are collected, a Payment Method will need to be created either in the client or in your hosted server. Once a Payment Method is created, you will use that ID in your request body to ICreditCardProcessor.AuthorizeOnlyAsync().
 
 | Description | Integration Method | Stripe Documentation | OrderCloud Platform Context |
 | ------------- | ------------- | ------------- | ------------- |

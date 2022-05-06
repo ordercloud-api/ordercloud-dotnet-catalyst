@@ -80,7 +80,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
                 Token = "tok_mastercard"
             };
 
-            var cardCreateOptions = new StripeCardCreateMapper().MapCardCreateOptions(pciSafeCardDetails);
+            var cardCreateOptions = new StripeCardMapper().MapStripeCardCreateOptions(pciSafeCardDetails);
             Assert.AreEqual(pciSafeCardDetails.Token, cardCreateOptions.Source.Value);
         }
 

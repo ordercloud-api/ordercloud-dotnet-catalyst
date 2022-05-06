@@ -82,8 +82,8 @@ namespace OrderCloud.Integrations.Payment.Stripe
             PCISafeCardDetails card, OCIntegrationConfig configOverride = null)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            var cardCreateMapper = new StripeCardCreateMapper();
-            var cardCreateOptions = cardCreateMapper.MapCardCreateOptions(card);
+            var cardMapper = new StripeCardMapper();
+            var cardCreateOptions = cardMapper.MapStripeCardCreateOptions(card);
 
             if (customer.CustomerAlreadyExists)
             {
@@ -98,7 +98,7 @@ namespace OrderCloud.Integrations.Payment.Stripe
             }
             var createdCard = await StripeClient.CreateCardAsync(customer.ID, cardCreateOptions, config);
 
-            return cardCreateMapper.MapCardCreateResponse(customer.ID, createdCard);
+            return cardMapper.MapStripeCardCreateResponse(customer.ID, createdCard);
         }
 
         public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID,

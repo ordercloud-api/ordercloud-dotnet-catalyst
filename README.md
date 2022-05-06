@@ -18,11 +18,13 @@ Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/I
 
 | Name | Project Guide | Nuget Library | Contributed By | Interfaces |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
+| **BlueSnap** | [README](./OrderCloud.Integrations.Payment.BlueSnap) | [OrderCloud.Integrations.Payment.BlueSnap](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.BlueSnap) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
+| **CardConnect** | [README](./OrderCloud.Integrations.Payment.CardConnect) | Coming soon | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
 | **EasyPost** | [README](./OrderCloud.Integrations.Shipping.EasyPost) | [OrderCloud.Integrations.Shipping.EasyPost](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.EasyPost) | OrderCloud Team | IShippingRatesCalculator
 | **Fedex** | [README](./OrderCloud.Integrations.Shipping.Fedex) | [OrderCloud.Integrations.Shipping.Fedex](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.Fedex) | OrderCloud Team | IShippingRatesCalculator
 | **UPS** | [README](./OrderCloud.Integrations.Shipping.UPS) | [OrderCloud.Integrations.Shipping.UPS](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.UPS) | OrderCloud Team | IShippingRatesCalculator
-| **Vertex** | [README](./OrderCloud.Integrations.Tax.Vertex) | [OrderCloud.Integrations.Tax.Vertex](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Vertex) | OrderCloud Team | ITaxCalculator
 | **Avalara** | [README](./OrderCloud.Integrations.Tax.Avalara) | [OrderCloud.Integrations.Tax.Avalara](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Avalara) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider
+| **Vertex** | [README](./OrderCloud.Integrations.Tax.Vertex) | [OrderCloud.Integrations.Tax.Vertex](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Vertex) | OrderCloud Team | ITaxCalculator
 | **TaxJar** | [README](./OrderCloud.Integrations.Tax.TaxJar) | [OrderCloud.Integrations.Tax.TaxJar](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.TaxJar) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider
 
 ### [User Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Auth/UserAuth)

@@ -24,6 +24,5 @@ namespace OrderCloud.Catalyst
 		public string ServiceName { get; set; }
 		public string RequestUrl { get; set; }
 		public int ResponseStatus { get; set; }
-
 	}
 }

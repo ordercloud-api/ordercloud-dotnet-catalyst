@@ -29,6 +29,7 @@ namespace OrderCloud.Catalyst
 		Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
 	}
 
+
     public class AuthorizeCCTransaction
 	{
 		/// <summary>
@@ -59,11 +60,11 @@ namespace OrderCloud.Catalyst
 		/// The customer's IP address is typically not required by processors, but it provides a layer of insurance on disputed or fraudulent payments. 
 		/// </summary>
 		public string CustomerIPAddress { get; set; }
-        /// <summary>
-        /// The processor-generated ID for this action. Null if a create attempt failed. 
-        /// </summary>
-        public string TransactionID { get; set; }
-    }
+		/// <summary>
+		/// The processor-generated transaction ID. Only use if a transaction was already created in a pre-authorize step.
+		/// </summary>
+		public string TransactionID { get; set; }
+	}
 
 	public class CCTransactionResult
 	{
@@ -72,7 +73,7 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public bool Succeeded { get; set; }
 		/// <summary>
-		/// The currency amount of the transaction   
+		/// The amount of the transaction   
 		/// </summary>
 		public decimal Amount { get; set; }
 		/// <summary>

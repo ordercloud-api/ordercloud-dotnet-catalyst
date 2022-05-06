@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using OrderCloud.Catalyst;
 using Stripe;
 
 namespace OrderCloud.Integrations.Payment.Stripe.Mappers
 {
+    /// <summary>
+    /// https://stripe.com/docs/api/payment_intents
+    /// </summary>
     public class StripePaymentIntentMapper
     {
-        /// <summary>
-        /// https://stripe.com/docs/api/payment_intents/capture
-        /// </summary>
         public PaymentIntentCaptureOptions MapPaymentIntentCaptureOptions(FollowUpCCTransaction transaction)
         {
             var options = new PaymentIntentCaptureOptions();
@@ -51,10 +49,6 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
                 Amount = createdPaymentIntent.Amount
             };
 
-        /// <summary>
-        /// https://stripe.com/docs/api/payment_intents/cancel
-        /// PaymentIntentCancelOptions only has one property for cancellation_reason, and doesn't map to anything from FollowUpCCTransaction
-        /// </summary>
         public PaymentIntentCancelOptions MapPaymentIntentCancelOptions(FollowUpCCTransaction transaction) =>
             new PaymentIntentCancelOptions()
                 { };

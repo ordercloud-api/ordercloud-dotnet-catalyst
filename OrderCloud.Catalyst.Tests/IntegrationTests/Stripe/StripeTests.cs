@@ -1,22 +1,12 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using OrderCloud.Integrations.Payment.Stripe;
 using OrderCloud.Integrations.Payment.Stripe.Mappers;
-using Stripe;
-using StripeClient = OrderCloud.Integrations.Payment.Stripe.StripeClient;
 
 namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
 {
     public class StripeTests
     {
-        private static StripeConfig _config = new StripeConfig()
-        {
-            SecretKey = ""
-        };
-        private readonly StripeService _service = new StripeService(_config);
-        private readonly StripeClient _client = new StripeClient(_config);
 
         [Test]
         public void ShouldThrowErrorIfDefaultConfigMissingFields()

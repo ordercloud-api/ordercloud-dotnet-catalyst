@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrderCloud.Catalyst;
 using OrderCloud.Integrations.Payment.Stripe.Mappers;

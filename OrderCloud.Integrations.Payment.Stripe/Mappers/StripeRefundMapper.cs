@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using OrderCloud.Catalyst;
 using Stripe;
 
 namespace OrderCloud.Integrations.Payment.Stripe.Mappers
 {
+    /// <summary>
+    /// https://stripe.com/docs/api/refunds
+    /// </summary>
     public class StripeRefundMapper
     {
-        /// <summary>
-        /// https://stripe.com/docs/api/refunds/create
-        /// </summary>
         public RefundCreateOptions MapRefundCreateOptions(FollowUpCCTransaction transaction) =>
             new RefundCreateOptions()
             {

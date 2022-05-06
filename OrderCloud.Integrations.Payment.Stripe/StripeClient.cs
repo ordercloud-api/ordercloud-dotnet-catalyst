@@ -54,16 +54,6 @@ namespace OrderCloud.Integrations.Payment.Stripe
         }
 
         /// <summary>
-        /// https://stripe.com/docs/api/refunds/create
-        /// </summary>
-        public static async Task<Refund> CreateRefundAsync(RefundCreateOptions options, StripeConfig config)
-        {
-            StripeConfiguration.ApiKey = config.SecretKey;
-            var service = new RefundService();
-            return await service.CreateAsync(options);
-        }
-
-        /// <summary>
         /// https://stripe.com/docs/api/payment_intents/cancel
         /// </summary>
         public static async Task<PaymentIntent> CancelPaymentIntentAsync(string paymentIntentID, PaymentIntentCancelOptions options, StripeConfig config)
@@ -71,6 +61,16 @@ namespace OrderCloud.Integrations.Payment.Stripe
             StripeConfiguration.ApiKey = config.SecretKey;
             var service = new PaymentIntentService();
             return await service.CancelAsync(paymentIntentID, options);
+        }
+
+        /// <summary>
+        /// https://stripe.com/docs/api/refunds/create
+        /// </summary>
+        public static async Task<Refund> CreateRefundAsync(RefundCreateOptions options, StripeConfig config)
+        {
+            StripeConfiguration.ApiKey = config.SecretKey;
+            var service = new RefundService();
+            return await service.CreateAsync(options);
         }
 
         /// <summary>

@@ -9,24 +9,6 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
     /// </summary>
     public class StripePaymentIntentMapper
     {
-        public PaymentIntentCaptureOptions MapPaymentIntentCaptureOptions(FollowUpCCTransaction transaction)
-        {
-            var options = new PaymentIntentCaptureOptions();
-            if (transaction.Amount > 0)
-                // defaults to full amount_capturable if not provided
-                options.AmountToCapture = Convert.ToInt64(transaction.Amount);
-            return options;
-        }
-
-        public CCTransactionResult MapPaymentIntentCaptureResponse(PaymentIntent capturedPaymentIntent) =>
-            new CCTransactionResult()
-            {
-                Message = capturedPaymentIntent.Status,
-                Succeeded = capturedPaymentIntent.Status.ToLower() == "succeeded",
-                TransactionID = capturedPaymentIntent.Id,
-                Amount = capturedPaymentIntent.Amount
-            };
-
         public PaymentIntentCreateOptions MapPaymentIntentCreateAndConfirmOptions(AuthorizeCCTransaction transaction) =>
             new PaymentIntentCreateOptions()
             {
@@ -47,6 +29,24 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
                     createdPaymentIntent
                         .Id, // transaction.TransactionID represents PaymentMethodID, this now represents PaymentIntentID
                 Amount = createdPaymentIntent.Amount
+            };
+
+        public PaymentIntentCaptureOptions MapPaymentIntentCaptureOptions(FollowUpCCTransaction transaction)
+        {
+            var options = new PaymentIntentCaptureOptions();
+            if (transaction.Amount > 0)
+                // defaults to full amount_capturable if not provided
+                options.AmountToCapture = Convert.ToInt64(transaction.Amount);
+            return options;
+        }
+
+        public CCTransactionResult MapPaymentIntentCaptureResponse(PaymentIntent capturedPaymentIntent) =>
+            new CCTransactionResult()
+            {
+                Message = capturedPaymentIntent.Status,
+                Succeeded = capturedPaymentIntent.Status.ToLower() == "succeeded",
+                TransactionID = capturedPaymentIntent.Id,
+                Amount = capturedPaymentIntent.Amount
             };
 
         public PaymentIntentCancelOptions MapPaymentIntentCancelOptions(FollowUpCCTransaction transaction) =>

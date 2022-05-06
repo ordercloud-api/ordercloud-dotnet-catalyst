@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Flurl;
-using Flurl.Http;
-using Flurl.Util;
-using Microsoft.Extensions.Options;
+﻿using System.Threading.Tasks;
 using Stripe;
 
 namespace OrderCloud.Integrations.Payment.Stripe
@@ -20,11 +12,9 @@ namespace OrderCloud.Integrations.Payment.Stripe
             _defaultConfig = defaultConfig;
         }
 
-        // https://stripe.com/docs/development/quickstart
-        // https://stripe.com/docs/payments/payment-intents
-        // https://stripe.com/docs/api/payment_intents
-
-        // this will be done via iFrame, not handled in the integration. The FE will pass a token that we can use
+        /// <summary>
+        /// https://stripe.com/docs/api/payment_methods/create
+        /// </summary>
         public async Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethodCreateOptions options, StripeConfig optionalOverride = null)
         {
             StripeConfig config = optionalOverride ?? _defaultConfig;
@@ -35,6 +25,9 @@ namespace OrderCloud.Integrations.Payment.Stripe
             return await service.CreateAsync(options);
         }
 
+        /// <summary>
+        /// https://stripe.com/docs/api/customers/create
+        /// </summary>
         public static async Task<Customer> CreateCustomerAsync(CustomerCreateOptions options, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
@@ -48,11 +41,6 @@ namespace OrderCloud.Integrations.Payment.Stripe
         public static async Task<PaymentIntent> CreateAndConfirmPaymentIntentAsync(PaymentIntentCreateOptions options, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
-            // should we move this to the mapper method?
-            if (options.PaymentMethod == null)
-            {
-                throw new StripeException("Payment Method required");
-            }
             
             var service = new PaymentIntentService();
             return await service.CreateAsync(options);

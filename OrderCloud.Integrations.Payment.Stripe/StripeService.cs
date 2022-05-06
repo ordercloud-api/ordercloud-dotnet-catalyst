@@ -78,15 +78,17 @@ namespace OrderCloud.Integrations.Payment.Stripe
 
         #region ICreditCardSaver
 
-        public async Task<PCISafeCardDetails> CreateSavedCardAsync(PaymentSystemCustomer customer,
+        public async Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer,
             PCISafeCardDetails card, OCIntegrationConfig configOverride = null)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            var cardCreateOptions = new StripeCardCreateMapper().MapCardCreateOptions(card);
+            var cardCreateMapper = new StripeCardCreateMapper();
+            var cardCreateOptions = cardCreateMapper.MapCardCreateOptions(card);
 
             if (customer.CustomerAlreadyExists)
             {
                 // do we need to do anything here?
+                // https://stripe.com/docs/api/payment_methods/attach
             }
             else
             {
@@ -95,41 +97,18 @@ namespace OrderCloud.Integrations.Payment.Stripe
                 customer.ID = stripeCustomer.Id;
             }
             var createdCard = await StripeClient.CreateCardAsync(customer.ID, cardCreateOptions, config);
-            // https://stripe.com/docs/api/payment_methods/attach
 
-            return new PCISafeCardDetails()
-            {
-                ExpirationMonth = createdCard.ExpMonth.ToString(),
-                ExpirationYear = createdCard.ExpYear.ToString(),
-                NumberLast4Digits = createdCard.Last4,
-                SavedCardID = createdCard.Id,
-                CardType = createdCard.Brand,
-                CardHolderName = createdCard.Name,
-                Token = createdCard.Fingerprint
-            };
+            return cardCreateMapper.MapCardCreateResponse(customer.ID, createdCard);
         }
 
         public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID,
             OCIntegrationConfig configOverride = null)
         {
             {
-                var savedCardsList = new List<PCISafeCardDetails>();
                 var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-                var cardsList = await StripeClient.ListCreditCardsAsync(customerID, config);
-                foreach (var card in cardsList.Data)
-                {
-                    savedCardsList.Add(new PCISafeCardDetails()
-                    {
-                        ExpirationMonth = card.ExpMonth.ToString(),
-                        ExpirationYear = card.ExpYear.ToString(),
-                        NumberLast4Digits = card.Last4,
-                        SavedCardID = card.Id,
-                        CardType = card.Brand,
-                        CardHolderName = card.Name,
-                        Token = card.Fingerprint
-                    });
-                }
-                return savedCardsList;
+                var cardMapper = new StripeCardMapper();
+                var cardList = await StripeClient.ListCreditCardsAsync(customerID, config);
+                return cardMapper.MapStripeCardListResponse(cardList);
             }
         }
 
@@ -137,17 +116,9 @@ namespace OrderCloud.Integrations.Payment.Stripe
             OCIntegrationConfig configOverride = null)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            var creditCard = await StripeClient.GetCreditCardAsync(customerID, cardID, config);
-            return new PCISafeCardDetails()
-            {
-                ExpirationMonth = creditCard.ExpMonth.ToString(),
-                ExpirationYear = creditCard.ExpYear.ToString(),
-                NumberLast4Digits = creditCard.Last4,
-                SavedCardID = creditCard.Id,
-                CardType = creditCard.Brand,
-                CardHolderName = creditCard.Name,
-                Token = creditCard.Fingerprint
-            };
+            var cardMapper = new StripeCardMapper();
+            var card = await StripeClient.GetCreditCardAsync(customerID, cardID, config);
+            return cardMapper.MapStripeCardGetResponse(card);
         }
 
         public Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null)

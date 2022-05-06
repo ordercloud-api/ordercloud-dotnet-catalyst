@@ -26,9 +26,8 @@ namespace OrderCloud.Integrations.Payment.Stripe
         /// <summary>
         /// https://stripe.com/docs/api/customers/create
         /// </summary>
-        public async Task<Customer> CreateCustomerAsync(CustomerCreateOptions options, StripeConfig optionalOverride = null)
+        public static async Task<Customer> CreateCustomerAsync(CustomerCreateOptions options, StripeConfig config)
         {
-            StripeConfig config = optionalOverride ?? _defaultConfig;
             StripeConfiguration.ApiKey = config.SecretKey;
             var service = new CustomerService();
             return await service.CreateAsync(options);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using OrderCloud.Catalyst;
 using OrderCloud.Integrations.Payment.Stripe.Mappers;
@@ -18,15 +17,10 @@ namespace OrderCloud.Integrations.Payment.Stripe
         {
             {
                 var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-                var paymentIntentCreateOptions = new StripePaymentIntentCreateMapper().MapPaymentIntentCreateAndConfirmOptions(transaction);
+                var paymentIntentMapper = new StripePaymentIntentMapper();
+                var paymentIntentCreateOptions = paymentIntentMapper.MapPaymentIntentCreateAndConfirmOptions(transaction);
                 var createdPaymentIntent = await StripeClient.CreateAndConfirmPaymentIntentAsync(paymentIntentCreateOptions, config);
-                return new CCTransactionResult()
-                {
-                    Message = createdPaymentIntent.Status,
-                    Succeeded = createdPaymentIntent.Status.ToLower() == "requires_capture",
-                    TransactionID = createdPaymentIntent.Id, // transaction.TransactionID represents PaymentMethodID, this now represents PaymentIntentID
-                    Amount = createdPaymentIntent.Amount
-                };
+                return paymentIntentMapper.MapPaymentIntentCreateAndConfirmResponse(createdPaymentIntent);
             }
         }
 
@@ -34,45 +28,30 @@ namespace OrderCloud.Integrations.Payment.Stripe
             OCIntegrationConfig configOverride = null)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            var paymentIntentCaptureOptions = new StripePaymentIntentCaptureMapper().MapPaymentIntentCaptureOptions(transaction);
+            var paymentIntentMapper = new StripePaymentIntentMapper();
+            var paymentIntentCaptureOptions = paymentIntentMapper.MapPaymentIntentCaptureOptions(transaction);
             var capturedPaymentIntent = await StripeClient.CapturePaymentIntentAsync(transaction.TransactionID, paymentIntentCaptureOptions, config);
-            return new CCTransactionResult()
-            {
-                Message = capturedPaymentIntent.Status,
-                Succeeded = capturedPaymentIntent.Status.ToLower() == "succeeded",
-                TransactionID = capturedPaymentIntent.Id,
-                Amount = capturedPaymentIntent.Amount
-            };
+            return paymentIntentMapper.MapPaymentIntentCaptureResponse(capturedPaymentIntent);
         }
 
         public async Task<CCTransactionResult> VoidAuthorizationAsync(FollowUpCCTransaction transaction,
             OCIntegrationConfig configOverride = null)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            var cancelPaymentIntentOptions = StripePaymentIntentCancelMapper.MapPaymentIntentCancelOptions(transaction);
+            var paymentIntentMapper = new StripePaymentIntentMapper();
+            var cancelPaymentIntentOptions = paymentIntentMapper.MapPaymentIntentCancelOptions(transaction);
             var canceledPaymentIntent = await StripeClient.CancelPaymentIntentAsync(transaction.TransactionID, cancelPaymentIntentOptions, config);
-            return new CCTransactionResult()
-            {
-                Message = canceledPaymentIntent.Status,
-                Succeeded = canceledPaymentIntent.Status.ToLower() == "canceled",
-                TransactionID = canceledPaymentIntent.Id,
-                Amount = canceledPaymentIntent.Amount
-            };
+            return paymentIntentMapper.MapPaymentIntentCancelResponse(canceledPaymentIntent);
         }
 
         public async Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction,
             OCIntegrationConfig configOverride = null)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            var refundCreateOptions = new StripeRefundCreateMapper().MapRefundCreateOptions(transaction);
+            var refundMapper = new StripeRefundMapper();
+            var refundCreateOptions = refundMapper.MapRefundCreateOptions(transaction);
             var refund = await StripeClient.CreateRefundAsync(refundCreateOptions, config);
-            return new CCTransactionResult()
-            {
-                Message = refund.Status,
-                Succeeded = refund.Status.ToLower() == "succeeded",
-                TransactionID = refund.Id, // this does not reflect PaymentIntentID
-                Amount = refund.Amount
-            };
+            return refundMapper.MapRefundCreateResponse(refund);
         }
         #endregion
 

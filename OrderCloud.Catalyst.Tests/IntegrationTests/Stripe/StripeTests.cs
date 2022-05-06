@@ -39,7 +39,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
                 Currency = "USD",
                 TransactionID = "pm_234234234234234234" // payment method ID
             };
-            var paymentIntentCreateOpts = new StripePaymentIntentCreateMapper().MapPaymentIntentCreateAndConfirmOptions(transaction);
+            var paymentIntentCreateOpts = new StripePaymentIntentMapper().MapPaymentIntentCreateAndConfirmOptions(transaction);
             Assert.AreEqual(transaction.Amount, paymentIntentCreateOpts.Amount);
             Assert.AreEqual(transaction.Currency, paymentIntentCreateOpts.Currency);
             Assert.AreEqual(transaction.TransactionID, paymentIntentCreateOpts.PaymentMethod);
@@ -54,7 +54,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
                 Amount = 500,
                 TransactionID = "pi_345345346456456" // payment intent ID
             };
-            var paymentIntentCaptureOptions = new StripePaymentIntentCaptureMapper().MapPaymentIntentCaptureOptions(transaction);
+            var paymentIntentCaptureOptions = new StripePaymentIntentMapper().MapPaymentIntentCaptureOptions(transaction);
             Assert.AreEqual(transaction.Amount, paymentIntentCaptureOptions.AmountToCapture);
         }
 
@@ -67,7 +67,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
                 TransactionID = "pi_345345346456456" // payment intent ID
             };
 
-            var refundCreateOptions = new StripeRefundCreateMapper().MapRefundCreateOptions(transaction);
+            var refundCreateOptions = new StripeRefundMapper().MapRefundCreateOptions(transaction);
             Assert.AreEqual(transaction.Amount, refundCreateOptions.Amount);
             Assert.AreEqual(transaction.TransactionID, refundCreateOptions.PaymentIntent);
         }

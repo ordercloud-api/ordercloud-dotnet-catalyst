@@ -79,9 +79,10 @@ namespace OrderCloud.Integrations.Payment.Stripe
         {
             {
                 var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-                var cardMapper = new StripeCardMapper();
-                var cardList = await StripeClient.ListCreditCardsAsync(customerID, config);
-                return cardMapper.MapStripeCardListResponse(cardList);
+                var paymentMethodMapper = new StripePaymentMethodMapper();
+                var listPaymentMethodsOptions = paymentMethodMapper.MapPaymentMethodListOptions(customerID);
+                var paymentMethodList = await StripeClient.ListPaymentMethodsAsync(listPaymentMethodsOptions, config);
+                return paymentMethodMapper.MapStripePaymentMethodListResponse(paymentMethodList);
             }
         }
 

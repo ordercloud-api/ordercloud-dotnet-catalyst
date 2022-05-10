@@ -49,25 +49,5 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
                 Token = card.Fingerprint
             };
         }
-
-        public List<PCISafeCardDetails> MapStripeCardListResponse(StripeList<Card> cardsList)
-        {
-            var savedCardsList = new List<PCISafeCardDetails>();
-            foreach (var card in cardsList.Data)
-            {
-                savedCardsList.Add(new PCISafeCardDetails()
-                {
-                    ExpirationMonth = card.ExpMonth.ToString(),
-                    ExpirationYear = card.ExpYear.ToString(),
-                    NumberLast4Digits = card.Last4,
-                    SavedCardID = card.Id,
-                    CardType = card.Brand,
-                    CardHolderName = card.Name,
-                    Token = card.Fingerprint
-                });
-            }
-
-            return savedCardsList;
-        }
     }
 }

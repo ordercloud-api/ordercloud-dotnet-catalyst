@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
@@ -18,10 +18,10 @@
 		<RepositoryType>git</RepositoryType>
 		<Company>Sitecore</Company>
 		<Product>OrderCloud</Product>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>
 	<ItemGroup>
-		<None Include="..\ordercloud-logo-blue.png" Pack="true" PackagePath="\" />
+    <None Include="..\sitecore_logo.jpg" Pack="true" PackagePath="\" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\OrderCloud.Catalyst\OrderCloud.Catalyst.csproj" />

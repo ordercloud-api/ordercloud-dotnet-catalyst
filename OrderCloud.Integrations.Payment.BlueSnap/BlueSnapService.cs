@@ -9,6 +9,8 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 {
 	public class BlueSnapService : OCIntegrationService, ICreditCardSaver, ICreditCardProcessor
 	{
+		public static readonly string HOSTED_PAYMENT_FIELD_TOKEN_KEY = "HostedPaymentFieldToken";
+
 		public BlueSnapService(BlueSnapConfig defaultConfig) : base(defaultConfig) { }
 
 		public async Task<Dictionary<string, string>> InitIFrameCredentialsAsync(InitiateCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
@@ -17,7 +19,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 			var token = await BlueSnapClient.GetHostedPaymentFieldToken(config);
 			var dict = new Dictionary<string, string>
 			{
-				{ "HostedPaymentFieldToken", token }
+				{ HOSTED_PAYMENT_FIELD_TOKEN_KEY, token }
 			};
 			return dict;
 		}

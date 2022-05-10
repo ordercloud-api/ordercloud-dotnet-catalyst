@@ -1,6 +1,6 @@
 ﻿# OrderCloud.Integrations.Shipping.EasyPost
 
-This project brings shipping rate calculation to your ecommerce app using the [EasyPost](https://www.easypost.com/) API. It is published as a [nuget code library](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.EasyPost) and conforms to a standard shipping interface published in the base library OrderCloud.Catalyst.
+This project brings shipping rate calculation to your ecommerce app using the [EasyPost API](https://www.easypost.com/). It is published as a [nuget code library](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.EasyPost) and conforms to a standard shipping interface published in the base library OrderCloud.Catalyst.
 
 ## Basics and Installation
 

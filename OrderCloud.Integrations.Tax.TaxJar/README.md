@@ -1,6 +1,6 @@
 ﻿# OrderCloud.Integrations.Tax.TaxJar
 
-This project brings easy tax calculation to your ecommerce app using the [TaxJar](https://www.taxjar.com/) API. It will be published as a nuget code library and conforms to standard tax interfaces published in the base library OrderCloud.Catalyst.
+This project brings easy tax calculation to your ecommerce app using the [TaxJar API](https://www.taxjar.com/). It is published as a [nuget code library](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.TaxJar) and conforms to standard tax interfaces published in the base library OrderCloud.Catalyst.
 
 ## Basics and Installation
 

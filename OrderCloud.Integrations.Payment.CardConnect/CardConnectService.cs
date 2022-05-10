@@ -12,6 +12,13 @@ namespace OrderCloud.Integrations.Payment.CardConnect
 	{
 		public CardConnectService(CardConnectConfig defaultConfig) : base(defaultConfig) { }
 
+		public async Task<Dictionary<string, string>> InitIFrameCredentialsAsync(InitiateCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+		{
+			// CardConnect Iframe does not need any credentials. This is basically an empty implementation to satisfy the ICreditCardProcessor interface.
+			var dict = new Dictionary<string, string> { };
+			return dict;
+		}
+
 		public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
 		{
 			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);

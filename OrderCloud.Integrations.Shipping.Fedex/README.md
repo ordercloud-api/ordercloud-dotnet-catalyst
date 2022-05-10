@@ -1,6 +1,6 @@
-﻿# OrderCloud.Integrations.Shipping.Fedex
+# OrderCloud.Integrations.Shipping.Fedex
 
-This project brings shipping rate calculation to your ecommerce app using the [Fedex](https://developer.fedex.com/api/en-us/get-started.html) API. It will be published as a nuget code library and conforms to a standard shipping interface published in the base library OrderCloud.Catalyst.
+This project brings shipping rate calculation to your ecommerce app using the [Fedex](https://developer.fedex.com/api/en-us/get-started.html) API. It is published as a [nuget code library](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.Fedex) and conforms to a standard shipping interface published in the base library OrderCloud.Catalyst.
 
 ## Basics and Installation
 

@@ -10,7 +10,7 @@
 		<Copyright>Copyright 2022, Sitecore.</Copyright>
 		<PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
 		<PackageIconUrl></PackageIconUrl>
-		<PackageIcon>ordercloud-logo-blue.png</PackageIcon>
+		<PackageIcon>sitecore_logo.jpg</PackageIcon>
 		<PackageTags>ordercloud ecommerce payment webjobs sitecore bluesnap</PackageTags>
 		<PackageLicenseUrl></PackageLicenseUrl>
 		<RepositoryUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</RepositoryUrl>

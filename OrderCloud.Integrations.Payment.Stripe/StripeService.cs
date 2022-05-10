@@ -60,8 +60,7 @@ namespace OrderCloud.Integrations.Payment.Stripe
             PCISafeCardDetails card, OCIntegrationConfig configOverride = null)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            var cardMapper = new StripeCardMapper();
-            var cardCreateOptions = cardMapper.MapStripeCardCreateOptions(card);
+            var paymentMethodMapper = new StripePaymentMethodMapper();
 
             if (!customer.CustomerAlreadyExists)
             {
@@ -69,9 +68,12 @@ namespace OrderCloud.Integrations.Payment.Stripe
                 var stripeCustomer = await StripeClient.CreateCustomerAsync(stripeCustomerOptions, config);
                 customer.ID = stripeCustomer.Id;
             }
-            var createdCard = await StripeClient.CreateCardAsync(customer.ID, cardCreateOptions, config);
 
-            return cardMapper.MapStripeCardCreateResponse(customer.ID, createdCard);
+            var paymentMethodCreateOptions = paymentMethodMapper.MapPaymentMethodCreateOptions(customer.ID, card);
+            var paymentMethod = await StripeClient.CreatePaymentMethodAsync(paymentMethodCreateOptions, config);
+            var paymentMethodAttachOptions = paymentMethodMapper.MapPaymentMethodAttachOptions(customer.ID);
+            paymentMethod = await StripeClient.AttachPaymentMethodToCustomerAsync(paymentMethod.Id, paymentMethodAttachOptions, config);
+            return paymentMethodMapper.MapPaymentMethodCreateResponse(customer.ID, paymentMethod);
         }
 
         public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID,
@@ -86,19 +88,19 @@ namespace OrderCloud.Integrations.Payment.Stripe
             }
         }
 
-        public async Task<PCISafeCardDetails> GetSavedCardAsync(string customerID, string cardID,
+        public async Task<PCISafeCardDetails> GetSavedCardAsync(string customerID, string paymentMethodID,
             OCIntegrationConfig configOverride = null)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
             var cardMapper = new StripeCardMapper();
-            var card = await StripeClient.GetCreditCardAsync(customerID, cardID, config);
-            return cardMapper.MapStripeCardGetResponse(card);
+            var paymentMethod = await StripeClient.RetrievePaymentMethodAsync(paymentMethodID, config);
+            return cardMapper.MapStripeCardGetResponse(paymentMethod);
         }
 
-        public async Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null)
+        public async Task DeleteSavedCardAsync(string customerID, string paymentMethodID, OCIntegrationConfig configOverride = null)
         {
             var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
-            await StripeClient.DeleteCreditCardAsync(customerID, cardID, config);
+            await StripeClient.DetachPaymentMethodToCustomerAsync(paymentMethodID, config);
         }
         #endregion
     }

@@ -8,6 +8,38 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
 {
     public class StripePaymentMethodMapper
     {
+        public PaymentMethodCreateOptions MapPaymentMethodCreateOptions(string customerID, PCISafeCardDetails card) =>
+            new PaymentMethodCreateOptions()
+            {
+                //Customer = customerID,
+                Type = "card",
+                Card = new PaymentMethodCardOptions()
+                {
+                    Token = card.Token
+                }
+            };
+
+        public CardCreatedResponse MapPaymentMethodCreateResponse(string customerID, PaymentMethod paymentMethod) =>
+            new CardCreatedResponse()
+            {
+                CustomerID = customerID,
+                Card = new PCISafeCardDetails()
+                {
+                    ExpirationMonth = paymentMethod.Card.ExpMonth.ToString(),
+                    ExpirationYear = paymentMethod.Card.ExpYear.ToString(),
+                    NumberLast4Digits = paymentMethod.Card.Last4,
+                    SavedCardID = paymentMethod.Id,
+                    CardType = paymentMethod.Card.Brand,
+                    Token = paymentMethod.Card.Fingerprint
+                }
+            };
+
+        public PaymentMethodAttachOptions MapPaymentMethodAttachOptions(string customerID) =>
+            new PaymentMethodAttachOptions()
+            {
+                Customer = customerID
+            };
+
 
         public PaymentMethodListOptions MapPaymentMethodListOptions(string customerID) =>
             new PaymentMethodListOptions()

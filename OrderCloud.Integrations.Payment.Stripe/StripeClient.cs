@@ -14,29 +14,41 @@ namespace OrderCloud.Integrations.Payment.Stripe
 
         /// <summary>
         /// https://stripe.com/docs/api/payment_methods/create
-        /// Not used in ICreditCardProcessor or ICreditCardSaver
         /// </summary>
-        public async Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethodCreateOptions options, StripeConfig optionalOverride = null)
+        public static async Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethodCreateOptions options, StripeConfig config)
         {
-            StripeConfig config = optionalOverride ?? _defaultConfig;
             StripeConfiguration.ApiKey = config.SecretKey;
             var service = new PaymentMethodService();
             return await service.CreateAsync(options);
         }
 
-        public async Task<PaymentMethod> AttachPaymentMethodToCustomerAsync(string paymentMethodID, PaymentMethodAttachOptions attachOptions,
-            StripeConfig optionalOverride = null)
+        /// <summary>
+        /// https://stripe.com/docs/api/payment_methods/retrieve
+        /// </summary>
+        public static async Task<PaymentMethod> RetrievePaymentMethodAsync(string paymentMethodID, StripeConfig config)
         {
-            StripeConfig config = optionalOverride ?? _defaultConfig;
+            StripeConfiguration.ApiKey = config.SecretKey;
+            var service = new PaymentMethodService();
+            return await service.GetAsync(paymentMethodID);
+        }
+
+        /// <summary>
+        /// https://stripe.com/docs/api/payment_methods/attach
+        /// </summary>
+        public static async Task<PaymentMethod> AttachPaymentMethodToCustomerAsync(string paymentMethodID, PaymentMethodAttachOptions attachOptions,
+            StripeConfig config)
+        {
             StripeConfiguration.ApiKey = config.SecretKey;
             var service = new PaymentMethodService();
             return await service.AttachAsync(paymentMethodID, attachOptions);
         }
 
-        public async Task<PaymentMethod> DetachPaymentMethodToCustomerAsync(string paymentMethodID,
-            StripeConfig optionalOverride = null)
+        /// <summary>
+        /// https://stripe.com/docs/api/payment_methods/detach
+        /// </summary>
+        public static async Task<PaymentMethod> DetachPaymentMethodToCustomerAsync(string paymentMethodID,
+            StripeConfig config)
         {
-            StripeConfig config = optionalOverride ?? _defaultConfig;
             StripeConfiguration.ApiKey = config.SecretKey;
             var service = new PaymentMethodService();
             return await service.DetachAsync(paymentMethodID);
@@ -44,7 +56,6 @@ namespace OrderCloud.Integrations.Payment.Stripe
 
         /// <summary>
         /// https://stripe.com/docs/api/payment_methods/list
-        /// Not used in ICreditCardProcessor or ICreditCardSaver
         /// </summary>
         public static async Task<StripeList<PaymentMethod>> ListPaymentMethodsAsync(
             PaymentMethodListOptions listOptions, StripeConfig config)
@@ -117,32 +128,12 @@ namespace OrderCloud.Integrations.Payment.Stripe
         /// <summary>
         /// https://stripe.com/docs/api/cards/list
         /// </summary>
+        /// NOT USED IN ICreditCardSaver OR ICreditCardProcessor
         public async Task<StripeList<Card>> ListCreditCardsAsync(string customerID, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
             var service = new CardService();
             return await service.ListAsync(customerID);
-        }
-
-        /// <summary>
-        /// https://stripe.com/docs/api/cards/retrieve
-        /// </summary>
-        public static async Task<Card> GetCreditCardAsync(string customerID, string creditCardID, StripeConfig config)
-        {
-            StripeConfiguration.ApiKey = config.SecretKey;
-            var service = new CardService();
-            return await service.GetAsync(customerID, creditCardID);
-        }
-
-        /// <summary>
-        /// https://stripe.com/docs/api/cards/delete
-        /// </summary>
-        public static async Task DeleteCreditCardAsync(string customerID, string creditCardID,
-            StripeConfig config)
-        {
-            StripeConfiguration.ApiKey = config.SecretKey;
-            var service = new CardService();
-            await service.DeleteAsync(customerID, creditCardID);
         }
     }
 }

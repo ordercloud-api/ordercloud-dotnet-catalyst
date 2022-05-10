@@ -18,35 +18,16 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
             };
         }
 
-        public CardCreatedResponse MapStripeCardCreateResponse(string customerID, Card card)
-        {
-            return new CardCreatedResponse()
-            {
-                CustomerID = customerID,
-                Card = new PCISafeCardDetails()
-                {
-                    ExpirationMonth = card.ExpMonth.ToString(),
-                    ExpirationYear = card.ExpYear.ToString(),
-                    NumberLast4Digits = card.Last4,
-                    SavedCardID = card.Id,
-                    CardType = card.Brand,
-                    CardHolderName = card.Name,
-                    Token = card.Fingerprint
-                }
-            };
-        }
-
-        public PCISafeCardDetails MapStripeCardGetResponse(Card card)
+        public PCISafeCardDetails MapStripeCardGetResponse(PaymentMethod paymentMethod)
         {
             return new PCISafeCardDetails()
             {
-                ExpirationMonth = card.ExpMonth.ToString(),
-                ExpirationYear = card.ExpYear.ToString(),
-                NumberLast4Digits = card.Last4,
-                SavedCardID = card.Id,
-                CardType = card.Brand,
-                CardHolderName = card.Name,
-                Token = card.Fingerprint
+                ExpirationMonth = paymentMethod.Card.ExpMonth.ToString(),
+                ExpirationYear = paymentMethod.Card.ExpYear.ToString(),
+                NumberLast4Digits = paymentMethod.Card.Last4,
+                SavedCardID = paymentMethod.Id,
+                CardType = paymentMethod.Card.Brand,
+                Token = paymentMethod.Card.Fingerprint
             };
         }
     }

@@ -33,6 +33,15 @@ namespace OrderCloud.Integrations.Payment.Stripe
             return await service.AttachAsync(paymentMethodID, attachOptions);
         }
 
+        public async Task<PaymentMethod> DetachPaymentMethodToCustomerAsync(string paymentMethodID,
+            StripeConfig optionalOverride = null)
+        {
+            StripeConfig config = optionalOverride ?? _defaultConfig;
+            StripeConfiguration.ApiKey = config.SecretKey;
+            var service = new PaymentMethodService();
+            return await service.DetachAsync(paymentMethodID);
+        }
+
         /// <summary>
         /// https://stripe.com/docs/api/payment_methods/list
         /// Not used in ICreditCardProcessor or ICreditCardSaver
@@ -108,7 +117,7 @@ namespace OrderCloud.Integrations.Payment.Stripe
         /// <summary>
         /// https://stripe.com/docs/api/cards/list
         /// </summary>
-        public static async Task<StripeList<Card>> ListCreditCardsAsync(string customerID, StripeConfig config)
+        public async Task<StripeList<Card>> ListCreditCardsAsync(string customerID, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
             var service = new CardService();

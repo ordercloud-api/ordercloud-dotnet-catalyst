@@ -1,6 +1,6 @@
 ﻿# OrderCloud.Integrations.Payment.BlueSnap
 
-This project brings payment processing to your ecommerce app using the [BlueSnap](https://developers.bluesnap.com/v8976-JSON/docs) API. It will be published as a nuget code library and conforms to the standard interfaces `ICreditCardProcessor` and `ICreditCardSaver` published in the base library ordercloud-dotnet-catalyst.
+This project brings payment processing to your ecommerce app using the [BlueSnap](https://developers.bluesnap.com/v8976-JSON/docs) API. It is published as a [nuget code library](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.BlueSnap) and conforms to the standard interfaces `ICreditCardProcessor` and `ICreditCardSaver` published in the base library ordercloud-dotnet-catalyst.
 
 ## Payment Processing Basics
 
@@ -11,7 +11,7 @@ The OrderCloud API does not have integration points designed specifically for pa
 - Once the user enters their payment details and you've seccurely tokenized it, what happens next? For credit cards, you have 2 choices. You can authorize the card - which verifies funds are available and holds them, but is easy to reverse with a void. Or you can authorize and capture - which begins the transfer of funds immediately, but can only be reversed with a refund (which will cost you, the merchant, a processing fee). Incorrectly placed, canceled, or refunded orders are very common in Ecommerce, so it is strongly recommended that you wait to Capture.   
 - Both the authorization request and the capture request must be made from a secure server-side context. Authorization should take place only after a user has indicated they want to submit the order, but it must succeed before an Order's status should be set to submitted. A pre-webhook endpoint or a proxy endpoint for order submit are the best ways to achieve this.     
 - There are different valid options for when to Capture, including when the order is shipped, a set time period after the order is placed, or in a nightly batch job.
-- If you need to reverse a transaction because of a cancelation or refund, you either Void the transaction or Refund, depending on if capture has taken place. 
+- If you need to reverse a transaction because of a cancelation or refund, you either Void the authorized transaction or Refund the captured transaction, depending on if capture has taken place. 
 
 ### Table of key credit card events
 
@@ -37,7 +37,7 @@ You will need these configuration data points to authneticate to the BlueSnap AP
 ```c#
 var blueSnapService = new BlueSnapService(new BlueSnapConfig()
 {
-	BaseUrl = https://sandbox.bluesnap.com // or https://ws.bluesnap.com
+	BaseUrl = "https://sandbox.bluesnap.com" // or https://ws.bluesnap.com
 	APIUsername = "...",
 	APIPassword = "...",
 });

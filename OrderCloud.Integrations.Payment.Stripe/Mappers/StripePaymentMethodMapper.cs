@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using OrderCloud.Catalyst;
 using Stripe;
 
 namespace OrderCloud.Integrations.Payment.Stripe.Mappers
 {
+    /// <summary>
+    /// https://stripe.com/docs/api/payment_methods
+    /// </summary>
     public class StripePaymentMethodMapper
     {
         public PaymentMethodCreateOptions MapPaymentMethodCreateOptions(string customerID, PCISafeCardDetails card) =>
             new PaymentMethodCreateOptions()
             {
-                //Customer = customerID,
                 Type = "card",
                 Card = new PaymentMethodCardOptions()
                 {

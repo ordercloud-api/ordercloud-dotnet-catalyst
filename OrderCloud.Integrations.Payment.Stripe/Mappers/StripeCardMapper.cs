@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using OrderCloud.Catalyst;
+﻿using OrderCloud.Catalyst;
 using Stripe;
 
 namespace OrderCloud.Integrations.Payment.Stripe.Mappers

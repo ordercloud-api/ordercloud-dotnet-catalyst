@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using OrderCloud.Catalyst;
+﻿using OrderCloud.Catalyst;
 using Stripe;
 
 namespace OrderCloud.Integrations.Payment.Stripe.Mappers
 {
+    /// <summary>
+    /// https://stripe.com/docs/api/customers
+    /// </summary>
     public class StripeCustomerCreateMapper
     {
         public static CustomerCreateOptions MapCustomerOptions(PaymentSystemCustomer customer)

@@ -17,7 +17,7 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
                 CaptureMethod = "manual", // Required value for separate auth and capture
                 Currency = transaction.Currency,
                 Customer = transaction.ProcessorCustomerID,
-                PaymentMethod = transaction.TransactionID, // Represents PaymentMethodID
+                PaymentMethod = transaction?.CardDetails?.SavedCardID ?? transaction.TransactionID, // Represents PaymentMethodID
             };
 
         public CCTransactionResult MapPaymentIntentCreateAndConfirmResponse(PaymentIntent createdPaymentIntent) =>

@@ -25,7 +25,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Shi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Shipping.Fedex", "OrderCloud.Integrations.Shipping.Fedex\OrderCloud.Integrations.Shipping.Fedex.csproj", "{C32A3102-2CEB-4042-8F37-3EA4D66D743F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Payment.Stripe", "OrderCloud.Integrations.Payment.Stripe\OrderCloud.Integrations.Payment.Stripe.csproj", "{483181A7-7879-4D03-B5F3-69C5A8F40A1D}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderCloud.Integrations.Payment.BlueSnap", "OrderCloud.Integrations.Payment.BlueSnap\OrderCloud.Integrations.Payment.BlueSnap.csproj", "{72AFA9D4-4767-4BA7-A467-91A4743FA5EE}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderCloud.Integrations.Payment.CardConnect", "OrderCloud.Integrations.Payment.CardConnect\OrderCloud.Integrations.Payment.CardConnect.csproj", "{C0035558-8279-463E-B10F-9881079592E7}"
 EndProject
 Global
@@ -70,6 +73,10 @@ Global
 		{C32A3102-2CEB-4042-8F37-3EA4D66D743F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C32A3102-2CEB-4042-8F37-3EA4D66D743F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C32A3102-2CEB-4042-8F37-3EA4D66D743F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{483181A7-7879-4D03-B5F3-69C5A8F40A1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{483181A7-7879-4D03-B5F3-69C5A8F40A1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{483181A7-7879-4D03-B5F3-69C5A8F40A1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{483181A7-7879-4D03-B5F3-69C5A8F40A1D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{72AFA9D4-4767-4BA7-A467-91A4743FA5EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{72AFA9D4-4767-4BA7-A467-91A4743FA5EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72AFA9D4-4767-4BA7-A467-91A4743FA5EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -92,6 +99,7 @@ Global
 		{636F46DB-6475-4C41-B5CB-8DCF77615096} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
 		{EE03A8ED-B316-47E4-B89E-DC3C9019D16E} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
 		{C32A3102-2CEB-4042-8F37-3EA4D66D743F} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
+		{483181A7-7879-4D03-B5F3-69C5A8F40A1D} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
 		{72AFA9D4-4767-4BA7-A467-91A4743FA5EE} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
 		{C0035558-8279-463E-B10F-9881079592E7} = {04D2632E-8BB1-449B-9E2F-751295F5C2EF}
 	EndGlobalSection

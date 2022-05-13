@@ -10,7 +10,7 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Models
     public class CardConnectCreateUpdateProfileRequest
     {
         /// <summary>
-        /// 20-digit profile ID and (optional) 3-digit account ID string in the format &lt;profile id&gt;/&lt;account id&gt;, required to update an existing profile.
+        /// 20-digit profile ID and (optional) 1 to 3-digit account ID string in the format {profileID}/{accountID}, required to update an existing profile.
         /// </summary>
         public string profile { get; set; }
         /// <summary>

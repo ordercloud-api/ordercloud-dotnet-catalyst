@@ -54,8 +54,13 @@ namespace OrderCloud.Integrations.Payment.CardConnect
 		public async Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig overrideConfig = null)
 		{
 			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
-			var cardConnectSavedCard = await CardConnectClient.CreateOrUpdateProfile(card.ToCardConnectCreateUpdateProfileRequest(customer), config);
-			return cardConnectSavedCard.ToIntegrationsCardCreatedResponse();
+			if (customer.CustomerAlreadyExists)
+            {
+				return (await CardConnectClient.CreateOrUpdateProfile(card.ToCardConnectUpdateProfileRequest(customer, config.MerchantId), config)).ToIntegrationsCardCreatedResponse();
+            } else
+            {
+				return (await CardConnectClient.CreateOrUpdateProfile(card.ToCardConnectCreateProfileRequest(config.MerchantId), config)).ToIntegrationsCardCreatedResponse(); ;
+            }
 		}
 		public async Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig overrideConfig = null)
 		{

@@ -91,6 +91,13 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Models
         /// Note: It is strongly recommended that your application prompts for CVV for card-not-present transactions for fraud prevention and to avoid declines on the CardPointe Gateway if the CVV verification option is enabled for your merchant account.
         /// </summary>
         public string cvv2 { get; set; }
+        /// <summary>
+        /// Optional, to create an account profile or to use an existing profile.
+        /// To create a profile using the account holder data provided in the request, specify Y.
+        /// To use an existing profile for this authorization, omit the account parameter and instead use the profile parameter to supply the 20-digit profile id and 1-3-digit account id string in the format <profileid>/<acctid>. See Profiles for more information.
+        /// Note: You can submit a $0 authorization, including CVV and AVS verification, to validate the customer's information before creating a profile.
+        /// </summary>
+        public string profile { get; set; }
     }
 
     /// <summary>

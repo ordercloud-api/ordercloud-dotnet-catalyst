@@ -97,22 +97,33 @@ namespace OrderCloud.Integrations.Payment.CardConnect
 		/// <summary>
 		/// https://developer.cardpointe.com/cardconnect-api#get-profile-request
 		/// </summary>
-		public static async Task<CardConnectGetProfileResponse> GetSavedCardsAsync(string profileid, string merchid, CardConnectConfig config)
+		public static async Task<List<CardConnectProfile>> GetSavedCardsAsync(string profileid, string merchid, CardConnectConfig config)
 		{
-			return await TryCatchRequestAsync(config, async (request) =>
+            try
             {
-                var transactionResult = await request
-                    .AppendPathSegments("profile", profileid, null, merchid)
-                    .GetAsync()
-                    .ReceiveJson<CardConnectGetProfileResponse>();
-
-				if (!transactionResult.WasSuccessful())
+                return await $"{config.BaseUrl}/profile/{profileid}//{merchid}"
+                    .WithBasicAuth(config.APIUsername, config.APIPassword).GetAsync()
+                    .ReceiveJson<List<CardConnectProfile>>();
+            }
+            catch (FlurlHttpTimeoutException ex)  // simulate with this https://stackoverflow.com/questions/100841/artificially-create-a-connection-timeout-error
+            {
+                // candidate for retry here?
+                throw new IntegrationNoResponseException(config, $"{config.BaseUrl}/profile/{profileid}//{merchid}");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var status = ex?.Call?.Response?.StatusCode;
+                if (status == null) // simulate by putting laptop on airplane mode
                 {
-                    throw new IntegrationErrorResponseException(config, request.Url, (int)HttpStatusCode.OK,
-                        transactionResult);
-                };
-				return transactionResult;
-			});
+                    throw new IntegrationNoResponseException(config, $"{config.BaseUrl}/profile/{profileid}//{merchid}");
+                }
+                if (status == 401)
+                {
+                    throw new IntegrationAuthFailedException(config, $"{config.BaseUrl}/profile/{profileid}//{merchid}", (int)status);
+                }
+                var body = await ex.Call.Response.GetJsonAsync();
+                throw new IntegrationErrorResponseException(config, $"{config.BaseUrl}/profile/{profileid}//{merchid}", (int)status, body);
+            }
 		}
         /// <summary>
 		/// https://developer.cardpointe.com/cardconnect-api#get-profile-request

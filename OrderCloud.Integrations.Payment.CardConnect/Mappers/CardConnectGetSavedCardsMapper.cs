@@ -9,17 +9,17 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
     public static class CardConnectGetSavedCardsMapper
     {
         public static List<PCISafeCardDetails> ToIntegrationsGetSavedCardsResponse(
-            this CardConnectGetProfileResponse response)
+            this List<CardConnectProfile> response)
         {
             List<PCISafeCardDetails> savedCards = new List<PCISafeCardDetails>();
-            foreach (CardConnectProfile card in response.profiles)
+            foreach (CardConnectProfile card in response)
             {
                 savedCards.Add(new PCISafeCardDetails()
                 {
                     SavedCardID = card.acctid,
                     CardType = card.accttype,
                     ExpirationMonth = card.expiry.Substring(0, 2),
-                    ExpirationYear = card.expiry.Substring(2,2),
+                    ExpirationYear = card.expiry.Substring(2, 2),
                     CardHolderName = card.name,
                     Token = card.token,
                     NumberLast4Digits = card.token.Substring(card.token.Length - 5, 4)
@@ -42,8 +42,19 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
                 NumberLast4Digits = card.token.Substring(card.token.Length - 5, 4)
             };
         }
-        public static CardConnectCreateUpdateProfileRequest ToCardConnectCreateUpdateProfileRequest(
-            this PCISafeCardDetails card, PaymentSystemCustomer customer)
+        public static CardConnectCreateUpdateProfileRequest ToCardConnectUpdateProfileRequest(this PCISafeCardDetails card, PaymentSystemCustomer customer, string merchantid)
+        {
+            return new CardConnectCreateUpdateProfileRequest()
+            {
+                accttype = card.CardType,
+                expiry = $"{card.ExpirationMonth}{card.ExpirationYear}",
+                name = card.CardHolderName,
+                profile = customer.ID,
+                merchid = merchantid
+            };
+        }
+        public static CardConnectCreateUpdateProfileRequest ToCardConnectCreateProfileRequest(
+            this PCISafeCardDetails card, string merchantid)
         {
             return new CardConnectCreateUpdateProfileRequest()
             {
@@ -51,7 +62,7 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
                 expiry = $"{card.ExpirationMonth}{card.ExpirationYear}",
                 name = card.CardHolderName,
                 account = card.Token,
-                profile = customer.ID,
+                merchid = merchantid
             };
         }
         public static CardCreatedResponse ToIntegrationsCardCreatedResponse(
@@ -67,7 +78,7 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
                     ExpirationYear = card.expiry.Substring(2, 2),
                     CardHolderName = card.name,
                     Token = card.token,
-                    NumberLast4Digits = card.token.Substring(card.token.Length - 5, 4)
+                    NumberLast4Digits = card.token.Substring(card.token.Length - 4, 4)
                 },
                 CustomerID = card.profileid
             };

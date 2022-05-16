@@ -14,18 +14,7 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
             List<PCISafeCardDetails> savedCards = new List<PCISafeCardDetails>();
             foreach (CardConnectProfile card in response)
             {
-                savedCards.Add(new PCISafeCardDetails()
-                {
-                    SavedCardID = card.acctid,
-                    CardType = card.accttype,
-                    ExpirationMonth = card.expiry.Substring(0, 2),
-                    ExpirationYear = card.expiry.Substring(2, 2),
-                    CardHolderName = card.name,
-                    Token = card.token,
-                    // Last 4 digits of the secure card token are the last 4 digits of the card.
-                    // https://developer.cardpointe.com/guides/cardsecure
-                    NumberLast4Digits = card.token.Substring(card.token.Length - 4, 4)
-                });
+                savedCards.Add(card.ToIntegrationsGetSavedCardResponse());
             }
 
             return savedCards;

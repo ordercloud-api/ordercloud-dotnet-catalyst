@@ -42,13 +42,13 @@ namespace OrderCloud.Integrations.Payment.CardConnect
 		public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerId, OCIntegrationConfig overrideConfig = null)
 		{
 			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
-			var cardConnectSavedCards = await CardConnectClient.GetSavedCardsAsync(customerId, config.MerchantId, config);
+			var cardConnectSavedCards = await CardConnectClient.GetProfileAsync(customerId, config.MerchantId, config);
 			return cardConnectSavedCards.ToIntegrationsGetSavedCardsResponse();
 		}
 		public async Task<PCISafeCardDetails> GetSavedCardAsync(string customerId, string cardId, OCIntegrationConfig overrideConfig = null)
 		{
 			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
-			var cardConnectSavedCard = await CardConnectClient.GetSavedCardAsync(customerId, cardId, config.MerchantId, config);
+			var cardConnectSavedCard = await CardConnectClient.GetProfileAccountAsync(customerId, cardId, config.MerchantId, config);
 			return cardConnectSavedCard.ToIntegrationsGetSavedCardResponse();
 		}
 		public async Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig overrideConfig = null)

@@ -97,7 +97,7 @@ namespace OrderCloud.Integrations.Payment.CardConnect
 		/// <summary>
 		/// https://developer.cardpointe.com/cardconnect-api#get-profile-request
 		/// </summary>
-		public static async Task<List<CardConnectProfile>> GetSavedCardsAsync(string profileid, string merchid, CardConnectConfig config)
+		public static async Task<List<CardConnectProfile>> GetProfileAsync(string profileid, string merchid, CardConnectConfig config)
 		{
             try
             {
@@ -128,7 +128,7 @@ namespace OrderCloud.Integrations.Payment.CardConnect
         /// <summary>
 		/// https://developer.cardpointe.com/cardconnect-api#get-profile-request
 		/// </summary>
-		public static async Task<CardConnectProfile> GetSavedCardAsync(string profileId, string cardId, string merchId, CardConnectConfig config)
+		public static async Task<CardConnectProfile> GetProfileAccountAsync(string profileId, string cardId, string merchId, CardConnectConfig config)
 		{
 			return await TryCatchRequestAsync(config, async (request) =>
             {

@@ -22,7 +22,9 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
                     ExpirationYear = card.expiry.Substring(2, 2),
                     CardHolderName = card.name,
                     Token = card.token,
-                    NumberLast4Digits = card.token.Substring(card.token.Length - 5, 4)
+                    // Last 4 digits of the secure card token are the last 4 digits of the card.
+                    // https://developer.cardpointe.com/guides/cardsecure
+                    NumberLast4Digits = card.token.Substring(card.token.Length - 4, 4)
                 });
             }
 
@@ -39,7 +41,9 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
                 ExpirationYear = card.expiry.Substring(2, 2),
                 CardHolderName = card.name,
                 Token = card.token,
-                NumberLast4Digits = card.token.Substring(card.token.Length - 5, 4)
+                // Last 4 digits of the secure card token are the last 4 digits of the card.
+                // https://developer.cardpointe.com/guides/cardsecure
+                NumberLast4Digits = card.token.Substring(card.token.Length - 4, 4)
             };
         }
         public static CardConnectCreateUpdateProfileRequest ToCardConnectUpdateProfileRequest(this PCISafeCardDetails card, PaymentSystemCustomer customer, string merchantid)
@@ -78,6 +82,8 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
                     ExpirationYear = card.expiry.Substring(2, 2),
                     CardHolderName = card.name,
                     Token = card.token,
+                    // Last 4 digits of the secure card token are the last 4 digits of the card.
+                    // https://developer.cardpointe.com/guides/cardsecure
                     NumberLast4Digits = card.token.Substring(card.token.Length - 4, 4)
                 },
                 CustomerID = card.profileid

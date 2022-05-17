@@ -17,7 +17,7 @@ The OrderCloud API does not have integration points designed specifically for pa
 
 | Description | Integration Method | BlueSnap Documentation | OrderCloud Platform Context |
 | ------------- | ------------- | ------------- | ------------- |
-| Request a token needed to build the IFrame | BlueSnapService.CreateHostedPaymentFieldsTokenAsync() | [Link](https://developers.bluesnap.com/v8976-Tools/docs/create-hosted-payment-fields-token) | From the server-side when the user enters the checkout flow |
+| Request a `HostedPaymentFieldToken` needed by the FE IFrame | ICreditCardProcessor.GetIFrameCredentialAsync() | [Link](https://developers.bluesnap.com/v8976-Tools/docs/create-hosted-payment-fields-token) | Before the user enters the payment section of checkout, request the token needed for the IFrame from a server-side context. |
 | Attach the user's card info to the token through the Iframe | None | [Link](https://developers.bluesnap.com/v8976-Tools/docs/hosted-payment-fields) | Save the token and PCI-safe card details (last 4 digits) on a Payment object attached to the Order |
 | Verify and hold funds | ICreditCardProcessor.AuthorizeOnlyAsync() | [Link](https://developers.bluesnap.com/v8976-JSON/docs/auth-only) | Within a pre-webhook or proxy route list Payments, attempt to authorize using the token, set payment accepted true, create a payment transaction, and then submit the Order |
 | Cancel or refund before capture | ICreditCardProcessor.VoidAuthorizationAsync() | [Link](https://developers.bluesnap.com/v8976-JSON/docs/auth-reversal) | In response to a cancelation, void server-side and create a payment transaction. |

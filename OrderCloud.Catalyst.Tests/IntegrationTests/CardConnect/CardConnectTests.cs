@@ -7,7 +7,7 @@ using NUnit.Framework;
 using OrderCloud.Integrations.Payment.CardConnect;
 using OrderCloud.Integrations.Payment.CardConnect.Models;
 
-namespace OrderCloud.Catalyst.Tests.IntegrationTests.CardConnect
+namespace OrderCloud.Catalyst.Tests.IntegrationTests
 {
     [TestFixture]
     public class CardConnectTests

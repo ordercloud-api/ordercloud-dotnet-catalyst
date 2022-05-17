@@ -1,6 +1,6 @@
 ﻿# OrderCloud.Integrations.Payment.CardConnect
 
-This project brings payment processing to your ecommerce app using the [CardConnect](https://developer.cardpointe.com/cardconnect-api) API. It will be published as a nuget code library and conforms to the standard interfaces `ICreditCardProcessor` and `ICreditCardSaver` published in the base library ordercloud-dotnet-catalyst.
+This project brings payment processing to your ecommerce app using the [CardConnect](https://developer.cardpointe.com/cardconnect-api) API. It is published as a [nuget code library](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.CardConnect) and conforms to the standard interfaces `ICreditCardProcessor` and `ICreditCardSaver` published in the base library ordercloud-dotnet-catalyst.
 
 ## Payment Processing Basics
 

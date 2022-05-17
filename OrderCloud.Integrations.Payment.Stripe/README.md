@@ -26,6 +26,10 @@ Card details are collected via Stripe.js in the client. Once details are collect
 | Capture funds | ICreditCardProcessor.CapturePriorAuthorizationAsync() | [Link](https://stripe.com/docs/api/payment_intents/capture) | Catpure when the order is shipped or during a nightly batch job. Create a payment transaction. |
 | Cancel or refund after capture | ICreditCardProcessor.RefundCaptureAsync() | [Link](https://stripe.com/docs/api/refunds/create) | In response to a cancelation, refund server-side and create a payment transaction. |
 
+### Interaction Diagram for Credit Card Processing
+
+![Alt text](../credit_card_diagram.png "nteraction Diagram for Credit Card Processing")
+
 ## Package Installation 
 
 This nuget library can be installed in the context of a .NET server-side project. If you already have a .NET project, great. If not, you can [follow this guide](https://ordercloud.io/knowledge-base/start-dotnet-middleware-from-scratch).

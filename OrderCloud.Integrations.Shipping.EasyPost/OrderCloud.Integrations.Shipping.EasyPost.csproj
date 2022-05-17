@@ -11,17 +11,17 @@
     <Copyright>Copyright 2021 Four51, Inc.</Copyright>
     <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
     <PackageIconUrl></PackageIconUrl>
-    <PackageIcon>ordercloud-logo-blue.png</PackageIcon>
+    <PackageIcon>sitecore_logo.jpg</PackageIcon>
     <PackageTags>ordercloud ecommerce shipping webjobs sitecore easypost</PackageTags>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Company>Sitecore</Company>
     <Product>OrderCloud</Product>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\ordercloud-logo-blue.png" Pack="true" PackagePath="\" />
+    <None Include="..\sitecore_logo.jpg" Pack="true" PackagePath="\" />  
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OrderCloud.Catalyst\OrderCloud.Catalyst.csproj" />

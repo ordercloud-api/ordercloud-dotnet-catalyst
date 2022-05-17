@@ -21,7 +21,6 @@ Card details are collected via Stripe.js in the client. Once details are collect
 | ------------- | ------------- | ------------- | ------------- |
 | Request an authnetication cred for the IFrame | ICreditCardProcessor.GetIFrameCredentialAsync() | [Link](https://stripe.com/docs/keys#obtain-api-keys) | Stripe publishable key is set in a config and forwarded to the front end. |
 | Tokenize the user's card details with Stripe Payment Element | None | [Link](https://stripe.com/docs/payments/payment-element) | Save the token and PCI-safe card details (last 4 digits) on a Payment object attached to the Order |
-
 | Verify and hold funds | ICreditCardProcessor.AuthorizeOnlyAsync() | [Link](https://stripe.com/docs/api/payment_intents/create) | Within a pre-webhook or proxy route list Payments, attempt to authorize using the token, set payment accepted true, create a payment transaction, and then submit the Order |
 | Cancel or refund before capture | ICreditCardProcessor.VoidAuthorizationAsync() | [Link](https://stripe.com/docs/api/payment_intents/cancel) | In response to a cancelation, void server-side and create a payment transaction. |
 | Capture funds | ICreditCardProcessor.CapturePriorAuthorizationAsync() | [Link](https://stripe.com/docs/api/payment_intents/capture) | Catpure when the order is shipped or during a nightly batch job. Create a payment transaction. |

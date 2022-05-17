@@ -207,7 +207,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 				.RespondWithJson(new { }, 200, new { Location = "https://sandbox.bluesnap.com/services/2/payment-fields-tokens/" + token });
 
 			// Act
-			var actual = await _command.CreateHostedPaymentFieldsTokenAsync();
+			var actual = await _command.GetIFrameCredentialAsync();
 
 			//Assert
 			Assert.AreEqual(token, actual);

@@ -11,7 +11,11 @@ namespace OrderCloud.Catalyst
 	/// </summary>
 	public interface ICreditCardProcessor
 	{
-        /// <summary>
+		/// <summary>
+		/// Get a string credential needed for the client-side Iframe. This may mean slightly different things for different processors, so consult the documentation.
+		/// </summary>
+		Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null);
+		/// <summary>
 		/// Attempt to verify the user can pay by placing a hold on a credit card. Funds will be captured later. Typically used as a verification step directly before order submit.
 		/// </summary>
 		Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
@@ -29,15 +33,27 @@ namespace OrderCloud.Catalyst
 		Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
 	}
 
+	public class InitiateCCTransaction
+	{
+		/// <summary>
+		/// The ammount that will be authorized on the credit card.
+		/// </summary>
+		public decimal Amount { get; set; }
+		/// <summary>
+		/// The currency to authorize in - three letter ISO format. 
+		/// </summary>
+		public string Currency { get; set; }
+	}
 
-    public class AuthorizeCCTransaction
+
+	public class AuthorizeCCTransaction
 	{
 		/// <summary>
 		/// The OrderCloud Order ID that this card transaction applies to.
 		/// </summary>
 		public string OrderID { get; set; }
 		/// <summary>
-		/// The ammount that will be authorized on the credit card.
+		/// The amount that will be authorized on the credit card.
 		/// </summary>
 		public decimal Amount { get; set; }
 		/// <summary>

@@ -11,7 +11,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 	{
 		public BlueSnapService(BlueSnapConfig defaultConfig) : base(defaultConfig) { }
 
-		public async Task<string> CreateHostedPaymentFieldsTokenAsync(OCIntegrationConfig overrideConfig = null)
+		public async Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null)
 		{
 			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
 			var token = await BlueSnapClient.GetHostedPaymentFieldToken(config);

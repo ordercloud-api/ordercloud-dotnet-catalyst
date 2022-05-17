@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.Integrations.Payment.CardConnect
 {
-	public class CardConnectService : OCIntegrationService, ICreditCardProcessor
+	public class CardConnectService : OCIntegrationService, ICreditCardProcessor, ICreditCardSaver
 	{
 		public CardConnectService(CardConnectConfig defaultConfig) : base(defaultConfig) { }
 
-		public async Task<Dictionary<string, string>> InitIFrameCredentialsAsync(InitiateCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+		public async Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null)
 		{
 			// CardConnect Iframe does not need any credentials. This is basically an empty implementation to satisfy the ICreditCardProcessor interface.
-			var dict = new Dictionary<string, string> { };
-			return dict;
+			var token = await Task.FromResult(string.Empty);
+			return token;
 		}
 
 		public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
@@ -45,6 +45,34 @@ namespace OrderCloud.Integrations.Payment.CardConnect
 			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
 			var cardConnectVoidAuthorizationResponse = await CardConnectClient.VoidPreviousAuthorization(transaction.ToCardConnectFundReversalRequest(config), config);
 			return cardConnectVoidAuthorizationResponse.ToIntegrationsCCFundReversalResponse();
+		}
+		public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerId, OCIntegrationConfig overrideConfig = null)
+		{
+			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
+			var cardConnectSavedCards = await CardConnectClient.GetProfileAsync(customerId, config.MerchantId, config);
+			return cardConnectSavedCards.ToIntegrationsGetSavedCardsResponse();
+		}
+		public async Task<PCISafeCardDetails> GetSavedCardAsync(string customerId, string cardId, OCIntegrationConfig overrideConfig = null)
+		{
+			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
+			var cardConnectSavedCard = await CardConnectClient.GetProfileAccountAsync(customerId, cardId, config.MerchantId, config);
+			return cardConnectSavedCard.ToIntegrationsGetSavedCardResponse();
+		}
+		public async Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig overrideConfig = null)
+		{
+			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
+			if (customer.CustomerAlreadyExists)
+            {
+				return (await CardConnectClient.CreateOrUpdateProfile(card.ToCardConnectUpdateProfileRequest(customer, config.MerchantId), config)).ToIntegrationsCardCreatedResponse();
+            } else
+            {
+				return (await CardConnectClient.CreateOrUpdateProfile(card.ToCardConnectCreateProfileRequest(config.MerchantId), config)).ToIntegrationsCardCreatedResponse(); ;
+            }
+		}
+		public async Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig overrideConfig = null)
+		{
+			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
+			await CardConnectClient.DeleteProfile(customerID, cardID, config);
 		}
 	}
 }

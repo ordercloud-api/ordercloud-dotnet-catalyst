@@ -1,6 +1,6 @@
-﻿# OrderCloud.Integrations.Shipping.UPS
+# OrderCloud.Integrations.Shipping.UPS
 
-This project brings shipping rate calculation to your ecommerce app using the [UPS RESTful API](https://www.ups.com/upsdeveloperkit?loc=en_US). It will be published as a nuget code library and conforms to a standard shipping interface published in the base library OrderCloud.Catalyst.
+This project brings shipping rate calculation to your ecommerce app using the [UPS API](https://www.ups.com/upsdeveloperkit?loc=en_US). It is published as a [nuget code library](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.UPS) and conforms to a standard shipping interface published in the base library OrderCloud.Catalyst.
 
 ## Basics and Installation
 

@@ -20,6 +20,7 @@ Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/I
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 | **BlueSnap** | [README](./OrderCloud.Integrations.Payment.BlueSnap) | [OrderCloud.Integrations.Payment.BlueSnap](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.BlueSnap) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
 | **CardConnect** | [README](./OrderCloud.Integrations.Payment.CardConnect) | Coming soon | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
+| **Stripe** | [README](./OrderCloud.Integrations.Payment.Stripe) | Coming soon | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
 | **EasyPost** | [README](./OrderCloud.Integrations.Shipping.EasyPost) | [OrderCloud.Integrations.Shipping.EasyPost](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.EasyPost) | OrderCloud Team | IShippingRatesCalculator
 | **Fedex** | [README](./OrderCloud.Integrations.Shipping.Fedex) | [OrderCloud.Integrations.Shipping.Fedex](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.Fedex) | OrderCloud Team | IShippingRatesCalculator
 | **UPS** | [README](./OrderCloud.Integrations.Shipping.UPS) | [OrderCloud.Integrations.Shipping.UPS](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.UPS) | OrderCloud Team | IShippingRatesCalculator

@@ -12,9 +12,9 @@ namespace OrderCloud.Catalyst
 	public interface ICreditCardProcessor
 	{
 		/// <summary>
-		/// Generate credentials needed for the Iframe. Different processors have very different needs, so consult the documentation to determine what keys the returned Dictionary should have.
+		/// Get a string credential needed for the client-side Iframe. This may mean slightly different things for different processors, so consult the documentation.
 		/// </summary>
-		Task<Dictionary<string, string>> InitIFrameCredentialsAsync(InitiateCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
+		Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null);
 		/// <summary>
 		/// Attempt to verify the user can pay by placing a hold on a credit card. Funds will be captured later. Typically used as a verification step directly before order submit.
 		/// </summary>

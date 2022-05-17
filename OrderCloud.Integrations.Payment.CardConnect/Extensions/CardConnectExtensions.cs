@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using OrderCloud.Integrations.Payment.CardConnect.Models;
 
@@ -24,6 +25,20 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Extensions
             // REVERS - Successful
             // Null - Unsuccessful.Refer to the respcode and resptext.
             return attempt.authcode == "REVERS";
+        }
+        public static bool WasSuccessful(this CardConnectGetProfileResponse attempt)
+        {
+            return attempt.profiles.FirstOrDefault().GetType().GetProperty("acctid") != null;
+        }
+
+        public static bool WasSuccessful(this CardConnectCreateUpdateProfileResponse attempt)
+        {
+            return attempt.respstat == "A";
+        }
+
+        public static bool WasSuccessful(this CardConnectDeleteProfileResponse attempt)
+        {
+            return attempt.respstat == "A";
         }
     }
 }

@@ -3,6 +3,7 @@ using OrderCloud.Catalyst;
 using OrderCloud.Integrations.Payment.CardConnect.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -83,6 +84,98 @@ namespace OrderCloud.Integrations.Payment.CardConnect
                     .AppendPathSegments("void")
                     .PostJsonAsync(transaction)
                     .ReceiveJson<CardConnectFundReversalResponse>();
+
+				if (!transactionResult.WasSuccessful())
+                {
+                    throw new IntegrationErrorResponseException(config, request.Url, (int)HttpStatusCode.OK,
+                        transactionResult);
+                };
+				return transactionResult;
+			});
+		}
+
+		/// <summary>
+		/// https://developer.cardpointe.com/cardconnect-api#get-profile-request
+		/// </summary>
+		public static async Task<List<CardConnectProfile>> GetProfileAsync(string profileid, string merchid, CardConnectConfig config)
+		{
+            try
+            {
+                return await $"{config.BaseUrl}/profile/{profileid}//{merchid}"
+                    .WithBasicAuth(config.APIUsername, config.APIPassword).GetAsync()
+                    .ReceiveJson<List<CardConnectProfile>>();
+            }
+            catch (FlurlHttpTimeoutException ex)  // simulate with this https://stackoverflow.com/questions/100841/artificially-create-a-connection-timeout-error
+            {
+                // candidate for retry here?
+                throw new IntegrationNoResponseException(config, $"{config.BaseUrl}/profile/{profileid}//{merchid}");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var status = ex?.Call?.Response?.StatusCode;
+                if (status == null) // simulate by putting laptop on airplane mode
+                {
+                    throw new IntegrationNoResponseException(config, $"{config.BaseUrl}/profile/{profileid}//{merchid}");
+                }
+                if (status == 401)
+                {
+                    throw new IntegrationAuthFailedException(config, $"{config.BaseUrl}/profile/{profileid}//{merchid}", (int)status);
+                }
+                var body = await ex.Call.Response.GetJsonAsync();
+                throw new IntegrationErrorResponseException(config, $"{config.BaseUrl}/profile/{profileid}//{merchid}", (int)status, body);
+            }
+		}
+        /// <summary>
+		/// https://developer.cardpointe.com/cardconnect-api#get-profile-request
+		/// </summary>
+		public static async Task<CardConnectProfile> GetProfileAccountAsync(string profileId, string cardId, string merchId, CardConnectConfig config)
+		{
+			return await TryCatchRequestAsync(config, async (request) =>
+            {
+                var transactionResult = await request
+                    .AppendPathSegments("profile", profileId, cardId, merchId)
+                    .GetAsync()
+                    .ReceiveJson<CardConnectGetProfileResponse>();
+
+				if (!transactionResult.WasSuccessful())
+                {
+                    throw new IntegrationErrorResponseException(config, request.Url, (int)HttpStatusCode.OK,
+                        transactionResult);
+                };
+				return transactionResult.profiles.FirstOrDefault();
+			});
+		}
+		/// <summary>
+		/// https://developer.cardpointe.com/cardconnect-api#create-update-profile-request
+		/// </summary>
+		public static async Task<CardConnectCreateUpdateProfileResponse> CreateOrUpdateProfile(CardConnectCreateUpdateProfileRequest payload, CardConnectConfig config)
+		{
+			return await TryCatchRequestAsync(config, async (request) =>
+            {
+                var transactionResult = await request
+                    .AppendPathSegments("profile")
+                    .PostJsonAsync(payload)
+                    .ReceiveJson<CardConnectCreateUpdateProfileResponse>();
+
+				if (!transactionResult.WasSuccessful())
+                {
+                    throw new IntegrationErrorResponseException(config, request.Url, (int)HttpStatusCode.OK,
+                        transactionResult);
+                };
+				return transactionResult;
+			});
+		}
+		/// <summary>
+		/// https://developer.cardpointe.com/cardconnect-api#delete-profile-request
+		/// </summary>
+		public static async Task<CardConnectDeleteProfileResponse> DeleteProfile(string customerId, string cardId, CardConnectConfig config)
+		{
+			return await TryCatchRequestAsync(config, async (request) =>
+            {
+                var transactionResult = await request
+                    .AppendPathSegments("profile")
+                    .DeleteAsync()
+                    .ReceiveJson<CardConnectDeleteProfileResponse>();
 
 				if (!transactionResult.WasSuccessful())
                 {

@@ -18,7 +18,7 @@ Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/I
 
 | Name | Project Guide | Library | Contributed By | Interfaces |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
-| **BlueSnap** | [README](./OrderCloud.Integrations.Payment.BlueSnap) | [OrderCloud.Integrations.Payment.BlueSnap](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.BlueSnap) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
+| **BlueSnap** | [README](./OrderCloud.Integrations.Payment.BlueSnap) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Payment.BlueSnap.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.BlueSnap) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
 | **CardConnect** | [README](./OrderCloud.Integrations.Payment.CardConnect) | [OrderCloud.Integrations.Payment.CardConnect](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.CardConnect) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
 | **Stripe** | [README](./OrderCloud.Integrations.Payment.Stripe) | [OrderCloud.Integrations.Payment.Stripe](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.Stripe) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
 | **EasyPost** | [README](./OrderCloud.Integrations.Shipping.EasyPost) | [OrderCloud.Integrations.Shipping.EasyPost](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.EasyPost) | OrderCloud Team | IShippingRatesCalculator

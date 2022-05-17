@@ -18,7 +18,7 @@ The OrderCloud API does not have integration points designed specifically for pa
 | Description | Integration Method | CardConnect Documentation | OrderCloud Platform Context |
 | ------------- | ------------- | ------------- | ------------- |
 | Request any creds needed to build the IFrame | ICreditCardProcessor.GetIFrameCredentialAsync() | None | Step not needed for CardConnect. Empty string will be returned. |
-| Attach the user's card info to the token through the Iframe | None | [Link](https://developer.cardpointe.com/hosted-iframe-tokenizer) | Save the token and PCI-safe card details (last 4 digits) on a Payment object attached to the Order |
+| Tokenize the user's card number | None | [Link](https://developer.cardpointe.com/hosted-iframe-tokenizer) | Save the token and PCI-safe card details (last 4 digits) on a Payment object attached to the Order |
 | Verify and hold funds | ICreditCardProcessor.AuthorizeOnlyAsync() | [Link](https://developer.cardpointe.com/cardconnect-api#authorization) | Within a pre-webhook or proxy route list Payments, attempt to authorize using the token, set payment accepted true, create a payment transaction, and then submit the Order |
 | Cancel or refund before capture | ICreditCardProcessor.VoidAuthorizationAsync() | [Link](https://developer.cardpointe.com/cardconnect-api#void) | In response to a cancelation, void server-side and create a payment transaction. |
 | Capture funds | ICreditCardProcessor.CapturePriorAuthorizationAsync() | [Link](https://developer.cardpointe.com/cardconnect-api#capture) | Catpure when the order is shipped or during a nightly batch job. Create a payment transaction. |

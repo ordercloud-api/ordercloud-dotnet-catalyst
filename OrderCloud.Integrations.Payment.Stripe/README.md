@@ -1,6 +1,6 @@
 ﻿# OrderCloud.Integrations.Payment.Stripe
 
-This project brings payment processing to your ecommerce app using the [Stripe](https://stripe.com/docs/api) API. It will be published as a nuget code library and conforms to the standard interfaces `ICreditCardProcessor` and `ICreditCardSaver` published in the base library ordercloud-dotnet-catalyst.
+This project brings payment processing to your ecommerce app using the [Stripe](https://stripe.com/docs/api) API. It is published as a [nuget code library](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.Stripe) and conforms to the standard interfaces `ICreditCardProcessor` and `ICreditCardSaver` published in the base library ordercloud-dotnet-catalyst.
 
 ## Payment Processing Basics
 

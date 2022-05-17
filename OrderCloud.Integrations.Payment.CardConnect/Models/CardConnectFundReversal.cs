@@ -24,7 +24,7 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Models
         public decimal? amount { get; set; } = 0M;
     }
 
-    public class CardConnectFundReversalResponse
+    public class CardConnectFundReversalResponse : CardConnectResponseData
     {
         /// <summary>
         /// Copied from refund request
@@ -44,24 +44,6 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Models
         /// If no orderid was passed and "receipt":"json", "n", or is omitted, the orderId field is omitted from the response.
         /// </summary>
         public string orderId { get; set; }
-        /// <summary>
-        /// Alpha-numeric response code that represents the description of the response
-        /// </summary>
-        public string respcode { get; set; }
-        /// <summary>
-        /// Abbreviation that represents the platform and the processor for the transaction
-        /// </summary>
-        public string respproc { get; set; }
-        /// <summary>
-        /// - A: Approved
-        /// - B: Retry
-        /// - C: Declined
-        /// </summary>
-        public string respstat { get; set; }
-        /// <summary>
-        /// Text description of the 
-        /// </summary>
-        public string resptext { get; set; }
         /// <summary>
         /// Identifies if the void was successful. Can one of the following values:
         /// - REVERS: Successful

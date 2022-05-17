@@ -91,12 +91,19 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Models
         /// Note: It is strongly recommended that your application prompts for CVV for card-not-present transactions for fraud prevention and to avoid declines on the CardPointe Gateway if the CVV verification option is enabled for your merchant account.
         /// </summary>
         public string cvv2 { get; set; }
+        /// <summary>
+        /// Optional, to create an account profile or to use an existing profile.
+        /// To create a profile using the account holder data provided in the request, specify Y.
+        /// To use an existing profile for this authorization, omit the account parameter and instead use the profile parameter to supply the 20-digit profile id and 1-3-digit account id string in the format <profileid>/<acctid>. See Profiles for more information.
+        /// Note: You can submit a $0 authorization, including CVV and AVS verification, to validate the customer's information before creating a profile.
+        /// </summary>
+        public string profile { get; set; }
     }
 
     /// <summary>
     /// https://developer.cardpointe.com/cardconnect-api#authorization-response
     /// </summary>
-    public class CardConnectAuthorizationResponse
+    public class CardConnectAuthorizationResponse : CardConnectResponseData
     {
         /// <summary>
         /// A token that replaces the card number in capture and settlement requests, if requested.
@@ -174,25 +181,6 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Models
         /// Authorization Code from the Issuer
         /// </summary>
         public string authcode { get; set; }
-        /// <summary>
-        /// Alpha-numeric response code that represents the description of the response.
-        /// </summary>
-        public string respcode { get; set; }
-        /// <summary>
-        /// Abbreviation that represents the platform and the processor for the transaction
-        /// </summary>
-        public string respproc { get; set; }
-        /// <summary>
-        /// Indicates the status of the authorization request. Can be one of the following values:
-        /// - A: Approved
-        /// - B: Retry
-        /// - C: Declined
-        /// </summary>
-        public string respstat { get; set; }
-        /// <summary>
-        /// Text description of response.
-        /// </summary>
-        public string resptext { get; set; }
     }
     //<summary>
     ////

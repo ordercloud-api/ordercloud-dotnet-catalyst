@@ -10,10 +10,9 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
 	{
 		public static CardConnectAuthorizationRequest ToCardConnectAuthorizationRequest(this AuthorizeCCTransaction transaction, CardConnectConfig config)
 		{
-			return new CardConnectAuthorizationRequest()
+			var cardConnectTransaction = new CardConnectAuthorizationRequest()
 			{
 				orderid = transaction.OrderID,
-				account = transaction.CardDetails.Token,
 				amount = transaction.Amount.ToString(),
 				address = transaction.AddressVerification.Street1,
 				city = transaction.AddressVerification.City,
@@ -24,6 +23,18 @@ namespace OrderCloud.Integrations.Payment.CardConnect.Mappers
 				merchid = config.MerchantId,
 				expiry = $"{transaction.CardDetails.ExpirationYear}{transaction.CardDetails.ExpirationMonth}"
 			};
+
+			if (string.IsNullOrEmpty(transaction.CardDetails.SavedCardID))
+			{
+				// Use a single use token
+				cardConnectTransaction.account = transaction.CardDetails.Token;
+			}
+			else
+			{
+				// Reference the existing profile, omitting the account data point
+				cardConnectTransaction.profile = $"{transaction.ProcessorCustomerID}/{transaction.CardDetails.SavedCardID}";
+			}
+			return cardConnectTransaction;
 		}
 	}
 }

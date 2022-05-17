@@ -16,17 +16,17 @@ If you're building solutions for OrderCloud using .NET and find a particular tas
 
 Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/Integrations/CONTRIBUTING.md)
 
-| Name | Project Guide | Library | Contributed By | Interfaces |
+| Name | README | Library | Contributed By | Interfaces |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
-| **BlueSnap** | [README](./OrderCloud.Integrations.Payment.BlueSnap) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Payment.BlueSnap.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.BlueSnap) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
-| **CardConnect** | [README](./OrderCloud.Integrations.Payment.CardConnect) | [OrderCloud.Integrations.Payment.CardConnect](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.CardConnect) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
-| **Stripe** | [README](./OrderCloud.Integrations.Payment.Stripe) | [OrderCloud.Integrations.Payment.Stripe](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.Stripe) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
-| **EasyPost** | [README](./OrderCloud.Integrations.Shipping.EasyPost) | [OrderCloud.Integrations.Shipping.EasyPost](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.EasyPost) | OrderCloud Team | IShippingRatesCalculator
-| **Fedex** | [README](./OrderCloud.Integrations.Shipping.Fedex) | [OrderCloud.Integrations.Shipping.Fedex](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.Fedex) | OrderCloud Team | IShippingRatesCalculator
-| **UPS** | [README](./OrderCloud.Integrations.Shipping.UPS) | [OrderCloud.Integrations.Shipping.UPS](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.UPS) | OrderCloud Team | IShippingRatesCalculator
-| **Avalara** | [README](./OrderCloud.Integrations.Tax.Avalara) | [OrderCloud.Integrations.Tax.Avalara](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Avalara) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider
-| **Vertex** | [README](./OrderCloud.Integrations.Tax.Vertex) | [OrderCloud.Integrations.Tax.Vertex](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Vertex) | OrderCloud Team | ITaxCalculator
-| **TaxJar** | [README](./OrderCloud.Integrations.Tax.TaxJar) | [OrderCloud.Integrations.Tax.TaxJar](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.TaxJar) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider
+| **BlueSnap** | [OrderCloud.Integrations.Payment.BlueSnap](./OrderCloud.Integrations.Payment.BlueSnap) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Payment.BlueSnap.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.BlueSnap) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
+| **CardConnect** | [OrderCloud.Integrations.Payment.CardConnect](./OrderCloud.Integrations.Payment.CardConnect) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Payment.CardConnect.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.CardConnect) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
+| **Stripe** | [OrderCloud.Integrations.Payment.Stripe](./OrderCloud.Integrations.Payment.Stripe) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Payment.Stripe.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.Stripe) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
+| **EasyPost** | [OrderCloud.Integrations.Shipping.EasyPost](./OrderCloud.Integrations.Shipping.EasyPost) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Shipping.EasyPost.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.EasyPost) | OrderCloud Team | IShippingRatesCalculator
+| **Fedex** | [OrderCloud.Integrations.Shipping.Fedex](./OrderCloud.Integrations.Shipping.Fedex) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Shipping.Fedex.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.Fedex) | OrderCloud Team | IShippingRatesCalculator
+| **UPS** | [OrderCloud.Integrations.Shipping.UPS](./OrderCloud.Integrations.Shipping.UPS) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Shipping.UPS.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.UPS) | OrderCloud Team | IShippingRatesCalculator
+| **Avalara** | [OrderCloud.Integrations.Tax.Avalara](./OrderCloud.Integrations.Tax.Avalara) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Tax.Avalara.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Avalara) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider
+| **Vertex** | [OrderCloud.Integrations.Tax.Vertex](./OrderCloud.Integrations.Tax.Vertex) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Tax.Vertex.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Vertex) | OrderCloud Team | ITaxCalculator
+| **TaxJar** | [OrderCloud.Integrations.Tax.TaxJar](./OrderCloud.Integrations.Tax.TaxJar) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Tax.TaxJar.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.TaxJar) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider
 
 ### [User Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Auth/UserAuth)
 

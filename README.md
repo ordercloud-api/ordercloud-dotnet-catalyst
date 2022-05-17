@@ -16,7 +16,7 @@ If you're building solutions for OrderCloud using .NET and find a particular tas
 
 Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/Integrations/CONTRIBUTING.md)
 
-| Name | README | Library | Contributed By | Interfaces |
+| Name | README | Nuget Library | Contributed By | Interfaces |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 | **BlueSnap** | [OrderCloud.Integrations.Payment.BlueSnap](./OrderCloud.Integrations.Payment.BlueSnap) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Payment.BlueSnap.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.BlueSnap) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver
 | **CardConnect** | [OrderCloud.Integrations.Payment.CardConnect](./OrderCloud.Integrations.Payment.CardConnect) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Payment.CardConnect.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.CardConnect) | OrderCloud Team | ICreditCardProcessor, ICreditCardSaver

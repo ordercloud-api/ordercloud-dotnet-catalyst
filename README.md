@@ -8,7 +8,7 @@ See [dotnet-catalyst-examples](https://github.com/ordercloud-api/dotnet-catalyst
 
 If you're building solutions for OrderCloud using .NET and find a particular task difficult or tedious, we welcome you to [suggest a feature](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/issues/new) for inclusion in this library. 
 
-:warning: Versions 1.x.x have known security holes. Please only use version 2.0.1 and later. 
+:warning: Version 1.x.x has known security holes. Please only use version 2.0.1 and later. 
 
 ## Features
 

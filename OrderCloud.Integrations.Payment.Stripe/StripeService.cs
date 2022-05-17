@@ -13,7 +13,6 @@ namespace OrderCloud.Integrations.Payment.Stripe
 
         public async Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null)
         {
-            // CardConnect Iframe does not need any credentials. This is basically an empty implementation to satisfy the ICreditCardProcessor interface.
             var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
             var token = await Task.FromResult(config.PublishableKey);
             return token;

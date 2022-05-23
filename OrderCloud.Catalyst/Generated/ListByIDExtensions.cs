@@ -870,6 +870,23 @@ namespace OrderCloud.Catalyst
 			});
         }
                
+        public static async Task<List<ExtendedLineItem>> ListAcrossOrdersByIDAsync(this ILineItemsResource resource, IEnumerable<string> ids, OrderDirection direction, string buyerID = null, string supplierID = null, DateTimeOffset? from = null, DateTimeOffset? to = null, string accessToken = null) 
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListAcrossOrdersAsync(direction, buyerID, supplierID, from, to, null, null, SearchType.AnyTerm, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListAcrossOrdersByIDAsync<T>(this ILineItemsResource resource, IEnumerable<string> ids, OrderDirection direction, string buyerID = null, string supplierID = null, DateTimeOffset? from = null, DateTimeOffset? to = null, string accessToken = null) 
+            where T : ExtendedLineItem
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListAcrossOrdersAsync<T>(direction, buyerID, supplierID, from, to, null, null, SearchType.AnyTerm, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }
+               
         public static async Task<List<LineItem>> ListByIDAsync(this ILineItemsResource resource, IEnumerable<string> ids, OrderDirection direction, string orderID, string accessToken = null) 
         {
             return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
@@ -962,6 +979,74 @@ namespace OrderCloud.Catalyst
             return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
 			{
 				return resource.ListItemsAsync<T>(shipmentID, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }
+               
+        public static async Task<List<OrderReturn>> ListByIDAsync(this IOrderReturnsResource resource, IEnumerable<string> ids, bool? approvable = null, string accessToken = null) 
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListAsync(approvable, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListByIDAsync<T>(this IOrderReturnsResource resource, IEnumerable<string> ids, bool? approvable = null, string accessToken = null) 
+            where T : OrderReturn
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListAsync<T>(approvable, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }
+               
+        public static async Task<List<OrderReturnApproval>> ListApprovalsByIDAsync(this IOrderReturnsResource resource, IEnumerable<string> ids, string returnID, string accessToken = null) 
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListApprovalsAsync(returnID, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListApprovalsByIDAsync<T>(this IOrderReturnsResource resource, IEnumerable<string> ids, string returnID, string accessToken = null) 
+            where T : OrderReturnApproval
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListApprovalsAsync<T>(returnID, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }
+               
+        public static async Task<List<User>> ListEligibleApproversByIDAsync(this IOrderReturnsResource resource, IEnumerable<string> ids, string returnID, string accessToken = null) 
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListEligibleApproversAsync(returnID, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListEligibleApproversByIDAsync<T>(this IOrderReturnsResource resource, IEnumerable<string> ids, string returnID, string accessToken = null) 
+            where T : User
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListEligibleApproversAsync<T>(returnID, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }
+               
+        public static async Task<List<SellerApprovalRule>> ListByIDAsync(this ISellerApprovalRulesResource resource, IEnumerable<string> ids, string accessToken = null) 
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListAsync(null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListByIDAsync<T>(this ISellerApprovalRulesResource resource, IEnumerable<string> ids, string accessToken = null) 
+            where T : SellerApprovalRule
+        {
+            return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
+			{
+				return resource.ListAsync<T>(null, null, null, PAGE_ONE, MAX_PAGE_SIZE, $"ID={filterValue}", accessToken);
 			});
         }
                

@@ -1921,6 +1921,44 @@ namespace OrderCloud.Catalyst
 			});
         }
                
+        public static async Task<List<ExtendedLineItem>> ListAllAcrossOrdersAsync(this ILineItemsResource resource, OrderDirection direction, string buyerID = null, string supplierID = null, DateTimeOffset? from = null, DateTimeOffset? to = null, object filters = null, string accessToken = null) 
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListAcrossOrdersAsync(direction, buyerID, supplierID, from, to, null, null, SearchType.AnyTerm, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListAllAcrossOrdersAsync<T>(this ILineItemsResource resource, OrderDirection direction, string buyerID = null, string supplierID = null, DateTimeOffset? from = null, DateTimeOffset? to = null, object filters = null, string accessToken = null) 
+            where T : ExtendedLineItem
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListAcrossOrdersAsync<T>(direction, buyerID, supplierID, from, to, null, null, SearchType.AnyTerm, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }
+
+        public static async Task ListAllAcrossOrdersAsync(this ILineItemsResource resource, Func<ListPage<ExtendedLineItem>, Task> action, OrderDirection direction, string buyerID = null, string supplierID = null, DateTimeOffset? from = null, DateTimeOffset? to = null, object filters = null, string accessToken = null) 
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListAcrossOrdersAsync(direction, buyerID, supplierID, from, to, null, null, SearchType.AnyTerm, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+
+        public static async Task ListAllAcrossOrdersAsync<T>(this ILineItemsResource resource, Func<ListPage<T>, Task> action, OrderDirection direction, string buyerID = null, string supplierID = null, DateTimeOffset? from = null, DateTimeOffset? to = null, object filters = null, string accessToken = null) 
+            where T : ExtendedLineItem
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListAcrossOrdersAsync<T>(direction, buyerID, supplierID, from, to, null, null, SearchType.AnyTerm, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+               
         public static async Task<List<LineItem>> ListAllAsync(this ILineItemsResource resource, OrderDirection direction, string orderID, object filters = null, string accessToken = null) 
         {
             return await ListAllHelper.ListAllAsync((page, filter) =>
@@ -2128,6 +2166,158 @@ namespace OrderCloud.Catalyst
             await ListAllHelper.ListBatchedAsync(async (filter) =>
 			{
 				var result = await resource.ListItemsAsync<T>(shipmentID, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+               
+        public static async Task<List<OrderReturn>> ListAllAsync(this IOrderReturnsResource resource, bool approvable = false, object filters = null, string accessToken = null) 
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListAsync(approvable, null, null, null, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListAllAsync<T>(this IOrderReturnsResource resource, bool approvable = false, object filters = null, string accessToken = null) 
+            where T : OrderReturn
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListAsync<T>(approvable, null, null, null, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }
+
+        public static async Task ListAllAsync(this IOrderReturnsResource resource, Func<ListPage<OrderReturn>, Task> action, bool approvable = false, object filters = null, string accessToken = null) 
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListAsync(approvable, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+
+        public static async Task ListAllAsync<T>(this IOrderReturnsResource resource, Func<ListPage<T>, Task> action, bool approvable = false, object filters = null, string accessToken = null) 
+            where T : OrderReturn
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListAsync<T>(approvable, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+               
+        public static async Task<List<OrderReturnApproval>> ListAllApprovalsAsync(this IOrderReturnsResource resource, string returnID, object filters = null, string accessToken = null) 
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListApprovalsAsync(returnID, null, null, null, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListAllApprovalsAsync<T>(this IOrderReturnsResource resource, string returnID, object filters = null, string accessToken = null) 
+            where T : OrderReturnApproval
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListApprovalsAsync<T>(returnID, null, null, null, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }
+
+        public static async Task ListAllApprovalsAsync(this IOrderReturnsResource resource, Func<ListPage<OrderReturnApproval>, Task> action, string returnID, object filters = null, string accessToken = null) 
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListApprovalsAsync(returnID, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+
+        public static async Task ListAllApprovalsAsync<T>(this IOrderReturnsResource resource, Func<ListPage<T>, Task> action, string returnID, object filters = null, string accessToken = null) 
+            where T : OrderReturnApproval
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListApprovalsAsync<T>(returnID, null, null, null, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+               
+        public static async Task<List<User>> ListAllEligibleApproversAsync(this IOrderReturnsResource resource, string returnID, object filters = null, string accessToken = null) 
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListEligibleApproversAsync(returnID, null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListAllEligibleApproversAsync<T>(this IOrderReturnsResource resource, string returnID, object filters = null, string accessToken = null) 
+            where T : User
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListEligibleApproversAsync<T>(returnID, null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }
+
+        public static async Task ListAllEligibleApproversAsync(this IOrderReturnsResource resource, Func<ListPage<User>, Task> action, string returnID, object filters = null, string accessToken = null) 
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListEligibleApproversAsync(returnID, null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+
+        public static async Task ListAllEligibleApproversAsync<T>(this IOrderReturnsResource resource, Func<ListPage<T>, Task> action, string returnID, object filters = null, string accessToken = null) 
+            where T : User
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListEligibleApproversAsync<T>(returnID, null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+               
+        public static async Task<List<SellerApprovalRule>> ListAllAsync(this ISellerApprovalRulesResource resource, object filters = null, string accessToken = null) 
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListAsync(null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }   
+    
+        public static async Task<List<T>> ListAllAsync<T>(this ISellerApprovalRulesResource resource, object filters = null, string accessToken = null) 
+            where T : SellerApprovalRule
+        {
+            return await ListAllHelper.ListAllAsync((page, filter) =>
+			{
+				return resource.ListAsync<T>(null, null, SORT_BY_ID, page, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+			});
+        }
+
+        public static async Task ListAllAsync(this ISellerApprovalRulesResource resource, Func<ListPage<SellerApprovalRule>, Task> action, object filters = null, string accessToken = null) 
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListAsync(null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
+                await action(result);
+                return result;
+			});
+        }
+
+        public static async Task ListAllAsync<T>(this ISellerApprovalRulesResource resource, Func<ListPage<T>, Task> action, object filters = null, string accessToken = null) 
+            where T : SellerApprovalRule
+        {
+            await ListAllHelper.ListBatchedAsync(async (filter) =>
+			{
+				var result = await resource.ListAsync<T>(null, null, SORT_BY_ID, PAGE_ONE, MAX_PAGE_SIZE, filters.AndFilter(filter), accessToken);
                 await action(result);
                 return result;
 			});

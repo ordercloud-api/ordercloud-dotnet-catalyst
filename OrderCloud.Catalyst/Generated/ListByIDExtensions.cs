@@ -982,7 +982,7 @@ namespace OrderCloud.Catalyst
 			});
         }
                
-        public static async Task<List<OrderReturn>> ListByIDAsync(this IOrderReturnsResource resource, IEnumerable<string> ids, bool? approvable = null, string accessToken = null) 
+        public static async Task<List<OrderReturn>> ListByIDAsync(this IOrderReturnsResource resource, IEnumerable<string> ids, bool approvable = false, string accessToken = null) 
         {
             return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>
 			{
@@ -990,7 +990,7 @@ namespace OrderCloud.Catalyst
 			});
         }   
     
-        public static async Task<List<T>> ListByIDAsync<T>(this IOrderReturnsResource resource, IEnumerable<string> ids, bool? approvable = null, string accessToken = null) 
+        public static async Task<List<T>> ListByIDAsync<T>(this IOrderReturnsResource resource, IEnumerable<string> ids, bool approvable = false, string accessToken = null) 
             where T : OrderReturn
         {
             return await ListAllHelper.ListByIDAsync(ids, (filterValue) =>

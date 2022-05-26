@@ -49,7 +49,7 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public string Currency { get; set; }
 		/// <summary>
-		/// Card details. The e Token or SavedCardID will be what is used to perform authorization.
+		/// Card details. The Token or SavedCardID will be what is used to perform authorization.
 		/// </summary>
 		public PCISafeCardDetails CardDetails { get; set; }
 		/// <summary>

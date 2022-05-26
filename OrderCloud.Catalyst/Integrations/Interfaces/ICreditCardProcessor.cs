@@ -33,18 +33,6 @@ namespace OrderCloud.Catalyst
 		Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
 	}
 
-	public class InitiateCCTransaction
-	{
-		/// <summary>
-		/// The ammount that will be authorized on the credit card.
-		/// </summary>
-		public decimal Amount { get; set; }
-		/// <summary>
-		/// The currency to authorize in - three letter ISO format. 
-		/// </summary>
-		public string Currency { get; set; }
-	}
-
 
 	public class AuthorizeCCTransaction
 	{
@@ -77,9 +65,9 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public string CustomerIPAddress { get; set; }
 		/// <summary>
-		/// The processor-generated transaction ID. Only use if a transaction was already created in a pre-authorize step.
+		/// Implementations of this interface may choose to ignore this or use it as they choose. Never use XP properties.
 		/// </summary>
-		public string TransactionID { get; set; }
+		public OrderWorksheet OrderWorksheet { get; set; }
 	}
 
 	public class CCTransactionResult

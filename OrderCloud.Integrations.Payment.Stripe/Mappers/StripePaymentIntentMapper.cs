@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using OrderCloud.Catalyst;
 using Stripe;
 
@@ -9,16 +10,43 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
     /// </summary>
     public class StripePaymentIntentMapper
     {
-        public PaymentIntentCreateOptions MapPaymentIntentCreateAndConfirmOptions(AuthorizeCCTransaction transaction) =>
-            new PaymentIntentCreateOptions()
+        // See https://stripe.com/docs/currencies#zero-decimal
+        private List<string> ZERO_DECIMAL_CURRIENCIES = new List<string> 
+        {
+            "BIF",
+            "CLP",
+            "DJF",
+            "GNF",
+            "JPY",
+            "KMF",
+            "KRW",
+            "MGA",
+            "PYG",
+            "RWF",
+            "UGX",
+            "VND",
+            "VUV",
+            "XAF",
+            "XOF",
+            "XPF",
+        };
+
+        private bool IsZeroDecimalCurrency(string currencyCode) => ZERO_DECIMAL_CURRIENCIES.Contains(currencyCode);
+
+        public PaymentIntentCreateOptions MapPaymentIntentCreateAndConfirmOptions(AuthorizeCCTransaction transaction) 
+        {
+            var coefficient = IsZeroDecimalCurrency(transaction.Currency) ? 1 : 100;
+            return new PaymentIntentCreateOptions()
             {
-                Amount = Convert.ToInt64(transaction.Amount),
+                Amount = Convert.ToInt64((transaction.Amount * coefficient)),
                 Confirm = true, // Creates and Confirms PaymentIntent, otherwise Confirm PaymentIntent would be a separate call
                 CaptureMethod = "manual", // Required value for separate auth and capture
                 Currency = transaction.Currency,
                 Customer = transaction.ProcessorCustomerID,
-                PaymentMethod = transaction?.CardDetails?.SavedCardID ?? transaction.TransactionID, // Represents PaymentMethodID
+                PaymentMethod = transaction?.CardDetails?.SavedCardID ?? transaction?.CardDetails?.Token, // Represents PaymentMethodID
+                Metadata = MapPaymentIntentMetaData(transaction)
             };
+        }
 
         public CCTransactionResult MapPaymentIntentCreateAndConfirmResponse(PaymentIntent createdPaymentIntent) =>
             new CCTransactionResult()
@@ -61,5 +89,23 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
                 TransactionID = canceledPaymentIntent.Id,
                 Amount = canceledPaymentIntent.Amount
             };
+
+        private Dictionary<string, string> MapPaymentIntentMetaData(AuthorizeCCTransaction transaction)
+		{
+			var metadata = new Dictionary<string, string>
+			{
+				{ "Authorize-Request-IP-Address", transaction.CustomerIPAddress },
+				{ "OrderCloud-Order-ID", transaction.OrderID },
+				{ "OrderCloud-Order-FromUser-ID", transaction.OrderWorksheet.Order.FromUser.ID },
+				{ "OrderCloud-Order-FromUser-FirstName", transaction.OrderWorksheet.Order.FromUser.FirstName},
+                { "OrderCloud-Order-FromUser-LastName", transaction.OrderWorksheet.Order.FromUser.LastName},
+                { "OrderCloud-Order-FromUser-Email", transaction.OrderWorksheet.Order.FromUser.Email },
+				{ "OrderCloud-Order-FromCompany-ID", transaction.OrderWorksheet.Order.FromCompanyID },
+                { "OrderCloud-Order-Billing-Address", MapAddressToString(transaction.OrderWorksheet.Order.BillingAddress) },
+            };
+            return metadata;
+        }
+
+        private string MapAddressToString(OrderCloud.SDK.Address a) => $"{a.Street1} {a.Street2} {a.City}, {a.State} {a.Zip}. {a.Country}";
     }
 }

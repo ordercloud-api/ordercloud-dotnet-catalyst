@@ -3,7 +3,7 @@ using NUnit.Framework;
 using OrderCloud.Integrations.Payment.Stripe;
 using OrderCloud.Integrations.Payment.Stripe.Mappers;
 
-namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
+namespace OrderCloud.Catalyst.Tests.IntegrationTests
 {
     public class StripeTests
     {
@@ -27,12 +27,15 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
             {
                 Amount = 500,
                 Currency = "USD",
-                TransactionID = "pm_234234234234234234" // payment method ID
+                CardDetails = new PCISafeCardDetails()
+                {
+                    Token = "pm_234234234234234234" // payment method ID
+                }
             };
             var paymentIntentCreateOpts = new StripePaymentIntentMapper().MapPaymentIntentCreateAndConfirmOptions(transaction);
             Assert.AreEqual(transaction.Amount, paymentIntentCreateOpts.Amount);
             Assert.AreEqual(transaction.Currency, paymentIntentCreateOpts.Currency);
-            Assert.AreEqual(transaction.TransactionID, paymentIntentCreateOpts.PaymentMethod);
+            Assert.AreEqual(transaction.CardDetails.Token, paymentIntentCreateOpts.PaymentMethod);
             Assert.AreEqual(transaction.ProcessorCustomerID, paymentIntentCreateOpts.Customer);
         }
 
@@ -72,6 +75,44 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests.Stripe
 
             var cardCreateOptions = new StripeCardMapper().MapStripeCardCreateOptions(pciSafeCardDetails);
             Assert.AreEqual(pciSafeCardDetails.Token, cardCreateOptions.Source.Value);
+		}
+
+		[Test]
+        [TestCase(500.1234, 50012)]
+        [TestCase(1, 100)]
+        [TestCase(0, 0)]
+        [TestCase(5.759, 576)]
+        public void ForADecimalCurrencyAmountShouldBeInCents(decimal input, long expectedResult)
+		{
+			var transaction = new AuthorizeCCTransaction()
+			{
+				Amount = input,
+				Currency = "USD",
+			};
+
+			var paymentIntentMapper = new StripePaymentIntentMapper();
+			var paymentIntentCreateOptions = paymentIntentMapper.MapPaymentIntentCreateAndConfirmOptions(transaction);
+
+            Assert.AreEqual(expectedResult, paymentIntentCreateOptions.Amount);
+		}
+
+        [Test]
+        [TestCase(500.1234, 500)]
+        [TestCase(1, 1)]
+        [TestCase(0, 0)]
+        [TestCase(5.759, 6)]
+        public void ForANonDecimalCurrencyAmountShouldBeInDollars(decimal input, long expectedResult)
+        {
+            var transaction = new AuthorizeCCTransaction()
+            {
+                Amount = input,
+                Currency = "JPY", // yen
+            };
+
+            var paymentIntentMapper = new StripePaymentIntentMapper();
+            var paymentIntentCreateOptions = paymentIntentMapper.MapPaymentIntentCreateAndConfirmOptions(transaction);
+
+            Assert.AreEqual(expectedResult, paymentIntentCreateOptions.Amount);
         }
     }
 }

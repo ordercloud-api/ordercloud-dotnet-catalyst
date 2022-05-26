@@ -37,7 +37,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
                 OrderWorksheet = _fixture.Create<OrderWorksheet>()
             };
             var paymentIntentCreateOpts = new StripePaymentIntentMapper().MapPaymentIntentCreateAndConfirmOptions(transaction);
-            Assert.AreEqual(transaction.Amount, 50000);
+            Assert.AreEqual(50000, paymentIntentCreateOpts.Amount);
             Assert.AreEqual(transaction.Currency, paymentIntentCreateOpts.Currency);
             Assert.AreEqual(transaction.CardDetails.Token, paymentIntentCreateOpts.PaymentMethod);
             Assert.AreEqual(transaction.ProcessorCustomerID, paymentIntentCreateOpts.Customer);

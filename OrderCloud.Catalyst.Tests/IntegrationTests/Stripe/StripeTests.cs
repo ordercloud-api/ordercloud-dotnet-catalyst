@@ -1,12 +1,15 @@
 using System.Collections.Generic;
+using AutoFixture;
 using NUnit.Framework;
 using OrderCloud.Integrations.Payment.Stripe;
 using OrderCloud.Integrations.Payment.Stripe.Mappers;
+using OrderCloud.SDK;
 
 namespace OrderCloud.Catalyst.Tests.IntegrationTests
 {
     public class StripeTests
     {
+        private static Fixture _fixture = new Fixture();
 
         [Test]
         public void ShouldThrowErrorIfDefaultConfigMissingFields()
@@ -30,10 +33,11 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
                 CardDetails = new PCISafeCardDetails()
                 {
                     Token = "pm_234234234234234234" // payment method ID
-                }
+                },
+                OrderWorksheet = _fixture.Create<OrderWorksheet>()
             };
             var paymentIntentCreateOpts = new StripePaymentIntentMapper().MapPaymentIntentCreateAndConfirmOptions(transaction);
-            Assert.AreEqual(transaction.Amount, paymentIntentCreateOpts.Amount);
+            Assert.AreEqual(transaction.Amount, 50000);
             Assert.AreEqual(transaction.Currency, paymentIntentCreateOpts.Currency);
             Assert.AreEqual(transaction.CardDetails.Token, paymentIntentCreateOpts.PaymentMethod);
             Assert.AreEqual(transaction.ProcessorCustomerID, paymentIntentCreateOpts.Customer);
@@ -88,7 +92,8 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			{
 				Amount = input,
 				Currency = "USD",
-			};
+                OrderWorksheet = _fixture.Create<OrderWorksheet>()
+            };
 
 			var paymentIntentMapper = new StripePaymentIntentMapper();
 			var paymentIntentCreateOptions = paymentIntentMapper.MapPaymentIntentCreateAndConfirmOptions(transaction);
@@ -107,6 +112,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
             {
                 Amount = input,
                 Currency = "JPY", // yen
+                OrderWorksheet = _fixture.Create<OrderWorksheet>()
             };
 
             var paymentIntentMapper = new StripePaymentIntentMapper();

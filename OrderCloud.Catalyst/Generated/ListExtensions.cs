@@ -613,6 +613,18 @@ namespace OrderCloud.Catalyst
             args = args ?? new ListArgs<T>();
 			return await resource.ListShipmentsAsync<T>(direction, orderID, args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
         }       
+        public static async Task<ListPage<ExtendedLineItem>> ListAcrossOrdersAsync(this ILineItemsResource resource, OrderDirection direction, string buyerID = null, string supplierID = null, DateTimeOffset? from = null, DateTimeOffset? to = null, SearchArgs<ExtendedLineItem> args = null, string accessToken = null) 
+        {
+            args = args ?? new SearchArgs<ExtendedLineItem>();
+			return await resource.ListAcrossOrdersAsync(direction, buyerID, supplierID, from, to, args.Search, args.SearchOn, args.SearchType, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+        }
+        
+        public static async Task<ListPage<T>> ListAcrossOrdersAsync<T>(this ILineItemsResource resource, OrderDirection direction, string buyerID = null, string supplierID = null, DateTimeOffset? from = null, DateTimeOffset? to = null, SearchArgs<T> args = null, string accessToken = null) 
+            where T : ExtendedLineItem
+        {
+            args = args ?? new SearchArgs<T>();
+			return await resource.ListAcrossOrdersAsync<T>(direction, buyerID, supplierID, from, to, args.Search, args.SearchOn, args.SearchType, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+        }       
         public static async Task<ListPage<LineItem>> ListAsync(this ILineItemsResource resource, OrderDirection direction, string orderID, IListArgs args = null, string accessToken = null) 
         {
             args = args ?? new ListArgs<LineItem>();
@@ -679,6 +691,54 @@ namespace OrderCloud.Catalyst
         {
             args = args ?? new ListArgs<T>();
 			return await resource.ListItemsAsync<T>(shipmentID, args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+        }       
+        public static async Task<ListPage<OrderReturn>> ListAsync(this IOrderReturnsResource resource, bool approvable = false, IListArgs args = null, string accessToken = null) 
+        {
+            args = args ?? new ListArgs<OrderReturn>();
+			return await resource.ListAsync(approvable, args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+        }
+        
+        public static async Task<ListPage<T>> ListAsync<T>(this IOrderReturnsResource resource, bool approvable = false, IListArgs args = null, string accessToken = null) 
+            where T : OrderReturn
+        {
+            args = args ?? new ListArgs<T>();
+			return await resource.ListAsync<T>(approvable, args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+        }       
+        public static async Task<ListPage<OrderReturnApproval>> ListApprovalsAsync(this IOrderReturnsResource resource, string returnID, IListArgs args = null, string accessToken = null) 
+        {
+            args = args ?? new ListArgs<OrderReturnApproval>();
+			return await resource.ListApprovalsAsync(returnID, args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+        }
+        
+        public static async Task<ListPage<T>> ListApprovalsAsync<T>(this IOrderReturnsResource resource, string returnID, IListArgs args = null, string accessToken = null) 
+            where T : OrderReturnApproval
+        {
+            args = args ?? new ListArgs<T>();
+			return await resource.ListApprovalsAsync<T>(returnID, args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+        }       
+        public static async Task<ListPage<User>> ListEligibleApproversAsync(this IOrderReturnsResource resource, string returnID, IListArgs args = null, string accessToken = null) 
+        {
+            args = args ?? new ListArgs<User>();
+			return await resource.ListEligibleApproversAsync(returnID, args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+        }
+        
+        public static async Task<ListPage<T>> ListEligibleApproversAsync<T>(this IOrderReturnsResource resource, string returnID, IListArgs args = null, string accessToken = null) 
+            where T : User
+        {
+            args = args ?? new ListArgs<T>();
+			return await resource.ListEligibleApproversAsync<T>(returnID, args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+        }       
+        public static async Task<ListPage<SellerApprovalRule>> ListAsync(this ISellerApprovalRulesResource resource, IListArgs args = null, string accessToken = null) 
+        {
+            args = args ?? new ListArgs<SellerApprovalRule>();
+			return await resource.ListAsync(args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
+        }
+        
+        public static async Task<ListPage<T>> ListAsync<T>(this ISellerApprovalRulesResource resource, IListArgs args = null, string accessToken = null) 
+            where T : SellerApprovalRule
+        {
+            args = args ?? new ListArgs<T>();
+			return await resource.ListAsync<T>(args.Search, args.SearchOn, args.ToSortString(), args.Page, args.PageSize, args.ToFilterString(), accessToken);
         }       
         public static async Task<ListPage<BuyerAddress>> ListAddressesAsync(this IMeResource resource, IListArgs args = null, string accessToken = null) 
         {

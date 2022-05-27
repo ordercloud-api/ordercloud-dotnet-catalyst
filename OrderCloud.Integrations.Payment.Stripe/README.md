@@ -85,16 +85,17 @@ public class CreditCardCommand
 			Currency = worksheet.Order.Currency,
 			AddressVerification = worksheet.Order.BillingAddress,
 			CustomerIPAddress = "...",
+			CardDetails = new PCISafeCardDetails()
 		};
 		var payWithSavedCard = payment?.xp?.SafeCardDetails?.SavedCardID != null;
 		if (payWithSavedCard)
 		{
-			authorizeRequest.SavedCardID = payment.xp.SafeCardDetails.SavedCardID;
+			authorizeRequest.CardDetails.SavedCardID = payment.xp.SafeCardDetails.SavedCardID;
 			authorizeRequest.ProcessorCustomerID = worksheet.Order.FromUser.xp.PaymentProcessorCustomerID;
 		}
 		else
 		{
-			authorizeRequest.CardToken = payment?.xp?.SafeCardDetails?.Token;
+			authorizeRequest.CardDetails.CardToken = payment?.xp?.SafeCardDetails?.Token;
 		}
 
 		CCTransactionResult authorizationResult = await _creditCardProcessor.AuthorizeOnlyAsync(authorizeRequest);

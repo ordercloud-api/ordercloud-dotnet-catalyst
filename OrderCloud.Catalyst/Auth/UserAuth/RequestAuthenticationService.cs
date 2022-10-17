@@ -54,8 +54,6 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public static string GetWebhookHash(HttpRequest request)
 		{
-			Require.That(request.Headers.ContainsKey("X-oc-hash"), new WebhookUnauthorizedException());
-
 			var sentHash = request.Headers?["X-oc-hash"].FirstOrDefault();
 			Require.That(!string.IsNullOrEmpty(sentHash), new WebhookUnauthorizedException());
 			return sentHash;
@@ -182,23 +180,27 @@ namespace OrderCloud.Catalyst
 
 			Require.That(!string.IsNullOrEmpty(requestHash), new WebhookUnauthorizedException());
 
-			request.EnableBuffering();
-			// Just choose something reasonable - https://stackoverflow.com/questions/3033771/file-i-o-with-streams-best-memory-buffer-size
-			var bufferSize = 4096;
+			string body = await GetHttpRequestBody(request);
+			var bodyBytes = Encoding.UTF8.GetBytes(body);
+			var keyBytes = Encoding.UTF8.GetBytes(options.HashKey);
+			var hash = new HMACSHA256(keyBytes).ComputeHash(bodyBytes);
+			var computed = Convert.ToBase64String(hash);
 
+			Require.That(requestHash == computed, new WebhookUnauthorizedException());
+			return true;
+		}
+
+		/// <summary>
+		/// This still won't work inside a controller unless there's middleware to run request.EnableBuffering();
+		/// See https://stackoverflow.com/questions/59185410/request-body-from-is-empty-in-net-core-3-0
+		/// </summary>
+		public async Task<string> GetHttpRequestBody(HttpRequest request)
+		{
+			request.EnableBuffering();
+			request.Body.Position = 0;
 			try
 			{
-				using (var reader = new StreamReader(request.Body, encoding: Encoding.UTF8, false, bufferSize, true))
-				{
-					var bodyBytes = Encoding.UTF8.GetBytes(await reader.ReadToEndAsync());
-
-					var keyBytes = Encoding.UTF8.GetBytes(options.HashKey);
-					var hash = new HMACSHA256(keyBytes).ComputeHash(bodyBytes);
-					var computed = Convert.ToBase64String(hash);
-
-					Require.That(requestHash == computed, new WebhookUnauthorizedException());
-					return true;
-				}
+				return await new StreamReader(request.Body).ReadToEndAsync();
 			}
 			finally
 			{

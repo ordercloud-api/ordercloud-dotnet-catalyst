@@ -24,6 +24,8 @@ namespace OrderCloud.Catalyst.Tests
 		{
 			Fixture fixture = new Fixture();
 			var payload = fixture.Create<WebhookPayloads.Addresses.Save>();
+			//var payload = new WebhookPayloads.Addresses.Save();
+
 			payload.ConfigData = new { Foo = "blah" };
 
 			dynamic resp = await SendWebhookReq(route, payload).ReceiveJson();
@@ -72,6 +74,19 @@ namespace OrderCloud.Catalyst.Tests
 			var resp = await SendWebhookReq($"webhook/response-testing/false", body);
 			var json = await resp.GetJsonAsync<PreWebhookResponse>();
 			Assert.AreEqual(body, json.body);
+		}
+
+		[Test]
+		public async Task fails_without_any_header()
+		{
+			Fixture fixture = new Fixture();
+			var payload = fixture.Create<WebhookPayloads.Addresses.Save>();
+
+			var resp = await TestFramework.Client
+				.Request("webhook/saveaddress/protected-by-attribute")
+				.PostJsonAsync(payload);
+
+			await resp.ShouldHaveFirstApiError("Unauthorized", 401, "X-oc-hash header does not match. Endpoint can only be hit from a valid OrderCloud webhook.");
 		}
 
 		private async Task<IFlurlResponse> SendWebhookReq(string route, object payload, string hashKey = null)

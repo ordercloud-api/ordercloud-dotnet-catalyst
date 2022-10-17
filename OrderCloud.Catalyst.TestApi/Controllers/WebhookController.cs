@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using OrderCloud.Catalyst;
 using OrderCloud.SDK;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace OrderCloud.Catalyst.TestApi
 			{
 				HashKey = _settings.OrderCloudSettings.WebhookHashKey
 			};
-			await _service.VerifyWebhookHashAsync(options);
+			await _service.VerifyWebhookHashAsync(Request, options);
 			return new
 			{
 				Action = "HandleAddressSave",

@@ -222,7 +222,7 @@ namespace OrderCloud.Catalyst
 		/// This still won't work inside a controller unless there's middleware to run request.EnableBuffering();
 		/// See https://stackoverflow.com/questions/59185410/request-body-from-is-empty-in-net-core-3-0
 		/// </summary>
-		public async Task<string> GetHttpRequestBody(HttpRequest request)
+		private async Task<string> GetHttpRequestBody(HttpRequest request)
 		{
 			request.EnableBuffering();
 			request.Body.Position = 0;

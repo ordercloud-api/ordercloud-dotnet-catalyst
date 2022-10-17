@@ -173,15 +173,15 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Verify the provided webhook hash. Proves the request originated from OrderCloud.
 		/// </summary>
-		public async Task<bool> VerifyWebhookHashAsync(string requestHash, HttpRequest request, OrderCloudWebhookAuthOptions options)
+		public bool VerifyWebhookHashAsync(string requestHash, string requestBody, OrderCloudWebhookAuthOptions options)
 		{
 			Require.That(!string.IsNullOrEmpty(options.HashKey),
 				new InvalidOperationException("OrderCloudWebhookAuthOptions.HashKey was not configured."));
 
+			Require.That(!string.IsNullOrEmpty(requestBody), new WebhookUnauthorizedException());
 			Require.That(!string.IsNullOrEmpty(requestHash), new WebhookUnauthorizedException());
 
-			string body = await GetHttpRequestBody(request);
-			var bodyBytes = Encoding.UTF8.GetBytes(body);
+			var bodyBytes = Encoding.UTF8.GetBytes(requestBody);
 			var keyBytes = Encoding.UTF8.GetBytes(options.HashKey);
 			var hash = new HMACSHA256(keyBytes).ComputeHash(bodyBytes);
 			var computed = Convert.ToBase64String(hash);
@@ -190,22 +190,14 @@ namespace OrderCloud.Catalyst
 			return true;
 		}
 
+
 		/// <summary>
-		/// This still won't work inside a controller unless there's middleware to run request.EnableBuffering();
-		/// See https://stackoverflow.com/questions/59185410/request-body-from-is-empty-in-net-core-3-0
+		/// Verify the provided webhook hash. Proves the request originated from OrderCloud.
 		/// </summary>
-		public async Task<string> GetHttpRequestBody(HttpRequest request)
+		public async Task<bool> VerifyWebhookHashAsync(string requestHash, HttpRequest request, OrderCloudWebhookAuthOptions options)
 		{
-			request.EnableBuffering();
-			request.Body.Position = 0;
-			try
-			{
-				return await new StreamReader(request.Body).ReadToEndAsync();
-			}
-			finally
-			{
-				request.Body.Position = 0;
-			}
+			var requestBody = await GetHttpRequestBody(request);
+			return VerifyWebhookHashAsync(requestHash, requestBody, options);
 		}
 
 		/// <summary>
@@ -224,6 +216,24 @@ namespace OrderCloud.Catalyst
 		{
 			return await VerifyWebhookHashAsync(_httpContextAccessor.HttpContext.Request, options);
 
+		}
+
+		/// <summary>
+		/// This still won't work inside a controller unless there's middleware to run request.EnableBuffering();
+		/// See https://stackoverflow.com/questions/59185410/request-body-from-is-empty-in-net-core-3-0
+		/// </summary>
+		public async Task<string> GetHttpRequestBody(HttpRequest request)
+		{
+			request.EnableBuffering();
+			request.Body.Position = 0;
+			try
+			{
+				return await new StreamReader(request.Body).ReadToEndAsync();
+			}
+			finally
+			{
+				request.Body.Position = 0;
+			}
 		}
 
 		/// <summary>

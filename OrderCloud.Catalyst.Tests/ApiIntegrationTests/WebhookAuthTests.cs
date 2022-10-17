@@ -18,13 +18,15 @@ namespace OrderCloud.Catalyst.Tests
 	public class WebhookAuthTests
 	{
 		[Test]
-		public async Task hash_is_authenticated()
+		[TestCase("webhook/saveaddress/protected-by-service")]
+		[TestCase("webhook/saveaddress/protected-by-attribute")]
+		public async Task hash_is_authenticated(string route)
 		{
 			Fixture fixture = new Fixture();
 			var payload = fixture.Create<WebhookPayloads.Addresses.Save>();
 			payload.ConfigData = new { Foo = "blah" };
 
-			dynamic resp = await SendWebhookReq("webhook/saveaddress", payload).ReceiveJson();
+			dynamic resp = await SendWebhookReq(route, payload).ReceiveJson();
 
 			Assert.AreEqual(resp.Action, "HandleAddressSave");
 			Assert.AreEqual(resp.City, payload.Request.Body.City);
@@ -32,12 +34,14 @@ namespace OrderCloud.Catalyst.Tests
 		}
 
 		[Test]
-		public async Task hash_does_not_match()
+		[TestCase("webhook/saveaddress/protected-by-service")]
+		[TestCase("webhook/saveaddress/protected-by-attribute")]
+		public async Task hash_does_not_match(string route)
 		{
 			Fixture fixture = new Fixture();
 			var payload = fixture.Create<WebhookPayloads.Addresses.Save>();
 
-			var resp = await SendWebhookReq("webhook/saveaddress", payload, "dfadasfd");
+			var resp = await SendWebhookReq(route, payload, "dfadasfd");
 			await resp.ShouldHaveFirstApiError("Unauthorized", 401, "X-oc-hash header does not match. Endpoint can only be hit from a valid OrderCloud webhook.");
 		}
 

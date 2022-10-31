@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.0.2-alpha</Version>
+    <Version>2.3.0</Version>
     <PackageId>OrderCloud.Integrations.Shipping.EasyPost</PackageId>
     <Title>OrderCloud Shipping Integration with EasyPost</Title>
     <Authors>Oliver Heywood</Authors>

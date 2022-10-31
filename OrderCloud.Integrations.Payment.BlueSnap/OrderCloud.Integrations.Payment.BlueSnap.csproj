@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Version>1.0.2-alpha</Version>
+		<Version>2.3.0</Version>
 		<PackageId>OrderCloud.Integrations.Payment.BlueSnap</PackageId>
 		<Title>OrderCloud Payment Integration with BlueSnap</Title>
 		<Authors>Oliver Heywood</Authors>

@@ -21,6 +21,22 @@ public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConf
     ...
 }
 ```
+
+## Verify webhooks without route attributes
+
+You can verify a webhook request without using an attribute on a route. This may be helpful for azure functions or other contexts
+```c#
+private readonly RequestAuthenticationService _authService;
+private readonly AppSettings _settings;
+...
+HttpRequest request = // howwever you can access the http request
+var options = new OrderCloudWebhookAuthOptions() { HashKey = _settings.OrderCloudSettings.WebhookHash };
+
+_authService.VerifyWebhookHashAsync(request, options); // will throw exception if invalid
+```
+
+Note that you may need to change your app configuration so that the request body can be read multiple times.
+
 ## Best Practices
 For security reasons it is important to keep your webhook hash key confidential and never store the raw value in your codebase or anywhere else where developers outside your organization may access it. Make sure you store this key somewhere secure and pass it into your application as a constant. A good solution for this is to store your hash key in an Azure App Configuration.
 

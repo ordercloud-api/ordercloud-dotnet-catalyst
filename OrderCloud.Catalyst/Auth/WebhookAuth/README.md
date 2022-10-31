@@ -29,7 +29,7 @@ You can verify a webhook request without using an attribute on a route. Use the 
 private readonly RequestAuthenticationService _authService;
 private readonly AppSettings _settings;
 ...
-var options = new OrderCloudWebhookAuthOptions() { HashKey = _settings.OrderCloudSettings.WebhookHash };
+var options = new OrderCloudWebhookAuthOptions() { HashKey = _settings.OrderCloudSettings.WebhookHash }; // "my-secret-key"
 
 HttpRequest request = null; // how ever you can access the http request
 _authService.VerifyWebhookHashAsync(request, options); // will throw exception if invalid

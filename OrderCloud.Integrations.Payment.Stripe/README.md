@@ -66,10 +66,10 @@ public class CreditCardCommand
 	private readonly ICreditCardProcessor _creditCardProcessor;
 	private readonly ICreditCardSaver _creditCardSaver;
 
-	public CheckoutIntegrationEventController(ICreditCardProcessor creditCardProcessor, ICreditCardSaver creditCardSaver)
+	public CreditCardCommand(ICreditCardProcessor creditCardProcessor, ICreditCardSaver creditCardSaver)
 	{
 		// Inject interface. Implementation will depend on how services were registered, StripeService in this case.
-		_creditCardProcessor = shipMethodCalculator; 
+		_creditCardProcessor = creditCardProcessor; 
 		_creditCardSaver = creditCardSaver;
 	}
 
@@ -127,5 +127,5 @@ This library also supports more complex cases that require mulitple merchant acc
 ```c#
 StripeConfig configOverride = await FetchPaymentAccountCredentials(supplierID)
 var authorize = new AuthorizeCCTransaction();
-List<List<ShipMethods> rates = await _creditCardProcessor.AuthorizeOnlyAsynct(authorize, configOverride);
+List<List<ShipMethods> rates = await _creditCardProcessor.AuthorizeOnlyAsync(authorize, configOverride);
 ```

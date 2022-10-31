@@ -81,5 +81,4 @@ Feel free open issues recommending changes or additions to the interfaces.
 
 ## Approval
 
-A disclaimer, whether a pull request with a new integration is accepted and published will ultimately depend on the approval of the OrderCloud team.
-
+A disclaimer, whether a pull request with a new integration is accepted and published will ultimately depend on the approval of the OrderCloud team. We will work with you to help you meet our guidelines.

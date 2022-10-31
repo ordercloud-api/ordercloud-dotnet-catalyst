@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using OrderCloud.SDK;
+using System.IO;
+using System.Text;
 
 namespace OrderCloud.Catalyst
 {
@@ -48,6 +50,24 @@ namespace OrderCloud.Catalyst
 		}
 
 		/// <summary>
+		/// Get the header "X-oc-hash" of the provided request. Used to verify the request originated from OrderCloud.
+		/// </summary>
+		public static string GetWebhookHash(HttpRequest request)
+		{
+			var sentHash = request.Headers?["X-oc-hash"].FirstOrDefault();
+			Require.That(!string.IsNullOrEmpty(sentHash), new WebhookUnauthorizedException());
+			return sentHash;
+		}
+
+		/// <summary>
+		/// Get the header "X-oc-hash" of the current HttpContext Request. Used to verify the request originated from OrderCloud.
+		/// </summary>
+		public string GetWebhookHash()
+		{
+			return GetWebhookHash(_httpContextAccessor.HttpContext.Request);
+		}
+
+		/// <summary>
 		/// Get a raw OrderCloud token from the current HttpContext request headers
 		/// </summary>
 		public string GetToken()
@@ -73,7 +93,7 @@ namespace OrderCloud.Catalyst
 		}
 
 		/// <summary>
-		/// Verifies the provided OrderCloud token. Throws 401 if invalid or 403 if insufficient roles.
+		/// Verify the provided OrderCloud token. Throws 401 if invalid or 403 if insufficient roles.
 		/// </summary>
 		public async Task<DecodedToken> VerifyTokenAsync(string token, OrderCloudUserAuthOptions options, IEnumerable<string> requiredRoles = null, IEnumerable<CommerceRole> allowedUserTypes = null)
 		{
@@ -133,7 +153,7 @@ namespace OrderCloud.Catalyst
 		}
 
 		/// <summary>
-		/// Verifies the provided HttpRequest's OrderCloud Token. Throws 401 if invalid or 403 if insufficient roles.
+		/// Verify the provided HttpRequest's OrderCloud Token. Throws 401 if invalid or 403 if insufficient roles.
 		/// </summary>
 		public async Task<DecodedToken> VerifyTokenAsync(HttpRequest request, OrderCloudUserAuthOptions options, IEnumerable<string> requiredRoles = null, IEnumerable<CommerceRole> allowedUserTypes = null)
 		{
@@ -143,13 +163,78 @@ namespace OrderCloud.Catalyst
 
 
 		/// <summary>
-		/// Verifies the current HttpContext request's OrderCloud token. Throws 401 if invalid or 403 if insufficient roles.
+		/// Verify the current HttpContext request's OrderCloud token. Throws 401 if invalid or 403 if insufficient roles.
 		/// </summary>
 		public async Task<DecodedToken> VerifyTokenAsync(OrderCloudUserAuthOptions options, IEnumerable<string> requiredRoles = null, IEnumerable<CommerceRole> allowedUserTypes = null)
 		{
 			return await VerifyTokenAsync(_httpContextAccessor.HttpContext.Request, options, requiredRoles, allowedUserTypes);
 		}
 
+		/// <summary>
+		/// Verify the provided webhook hash. Proves the request originated from OrderCloud.
+		/// </summary>
+		public bool VerifyWebhookHashAsync(string requestHash, string requestBody, OrderCloudWebhookAuthOptions options)
+		{
+			Require.That(!string.IsNullOrEmpty(options.HashKey),
+				new InvalidOperationException("OrderCloudWebhookAuthOptions.HashKey was not configured."));
+
+			Require.That(!string.IsNullOrEmpty(requestBody), new WebhookUnauthorizedException());
+			Require.That(!string.IsNullOrEmpty(requestHash), new WebhookUnauthorizedException());
+
+			var bodyBytes = Encoding.UTF8.GetBytes(requestBody);
+			var keyBytes = Encoding.UTF8.GetBytes(options.HashKey);
+			var hash = new HMACSHA256(keyBytes).ComputeHash(bodyBytes);
+			var computed = Convert.ToBase64String(hash);
+
+			Require.That(requestHash == computed, new WebhookUnauthorizedException());
+			return true;
+		}
+
+
+		/// <summary>
+		/// Verify the provided webhook hash. Proves the request originated from OrderCloud.
+		/// </summary>
+		public async Task<bool> VerifyWebhookHashAsync(string requestHash, HttpRequest request, OrderCloudWebhookAuthOptions options)
+		{
+			var requestBody = await GetHttpRequestBody(request);
+			return VerifyWebhookHashAsync(requestHash, requestBody, options);
+		}
+
+		/// <summary>
+		/// Verify the provided HttpContext request's webhook hash. Proves the request came from OrderCloud.
+		/// </summary>
+		public async Task<bool> VerifyWebhookHashAsync(HttpRequest request, OrderCloudWebhookAuthOptions options)
+		{
+			var requestHash = GetWebhookHash(request);
+			return await VerifyWebhookHashAsync(requestHash, request, options);
+		}
+
+		/// <summary>
+		/// Verify the current HttpContext request's webhook hash. Proves the request came from OrderCloud.
+		/// </summary>
+		public async Task<bool> VerifyWebhookHashAsync(OrderCloudWebhookAuthOptions options)
+		{
+			return await VerifyWebhookHashAsync(_httpContextAccessor.HttpContext.Request, options);
+
+		}
+
+		/// <summary>
+		/// This still won't work inside a controller unless there's middleware to run request.EnableBuffering();
+		/// See https://stackoverflow.com/questions/59185410/request-body-from-is-empty-in-net-core-3-0
+		/// </summary>
+		private async Task<string> GetHttpRequestBody(HttpRequest request)
+		{
+			request.EnableBuffering();
+			request.Body.Position = 0;
+			try
+			{
+				return await new StreamReader(request.Body).ReadToEndAsync();
+			}
+			finally
+			{
+				request.Body.Position = 0;
+			}
+		}
 
 		/// <summary>
 		/// Get the full details of the currently authenticated user based on the HttpContext request token

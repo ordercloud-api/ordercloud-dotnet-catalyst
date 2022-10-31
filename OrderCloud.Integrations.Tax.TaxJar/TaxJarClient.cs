@@ -10,19 +10,18 @@ namespace OrderCloud.Integrations.Tax.TaxJar
 {
 	public class TaxJarClient
 	{
+		protected static IFlurlRequest BuildClient(TaxJarConfig config) => config.BaseUrl.WithOAuthBearerToken(config.APIToken);
+
 		/// <summary>
 		/// https://developers.taxjar.com/api/reference/#post-create-an-order-transaction
 		/// </summary>
 		public static async Task<TaxJarOrder> CreateOrderAsync(TaxJarOrder order, TaxJarConfig config)
 		{
-			return await TryCatchRequestAsync(config, async (request) =>
-			{
-				var tax = await request
-					.AppendPathSegments("taxes", "orders")
-					.PostJsonAsync(order)
-					.ReceiveJson<TaxJarOrder>();
-				return tax;
-			});
+			var tax = await BuildClient(config)
+				.AppendPathSegments("taxes", "orders")
+				.PostJsonWithErrorHandlingAsync<TaxJarError>(order, config)
+				.ReceiveJson<TaxJarOrder>();
+			return tax;
 		}
 
 		/// <summary>
@@ -30,13 +29,10 @@ namespace OrderCloud.Integrations.Tax.TaxJar
 		/// </summary>
 		public static async Task<TaxJarCategories> ListCategoriesAsync(TaxJarConfig config)
 		{
-			return await TryCatchRequestAsync(config, async (request) =>
-			{ 
-				var categories = await request
-					.AppendPathSegments("categories")
-					.GetJsonAsync<TaxJarCategories>();
-				return categories;
-			});
+			var categories = await BuildClient(config)
+				.AppendPathSegments("categories")
+				.GetJsonWithErrorHandlingAsync<TaxJarCategories, TaxJarError>(config);
+			return categories;
 		}
 
 		/// <summary>
@@ -44,42 +40,11 @@ namespace OrderCloud.Integrations.Tax.TaxJar
 		/// </summary>
 		public static async Task<TaxJarCalcResponse> CalcTaxForOrderAsync(TaxJarOrder order, TaxJarConfig config)
 		{
-			return await TryCatchRequestAsync(config, async (request) =>
-			{
-				var tax = await request
-					.AppendPathSegments("taxes")
-					.PostJsonAsync(order)
-					.ReceiveJson<TaxJarCalcResponse>();
-				return tax;
-			});
-		}
-
-		protected static async Task<T> TryCatchRequestAsync<T>(TaxJarConfig config, Func<IFlurlRequest, Task<T>> run)
-		{
-			var request = config.BaseUrl.WithOAuthBearerToken(config.APIToken);
-			try
-			{
-				return await run(request);
-			}
-			catch (FlurlHttpTimeoutException ex)  // simulate with this https://stackoverflow.com/questions/100841/artificially-create-a-connection-timeout-error
-			{
-				// candidate for retry here?
-				throw new IntegrationNoResponseException(config, request.Url);
-			}
-			catch (FlurlHttpException ex)
-			{
-				var status = ex?.Call?.Response?.StatusCode;
-				if (status == null) // simulate by putting laptop on airplane mode
-				{
-					throw new IntegrationNoResponseException(config, request.Url);
-				}
-				if (status == 401)
-				{
-					throw new IntegrationAuthFailedException(config, request.Url, (int)status);
-				}
-				var body = await ex.Call.Response.GetJsonAsync<TaxJarError>();
-				throw new IntegrationErrorResponseException(config, request.Url, (int)status, body);
-			}
+			var tax = await BuildClient(config)
+				.AppendPathSegments("taxes")
+				.PostJsonWithErrorHandlingAsync<TaxJarError>(order, config)
+				.ReceiveJson<TaxJarCalcResponse>();
+			return tax;
 		}
 	}
 }

@@ -99,6 +99,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
 			Assert.AreEqual(data.ServiceName, "Avalara");
 			Assert.AreEqual(data.RequestUrl, $"{_config.BaseUrl}/transactions/create");
 			Assert.AreEqual(data.ResponseStatus, 400);
+			Assert.AreEqual(((AvalaraError)data.ResponseBody).error.code, "InvalidAddress");
 		}
 	}
 }

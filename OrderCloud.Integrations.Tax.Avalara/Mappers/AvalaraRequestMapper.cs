@@ -21,7 +21,7 @@ namespace OrderCloud.Integrations.Tax.Avalara
 				date = DateTime.Now,
 				discount = GetOrderOnlyTotalDiscount(order),
 				lines = productLines.Concat(shippingLines).ToList(),
-				purchaseOrderNo = order.OrderID
+				purchaseOrderNo = order.OrderID,
 			};
 		}
 
@@ -36,7 +36,8 @@ namespace OrderCloud.Integrations.Tax.Avalara
 				discounted = true, // Assumption that all products are eligible for order-level promotions
 				customerUsageType = null,
 				number = lineItem.LineItemID,
-				addresses = ToAddressesModel(lineItem.ShipFrom, lineItem.ShipTo)
+				description = lineItem.ProductName,
+				addresses = ToAddressesModel(lineItem.ShipFrom, lineItem.ShipTo),
 			};
 		}
 
@@ -78,7 +79,8 @@ namespace OrderCloud.Integrations.Tax.Avalara
 				city = address.City,
 				region = address.State,
 				postalCode = address.Zip,
-				country = address.Country
+				country = address.Country,
+				locationCode = address.ID
 			};
 		}
 	}

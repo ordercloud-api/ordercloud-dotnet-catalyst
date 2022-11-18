@@ -48,6 +48,12 @@ namespace OrderCloud.Catalyst
 		{
 			Email = email;
 		}
+
+		public ToEmailAddress(EmailAddress email)
+		{
+			Email = email.Email;
+			Name = email.Name;
+		}
 		/// <summary>
 		/// Dynamic data specific to this recipient used to populate the template. Overrides values in EmailMessage.GlobalTemplateData. Ignored if TemplateID is null or AllRecipientsVisibleOnSingleThread is true. Optional.
 		/// </summary>
@@ -56,7 +62,7 @@ namespace OrderCloud.Catalyst
 
 
 	/// <summary>
-	/// All the data required to send an email. Supports multiple recipients, templatization, and attachments.
+	/// All the data to send an email. Supports multiple recipients, templatization by recipient, attachments, and either one shared thread or individual messages.
 	/// </summary>
 	public class EmailMessage
 	{

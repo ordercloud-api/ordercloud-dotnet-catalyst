@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>2.3.0</Version>
+    <PackageId>OrderCloud.Integrations.Email.SendInBlue</PackageId>
+    <Title>OrderCloud Email Integration with Sendinblue</Title>
+    <Authors>Oliver Heywood</Authors>
+    <Description>Integrate the OrderCloud ecommerce platform with Sendinblue for Email.</Description>
+    <Copyright>Copyright 2022, Sitecore.</Copyright>
+    <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageIcon>sitecore_logo.jpg</PackageIcon>
+    <PackageTags>ordercloud ecommerce email webjobs sitecore sendinblue</PackageTags>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Company>Sitecore</Company>
+    <Product>OrderCloud</Product>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\sitecore_logo.jpg" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="sib_api_v3_sdk" Version="3.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OrderCloud.Catalyst\OrderCloud.Catalyst.csproj" />
+  </ItemGroup>
+</Project>

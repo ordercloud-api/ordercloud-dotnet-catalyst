@@ -12,8 +12,8 @@ namespace OrderCloud.Integrations.Tax.Avalara
 	public class AvalaraClient
 	{
 		// provided by the Avalara team to indentify this specific integration with OrderCloud
-		private static string AppName = "a0o33000003vpfvAAA";
-		private static string AvataxClientHeaderName = "X-Avalara-Client";
+		protected static string AppName = "a0o33000003vpfvAAA";
+		protected static string AvataxClientHeaderName = "X-Avalara-Client";
 		protected static IFlurlRequest BuildClient(AvalaraConfig config) => config.BaseUrl.WithBasicAuth(config.AccountID, config.LicenseKey);
 
 		/// <summary>

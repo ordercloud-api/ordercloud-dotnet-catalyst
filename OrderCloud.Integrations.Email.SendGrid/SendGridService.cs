@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OrderCloud.Integrations.Email.SendGrid
 {
-	public class SendGridService : OCIntegrationService, IEmailSender
+	public class SendGridService : OCIntegrationService, ISingleEmailSender
 	{
 		private readonly SendGridClient _client;  
 
@@ -20,7 +20,7 @@ namespace OrderCloud.Integrations.Email.SendGrid
 		/// <summary>
 		/// See https://docs.sendgrid.com/api-reference/mail-send/mail-send
 		/// </summary>
-		public async Task SendEmailAsync(EmailMessage message, OCIntegrationConfig overrideConfig = null)
+		public async Task SendSingleEmailAsync(EmailMessage message, OCIntegrationConfig overrideConfig = null)
 		{
 			var client = _client;
 			if (overrideConfig != null)

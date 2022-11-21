@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 namespace OrderCloud.Catalyst
 {
 	/// <summary>
-	/// A simple email sender. Intended for "Transactional emails", meaning notifications in response to an action taken in an appplication, like reset password or order submitted. This is as opposed to a marketing campaign email.
+	/// A simple email sender. Intended for "Transactional emails", meaning notifications in response to an action taken in an appplication, like reset password or order submitted. This is as opposed to batches or marketing campaigns.
 	/// </summary>
-	public interface IEmailSender
+	public interface ISingleEmailSender
 	{
 		/// <summary>
-		/// If there are multiple recipients, they will see each other on the thread.
+		/// Send a single email, as opposed to a batch of emails or an email campaign. Multiple recipients with personalized templates supported.
 		/// </summary>
-		Task SendEmailAsync(EmailMessage message, OCIntegrationConfig configOverride = null);
+		Task SendSingleEmailAsync(EmailMessage message, OCIntegrationConfig overrideConfig = null);
 	}
 
 
@@ -55,7 +55,7 @@ namespace OrderCloud.Catalyst
 			Name = email.Name;
 		}
 		/// <summary>
-		/// Dynamic data specific to this recipient used to populate the template. Overrides values in EmailMessage.GlobalTemplateData. Ignored if TemplateID is null or AllRecipientsVisibleOnSingleThread is true. Optional.
+		/// Dynamic data specific to this recipient used to populate the template. Overrides values in EmailMessage.GlobalTemplateData. Ignored if AllRecipientsVisibleOnSingleThread is true. Optional.
 		/// </summary>
 		public Dictionary<string, string> TemplateDataOverrides { get; set; } = new Dictionary<string, string>();
 	}
@@ -87,7 +87,7 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public string TemplateID { get; set; }
 		/// <summary>
-		/// Dynamic data used to populate the template. Will be ignored if TemplateID is null. Key value strings only. Optional.
+		/// Dynamic data used to populate the template. Key value strings only. Optional.
 		/// </summary>
 		public Dictionary<string, string> GlobalTemplateData { get; set; } = new Dictionary<string, string>();
 		/// <summary>

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Integrations.Email.MailChimp
+namespace OrderCloud.Integrations.Messaging.MailChimp
 {
 	public class MailChimpService : OCIntegrationService, ISingleEmailSender
 	{

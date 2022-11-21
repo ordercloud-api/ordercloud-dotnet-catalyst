@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Task = System.Threading.Tasks.Task;
 
-namespace OrderCloud.Integrations.Email.SendInBlue
+namespace OrderCloud.Integrations.Messaging.SendInBlue
 {
 	public class SendInBlueService : OCIntegrationService, ISingleEmailSender
 	{

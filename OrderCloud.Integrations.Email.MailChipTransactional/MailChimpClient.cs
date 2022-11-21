@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OrderCloud.Catalyst;
 
-namespace OrderCloud.Integrations.Email.MailChimp
+namespace OrderCloud.Integrations.Messaging.MailChimp
 {
 	public class MailChimpClient
 	{

@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Version>2.3.0</Version>
-    <PackageId>OrderCloud.Integrations.Email.MailChimp</PackageId>
+    <PackageId>OrderCloud.Integrations.Messaging.MailChimp</PackageId>
     <Title>OrderCloud Email Integration with MailChimp</Title>
     <Authors>Oliver Heywood</Authors>
     <Description>Integrate the OrderCloud ecommerce platform with MailChimp for Email.</Description>

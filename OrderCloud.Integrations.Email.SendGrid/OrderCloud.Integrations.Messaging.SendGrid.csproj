@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Version>2.3.0</Version>
-    <PackageId>OrderCloud.Integrations.Email.SendGrid</PackageId>
+    <PackageId>OrderCloud.Integrations.Messaging.SendGrid</PackageId>
     <Title>OrderCloud Email Integration with SendGrid</Title>
     <Authors>Oliver Heywood</Authors>
     <Description>Integrate the OrderCloud ecommerce platform with Sendgrid for Email.</Description>

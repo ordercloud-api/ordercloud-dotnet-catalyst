@@ -1,6 +1,6 @@
 ﻿using OrderCloud.Catalyst;
 
-namespace OrderCloud.Integrations.Email.SendGrid
+namespace OrderCloud.Integrations.Messaging.SendGrid
 {
 	public class SendGridConfig : OCIntegrationConfig
 	{

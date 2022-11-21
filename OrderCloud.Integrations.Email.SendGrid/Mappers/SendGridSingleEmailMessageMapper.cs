@@ -7,7 +7,7 @@ using System.Text;
 using EmailAddress = OrderCloud.Catalyst.EmailAddress;
 using SendGridEmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 
-namespace OrderCloud.Integrations.Email.SendGrid
+namespace OrderCloud.Integrations.Messaging.SendGrid
 {
 	public static class SendGridSingleEmailMessageMapper
 	{

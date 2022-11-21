@@ -1,7 +1,7 @@
 ﻿using OrderCloud.Catalyst;
 using System;
 
-namespace OrderCloud.Integrations.Email.MailChimp
+namespace OrderCloud.Integrations.Messaging.MailChimp
 {
 	public class MailChimpConfig : OCIntegrationConfig
 	{

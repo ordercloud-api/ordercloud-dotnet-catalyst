@@ -1,7 +1,7 @@
 ﻿using OrderCloud.Catalyst;
 using System;
 
-namespace OrderCloud.Integrations.Email.SendInBlue
+namespace OrderCloud.Integrations.Messaging.SendInBlue
 {
 	public class SendInBlueConfig : OCIntegrationConfig
 	{

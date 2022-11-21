@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Integrations.Email.SendGrid
+namespace OrderCloud.Integrations.Messaging.SendGrid
 {
 	public class SendGridService : OCIntegrationService, ISingleEmailSender
 	{

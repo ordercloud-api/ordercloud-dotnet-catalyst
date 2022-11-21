@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OrderCloud.Integrations.Email.MailChimp
+namespace OrderCloud.Integrations.Messaging.MailChimp
 {
 	public static class MailChimpSendMessageMapper
 	{

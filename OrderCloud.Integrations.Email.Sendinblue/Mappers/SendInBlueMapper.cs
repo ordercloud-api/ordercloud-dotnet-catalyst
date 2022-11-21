@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OrderCloud.Integrations.Email.SendInBlue
+namespace OrderCloud.Integrations.Messaging.SendInBlue
 {
 	public static class SendInBlueMapper
 	{

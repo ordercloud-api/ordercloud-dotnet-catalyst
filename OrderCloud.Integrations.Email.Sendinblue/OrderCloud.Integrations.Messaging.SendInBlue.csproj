@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Version>2.3.0</Version>
-    <PackageId>OrderCloud.Integrations.Email.SendInBlue</PackageId>
+    <PackageId>OrderCloud.Integrations.Messaging.SendInBlue</PackageId>
     <Title>OrderCloud Email Integration with Sendinblue</Title>
     <Authors>Oliver Heywood</Authors>
     <Description>Integrate the OrderCloud ecommerce platform with Sendinblue for Email.</Description>

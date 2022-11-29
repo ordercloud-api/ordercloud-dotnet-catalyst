@@ -2,7 +2,7 @@
 
 [![](https://img.shields.io/nuget/v/ordercloud-dotnet-catalyst.svg?maxAge=3600)](https://www.nuget.org/packages/ordercloud-dotnet-catalyst/)
 
-A foundational library for building OrderCloud middleware APIs, jobs, plugins and extensions with .NET. A toolbox of helpers for authentication, performant bulk requests, error handling, jobs, project setup, ect.    
+A foundational library for building [Ordercloud](https://ordercloud.io/) middleware APIs, jobs, plugins and extensions with .NET. A toolbox of helpers for authentication, performant bulk requests, error handling, jobs, project setup, ect.    
 
 See [dotnet-middleware](https://github.com/ordercloud-api/dotnet-middleware) for a starter server-side project that uses this library. Targeted guides are found there.
 

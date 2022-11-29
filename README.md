@@ -30,7 +30,7 @@ Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/I
 
 ### User Authentication
 
-Use Ordercloud's authentication scheme in your own APIs. [More Info](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Auth/UserAuth)
+Use Ordercloud's authentication scheme in your own APIs. [More Info](./OrderCloud.Catalyst/Auth/UserAuth)
 
 ```c#
 [HttpGet("hello"), OrderCloudUserAuth(ApiRole.Shopper)]
@@ -39,9 +39,9 @@ public string SayHello() {
 }
 ```
 
-### [Webhook Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Auth/WebhookAuth)
+### Webhook Authentication
 
-Securely receive push notifications of events from the Ordercloud platform.
+Securely receive push notifications of events from the Ordercloud platform. [More Info](./OrderCloud.Catalyst/Auth/WebhookAuth)
 
 ```c#
 [HttpPost("webhook"), OrderCloudWebhookAuth]
@@ -50,17 +50,17 @@ public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConf
 }
 ```
 
-### [Listing All Pages](./OrderCloud.Catalyst/DataMovement/ListAllAsync)
+### Listing All Pages
 
-If OrderCloud's limit of 100 records per page is a pain point.
+If OrderCloud's limit of 100 records per page is a pain point. [More Info](./OrderCloud.Catalyst/DataMovement/ListAllAsync)
 
 ```c#
 var orders = new OrderCloudClient(...).Orders.ListAllAsync();
 ```
 
-### [Proxying Platform List Calls](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Models/ListOptions)
+### Proxying Platform List Calls
 
-Receive list requests to your API with user defined filters, search, paging, and sorting.
+Receive list requests to your API with user defined filters, search, paging, and sorting. [More Info](./OrderCloud.Catalyst/Models/ListOptions)
 ```c#
 [HttpGet("orders"), OrderCloudUserAuth(ApiRole.Shopper)]
 public async Task<ListPage<Order>> ListOrders(IListArgs args)
@@ -74,9 +74,9 @@ public async Task<ListPage<Order>> ListOrders(IListArgs args)
 }
 ```
 
-### [Caching](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/DataMovement/Caching)
+### Caching
 
-Use Redis or LazyCache. Or, define your own implementation of ISimpleCache.
+Use Redis or LazyCache. Or, define your own implementation of ISimpleCache. [More Info](./OrderCloud.Catalyst/DataMovement/Caching)
 
 ```c#
 private ISimpleCache _cache;
@@ -97,9 +97,9 @@ public Thing EditThing(string thingID) {
 }
 ```
 
-### [Throttler](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/DataMovement/Throttler) 
+### Throttler
 
-A perfomance helper for multiple async function calls.
+A perfomance helper for multiple async function calls. [More Info](./OrderCloud.Catalyst/DataMovement/Throttler)
 
 ```c# 
 var cars = new List<Car>();
@@ -109,9 +109,9 @@ var minPause = 100 // ms
 var carOwners = await Throttler.RunAsync(cars, minPause, maxConcurency, car => apiClient.GetCarOwner(car.ID);
 ```
 
-### [Error Handling](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Errors)
+### Error Handling
 
-Handle API errors, including unexpected ones, with a standard JSON response structure. Define your own errors.
+Handle API errors, including unexpected ones, with a standard JSON response structure. Define your own errors. [More Info](./OrderCloud.Catalyst/Errors)
 
 ```c#
 public class AgeLimit21Exception : CatalystBaseException
@@ -124,9 +124,9 @@ public class AgeLimit21Exception : CatalystBaseException
 Require.That(user.xp.Age >= 21, new AgeLimit21Exception());
 ```
 
-### [Model Validation](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/tests/OrderCloud.Catalyst.TestApi/Controllers/ModelValidation)
+### Model Validation
 
-Take advantage of DataAnnotation attributes to specify validation requirements for your own custom models.
+Take advantage of DataAnnotation attributes to specify validation requirements for your own custom models. [More Info](./OrderCloud.Catalyst.TestApi/Controllers/ModelValidation)
 
 ```c#
 [Required(ErrorMessage = "This field is required, please try again.")]

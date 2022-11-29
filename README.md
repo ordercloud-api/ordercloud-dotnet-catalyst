@@ -28,9 +28,9 @@ Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/I
 | **Vertex** | [OrderCloud.Integrations.Tax.Vertex](./OrderCloud.Integrations.Tax.Vertex) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Tax.Vertex.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Vertex) | OrderCloud Team | [`ITaxCalculator`](./OrderCloud.Catalyst/Integrations/Interfaces/ITaxCalculator.cs)
 | **TaxJar** | [OrderCloud.Integrations.Tax.TaxJar](./OrderCloud.Integrations.Tax.TaxJar) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Tax.TaxJar.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.TaxJar) | OrderCloud Team | [`ITaxCalculator`](./OrderCloud.Catalyst/Integrations/Interfaces/ITaxCalculator.cs), [`ITaxCodeProvider`](./OrderCloud.Catalyst/Integrations/Interfaces/ITaxCodeProvider.cs)
 
-### [User Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Auth/UserAuth)
+### User Authentication
 
-Use Ordercloud's authentication scheme in your own APIs.
+Use Ordercloud's authentication scheme in your own APIs. [More Info](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Auth/UserAuth)
 
 ```c#
 [HttpGet("hello"), OrderCloudUserAuth(ApiRole.Shopper)]

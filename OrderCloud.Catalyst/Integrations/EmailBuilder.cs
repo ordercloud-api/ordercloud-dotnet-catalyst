@@ -17,12 +17,12 @@ namespace OrderCloud.Catalyst
 			return BuildEmailToMany(list, from, subject, content, attachments);
 		}
 
-		public static EmailMessage BuildTemplateEmail(string to, string from, string subject, string templateID, Dictionary<string, string> templateData, List<EmailAttachment> attachments = null)
+		public static EmailMessage BuildTemplateEmail(string to, string from, string subject, string templateID, Dictionary<string, object> templateData, List<EmailAttachment> attachments = null)
 		{
 			return BuildTemplateEmail(new ToEmailAddress(to), new EmailAddress(from), subject, templateID, templateData, attachments);
 		}
 
-		public static EmailMessage BuildTemplateEmail(ToEmailAddress to, EmailAddress from, string subject, string templateID, Dictionary<string, string> templateData, List<EmailAttachment> attachments = null)
+		public static EmailMessage BuildTemplateEmail(ToEmailAddress to, EmailAddress from, string subject, string templateID, Dictionary<string, object> templateData, List<EmailAttachment> attachments = null)
 		{
 			var list = new List<ToEmailAddress>() { to };
 			return BuildTemplateEmailToMany(list, from, subject, templateID, templateData, attachments);
@@ -46,13 +46,13 @@ namespace OrderCloud.Catalyst
 			};
 		}
 
-		public static EmailMessage BuildTemplateEmailToMany(List<string> to, string from, string subject, string templateID, Dictionary<string, string> templateData, List<EmailAttachment> attachments = null)
+		public static EmailMessage BuildTemplateEmailToMany(List<string> to, string from, string subject, string templateID, Dictionary<string, object> templateData, List<EmailAttachment> attachments = null)
 		{
 			var list = to.Select(x => new ToEmailAddress(x)).ToList();
 			return BuildTemplateEmailToMany(list, new EmailAddress(from), subject, templateID, templateData, attachments);
 		}
 
-		public static EmailMessage BuildTemplateEmailToMany(List<ToEmailAddress> to, EmailAddress from, string subject, string templateID, Dictionary<string, string> templateData, List<EmailAttachment> attachments = null)
+		public static EmailMessage BuildTemplateEmailToMany(List<ToEmailAddress> to, EmailAddress from, string subject, string templateID, Dictionary<string, object> templateData, List<EmailAttachment> attachments = null)
 		{
 			var message = BuildEmailToMany(to, from, subject, null, attachments);
 			message.TemplateID = templateID;
@@ -74,13 +74,13 @@ namespace OrderCloud.Catalyst
 			return message;
 		}
 
-		public static EmailMessage BuildSharedThreadTemplateEmailToMany(List<string> to, string from, string subject, string templateID, Dictionary<string, string> templateData, List<EmailAttachment> attachments = null)
+		public static EmailMessage BuildSharedThreadTemplateEmailToMany(List<string> to, string from, string subject, string templateID, Dictionary<string, object> templateData, List<EmailAttachment> attachments = null)
 		{
 			var list = to.Select(x => new EmailAddress(x)).ToList();
 			return BuildSharedThreadTemplateEmailToMany(list, new EmailAddress(from), subject, templateID, templateData, attachments);
 		}
 
-		public static EmailMessage BuildSharedThreadTemplateEmailToMany(List<EmailAddress> to, EmailAddress from, string subject, string templateID, Dictionary<string, string> templateData, List<EmailAttachment> attachments = null)
+		public static EmailMessage BuildSharedThreadTemplateEmailToMany(List<EmailAddress> to, EmailAddress from, string subject, string templateID, Dictionary<string, object> templateData, List<EmailAttachment> attachments = null)
 		{
 			var list = to.Select(x => new ToEmailAddress(x)).ToList();
 			var message = BuildTemplateEmailToMany(list, from, subject, templateID, templateData, attachments);

@@ -1,8 +1,10 @@
-﻿using OrderCloud.Catalyst;
+﻿using Newtonsoft.Json;
+using OrderCloud.Catalyst;
 using SendGrid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +12,8 @@ namespace OrderCloud.Integrations.Messaging.SendGrid
 {
 	public class SendGridService : OCIntegrationService, ISingleEmailSender
 	{
-		private readonly SendGridClient _client;  
+		protected readonly SendGridClient _client;
+		protected readonly string URL = "https://api.sendgrid.com/v3/mail/send";
 
 		public SendGridService(SendGridConfig defaultConfig) : base(defaultConfig) 
 		{
@@ -30,9 +33,18 @@ namespace OrderCloud.Integrations.Messaging.SendGrid
 			}
 
 			var sendGridModel = SendGridSingleEmailMessageMapper.ToSendGridMessage(message);
-			await client.SendEmailAsync(sendGridModel);
+			var response = await client.SendEmailAsync(sendGridModel);
 
-			// TODO error handling
+			if (response.StatusCode == HttpStatusCode.Unauthorized)
+			{
+				throw new IntegrationAuthFailedException(overrideConfig ?? _defaultConfig, URL, 401);
+			}
+			else if (!response.IsSuccessStatusCode)
+			{
+				var bodyString = await response.Body.ReadAsStringAsync();
+				var body = JsonConvert.DeserializeObject<SendGridErrorResponse>(bodyString);
+				throw new IntegrationErrorResponseException(overrideConfig ?? _defaultConfig, URL, (int)response.StatusCode, body);
+			}
 		}
 	}
 }

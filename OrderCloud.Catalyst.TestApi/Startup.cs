@@ -73,7 +73,7 @@ namespace OrderCloud.Catalyst.TestApi
 				context.Request.EnableBuffering(); // allows the body to be read twice for verifying webhooks in the controller route.
 				return next();
 			});
-			app.UseCatalystExceptionHandler();
+			app.UseCatalystExceptionHandler(false);
 			app.UseHttpsRedirection();
 			app.UseRouting();
 			app.UseCors("integrationcors");

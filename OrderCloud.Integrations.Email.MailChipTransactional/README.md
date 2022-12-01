@@ -1,106 +1,82 @@
-﻿# OrderCloud.Integrations.Payment.BlueSnap
+﻿# OrderCloud.Integrations.Messaging.MailChimp
 
-## Payment Processing Basics
+This project brings email to your ecommerce app using the [MailChimp Transactional API](https://mailchimp.com/developer/transactional/api/) (Formerly Mandrill). Messaging can include marketing campaigns, batches, or single transactional messages send via email, SMS, or another channel. MailChimpService.cs conforms to the standard [`ISingleEmailSender`](../OrderCloud.Catalyst/Integrations/Interfaces/ISingleEmailSender.cs interface published in the base library ordercloud-dotnet-catalyst.
 
+## Transactional Email Basics 
+"Transactional" is the term used to describe emails that are sent in response to specific actions the user takes in an app - think forgot password or order confirmation emails. These are as opposed to batch messages or marketing campaigns. Different regulations apply to these different categories (For example, marketing campaigns should have an unsubscribe feature, whereas that is not required for transactional.) Most major messaging platforms provide distinct functionality for transactional messages. Here are features which the `ISingleEmailSender` supports
+- Basic email properties like Email and Name for To and From addresses, Subject, and Content.
+- Multiple recipients, with the ability to hide them from each other or put them all on one thread. 
+- Pre-saved templates which can be populated by key-value pairs of dynamic data. 
+- In the case of multiple recipients who are hidden from each other, it supports dynamic data overrides by recipient.  
+- Attached Files
+
+Here are features which are *not supported* because not all the major providers do. You can find these features with some providers.
+- Future Scheduled Emails
+- ReplyTo Email and Name
+
+## Transactional Messaging in OrderCloud 
+All OrderCloud Ecommerce solutions need transactional messages - at a minimum for events like forgot password and order confirmation. The OrderCloud API has a resource called "Message Senders" to support this. Start by reading [this article about message senders](https://ordercloud.io/knowledge-base/message-senders). It includes a list of supported platform events which trigger messages. OrderCloud includes a built-in messaging integration with MailChimp (Mandrill). There are a number of scenarios which the built-in integration cannot handle. 
+1. If you want to use a provider other than MailChimp Mandrill. Create a custom message sender.
+2. If you want to send emails triggered by an event not in the supported list. Write custom code to hook into.
+3. If you need to display dynamic data in an email which is not included in the standard integration's template variables. Create a custom message sender.
+
+In these scenarios this project can help!
 
 ## Package Installation 
 
-This nuget library can be installed in the context of a .NET server-side project. If you already have a .NET project, great. If not, you can [follow this guide](https://ordercloud.io/knowledge-base/start-dotnet-middleware-from-scratch).
-
-```dotnet add package OrderCloud.Integrations.Payment.BlueSnap```
+There is no nuget package for this integration currently.
 
 ## Authentication and Injection
 
-You will need these configuration data points to authneticate to the BlueSnap API - *BaseUrl*, *APIUsername*, and *APIPassword*. Follow [these steps](https://developers.bluesnap.com/docs/api-credentials) to get API credentials. 
+You will need these configuration data points to authneticate to the MailChimp API - *ApiKey*. Transactional emails require a extra add-on to the standard MailChimp payment package. Follow [these steps](https://mailchimp.com/help/about-api-keys/) to get API credentials. 
 
 ```c#
-var blueSnapService = new BlueSnapService(new BlueSnapConfig()
+var mailChimpService = new MailChimpService(new MailChimpConfig()
 {
-	BaseUrl = "https://sandbox.bluesnap.com" // or https://ws.bluesnap.com
-	APIUsername = "...",
-	APIPassword = "...",
+	TransactionalApiKey = "...",
 });
 ```
 
-For efficient use of compute resources and clean code, create 1 BlueSnapService object and make it available throughout your project using inversion of control dependency injection. 
+For efficient use of compute resources and clean code, create 1 MailChimpService object and make it available throughout your project using inversion of control dependency injection. 
 
 ```c#
-services.AddSingleton<ICreditCardProcessor>(blueSnapService);
-services.AddSingleton<ICreditCardSaver>(blueSnapService);
+services.AddSingleton<ISingeEmailSender>(mailChimpService);
 ```
 
-Notice that ICreditCardProcessor and ICreditCardSaver are not specific to BlueSnap. They are general to the problem domain and come from the upstream ordercloud-dotnet-catalyst package. 
+Notice that ISingeEmailSender is not specific to MailChimp. It is general to the problem domain and comes from the upstream ordercloud-dotnet-catalyst package. 
 
 ## Usage 
 
-Inject the interfaces and use them within route logic. Rely on the interfaces whenever you can, not BlueSnapService. The layer of abstraction that ICreditCardProcessor and ICreditCardSaver provide decouples your code from BlueSnap as a specific provider and hides some internal complexity.
+Inject the interfaces and use them within route logic. Rely on the interfaces whenever you can, not MailChimpService. The layer of abstraction that ISingleEmailSender provides decouples your code from MailChimp as a specific provider and hides some internal complexity.
 
 ```c#
-public class CreditCardCommand 
+public class EmailMessageMapperService 
 {
-	private readonly ICreditCardProcessor _creditCardProcessor;
-	private readonly ICreditCardSaver _creditCardSaver;
+	private readonly ISingleEmailSender _singleEmailSender;
 
-	public CreditCardCommand(ICreditCardProcessor creditCardProcessor, ICreditCardSaver creditCardSaver)
+	public EmailNotificationService(ISingleEmailSender singleEmailSender)
 	{
 		// Inject interface. Implementation will depend on how services were registered, BlueSnapService in this case.
-		_creditCardProcessor = creditCardProcessor; 
-		_creditCardSaver = creditCardSaver;
+		_singleEmailSender = singleEmailSender; 
 	}
 
 	...
-
-	// Use in pre-submit webhook or proxy route
-	public async Task<PaymentWithXp> AuthorizeCardPayment(OrderWorksheetWithXp worksheet, PaymentWithXp payment)
+	public async Task SendForgotPasswordEmailAsync()
 	{
-		var authorizeRequest = new AuthorizeCCTransaction()
-		{
-			OrderID = worksheet.Order.ID,
-			Amount = worksheet.Order.Total,
-			Currency = worksheet.Order.Currency,
-			AddressVerification = worksheet.Order.BillingAddress,
-			CustomerIPAddress = "...",
-			CardDetails = new PCISafeCardDetails()
-		};
-		var payWithSavedCard = payment?.xp?.SafeCardDetails?.SavedCardID != null;
-		if (payWithSavedCard)
-		{
-			authorizeRequest.CardDetails.SavedCardID = payment.xp.SafeCardDetails.SavedCardID;
-			authorizeRequest.ProcessorCustomerID = worksheet.Order.FromUser.xp.PaymentProcessorCustomerID;
-		}
-		else
-		{
-			authorizeRequest.CardDetails.CardToken = payment?.xp?.SafeCardDetails?.Token;
-		}
-		
-		CCTransactionResult authorizationResult = await _creditCardProcessor.AuthorizeOnlyAsync(authorizeRequest);
 
-		Require.That(authorizationResult.Succeeded, new ErrorCode("Payment.AuthorizeDidNotSucceed", authorizationResult.Message), authorizationResult);
-
-		await _oc.Payments.PatchAsync<PaymentWithXp>(OrderDirection.All, worksheet.Order.ID, payment.ID, new PartialPayment { Accepted = true, Amount = authorizeRequest.Amount });
-		var updatedPayment = await _oc.Payments.CreateTransactionAsync<PaymentWithXp>(OrderDirection.All, worksheet.Order.ID, payment.ID, new PaymentTransactionWithXp()
-		{
-			ID = authorizationResult.TransactionID,
-			Amount = payment.Amount,
-			DateExecuted = DateTime.Now,
-			ResultCode = authorizationResult.AuthorizationCode,
-			ResultMessage = authorizationResult.Message,
-			Succeeded = authorizationResult.Succeeded,
-			Type = PaymentTransactionType.Authorization.ToString(),
-			xp = new PaymentTransactionXp
-			{
-				TransactionDetails = authorizationResult,
-			}
-		});
-		return updatedPayment;
 	}
 }
 ```
 
-This library also supports more complex cases that require mulitple merchant accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of BlueSnapService exactly as above. You can provide empty strings for the credentials. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
+A good engineering pattern for email notifications can be to processes them asynchronously from the main thread so that they do not hold up other work. That can be accomplished by dropping a message with the details on a queue and processing the queue in an Azure Function. 
+```c#
+
+```
+
+This library also supports more complex cases that require mulitple merchant accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of MailChimpService exactly as above. You can provide empty strings for the credentials. However, when you call methods on the interfaces, provide the optional `overrideConfig` parameter. 
 
 ```c#
-BlueSnapConfig configOverride = await FetchPaymentAccountCredentials(supplierID)
-var authorize = new AuthorizeCCTransaction();
-List<List<ShipMethods> rates = await _creditCardProcessor.AuthorizeOnlyAsync(authorize, configOverride);
+MailChimpConfig overrideConfig = await FetchAccountCredentials(supplierID)
+var message = EmailBuilder.BuildEmail(...);
+await _creditCardProcessor.AuthorizeOnlyAsync(message, overrideConfig);
 ```

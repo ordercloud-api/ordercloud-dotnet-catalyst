@@ -23,11 +23,11 @@ namespace OrderCloud.Catalyst
                 catch (Exception ex)
                 {
                     await HandleExceptionAsync(context, ex);
-                    if (reThrowError)
-                    {
-                        throw;
-                    }
-                }
+					if (reThrowError)
+					{
+						throw;
+					}
+				}
             });
             return builder;
         }
@@ -73,9 +73,10 @@ namespace OrderCloud.Catalyst
                     break;
             }
 
-            context.Response.StatusCode = (int) status;
-            context.Response.ContentType = "application/json";
-            return context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorList(body)));
+            context.Response.StatusCode = (int)status;
+			context.Response.ContentType = "application/json";
+            string responseBody = JsonConvert.SerializeObject(new ErrorList(body));
+            return context.Response.WriteAsync(responseBody);
         }
     }
 

@@ -7,7 +7,7 @@ namespace OrderCloud.Integrations.Messaging.MailChimp
 	public class MailChimpMergeVar
 	{
 		public string name { get; set; }
-		public string content { get; set; }
+		public object content { get; set; }
 	}
 
 	public class MailChimpPersonalMergeVars

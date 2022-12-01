@@ -37,13 +37,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shipping", "Shipping", "{87
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tax", "Tax", "{4138CC7E-F75D-4696-A40B-76496CDC22D4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Email", "Email", "{CDE5C68C-1A0F-4AF5-9D84-67CC3DCDE6CD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Messaging", "Messaging", "{CDE5C68C-1A0F-4AF5-9D84-67CC3DCDE6CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderCloud.Integrations.Email.SendGrid", "OrderCloud.Integrations.Email.SendGrid\OrderCloud.Integrations.Email.SendGrid.csproj", "{99B022A9-08EB-4472-8255-F68717A6232F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Messaging.SendGrid", "OrderCloud.Integrations.Email.SendGrid\OrderCloud.Integrations.Messaging.SendGrid.csproj", "{99B022A9-08EB-4472-8255-F68717A6232F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderCloud.Integrations.Email.MailChimp", "OrderCloud.Integrations.Email.MailChipTransactional\OrderCloud.Integrations.Email.MailChimp.csproj", "{E5353313-3AC0-4E82-9750-E9782EFAA3B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Messaging.MailChimp", "OrderCloud.Integrations.Email.MailChipTransactional\OrderCloud.Integrations.Messaging.MailChimp.csproj", "{E5353313-3AC0-4E82-9750-E9782EFAA3B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderCloud.Integrations.Email.SendInBlue", "OrderCloud.Integrations.Email.Sendinblue\OrderCloud.Integrations.Email.SendInBlue.csproj", "{B82FF5A4-40B7-466F-A9D7-E2EE240AD800}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Messaging.SendInBlue", "OrderCloud.Integrations.Email.Sendinblue\OrderCloud.Integrations.Messaging.SendInBlue.csproj", "{B82FF5A4-40B7-466F-A9D7-E2EE240AD800}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

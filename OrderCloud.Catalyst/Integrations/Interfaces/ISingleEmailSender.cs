@@ -57,7 +57,7 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Dynamic data specific to this recipient used to populate the template. Overrides values in EmailMessage.GlobalTemplateData. Ignored if AllRecipientsVisibleOnSingleThread is true. Optional.
 		/// </summary>
-		public Dictionary<string, string> TemplateDataOverrides { get; set; } = new Dictionary<string, string>();
+		public Dictionary<string, object> TemplateDataOverrides { get; set; } = new Dictionary<string, object>();
 	}
 
 
@@ -89,7 +89,7 @@ namespace OrderCloud.Catalyst
 		/// <summary>
 		/// Dynamic data used to populate the template. Key value strings only. Optional.
 		/// </summary>
-		public Dictionary<string, string> GlobalTemplateData { get; set; } = new Dictionary<string, string>();
+		public Dictionary<string, object> GlobalTemplateData { get; set; } = new Dictionary<string, object>();
 		/// <summary>
 		/// List of files to attach to the email. Optional.
 		/// </summary>

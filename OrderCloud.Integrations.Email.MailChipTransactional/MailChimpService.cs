@@ -10,7 +10,7 @@ namespace OrderCloud.Integrations.Messaging.MailChimp
 	{
 		public MailChimpService(MailChimpConfig defaultConfig) : base(defaultConfig) { }
 
-		public async Task SendSingleEmailAsync(EmailMessage message, OCIntegrationConfig overrideConfig)
+		public async Task SendSingleEmailAsync(EmailMessage message, OCIntegrationConfig overrideConfig = null)
 		{
 			var config = ValidateConfig<MailChimpConfig>(overrideConfig ?? _defaultConfig);
 

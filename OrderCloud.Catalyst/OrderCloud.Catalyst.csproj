@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>2.3.2</Version>
+    <Version>2.3.3</Version>
     <PackageId>ordercloud-dotnet-catalyst</PackageId>
     <Title>OrderCloud SDK Extensions for Azure App Services</Title>
     <Authors>Oliver Heywood</Authors>

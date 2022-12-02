@@ -1,6 +1,6 @@
 ﻿# OrderCloud.Integrations.Messaging.MailChimp
 
-This project brings email to your ecommerce app using the [MailChimp Transactional API](https://mailchimp.com/developer/transactional/api/) (Formerly Mandrill). Messaging can include marketing campaigns, batches, or single transactional messages send via email, SMS, or another channel. `MailChimpService.cs` implements to the [`ISingleEmailSender`](./OrderCloud.Catalyst/Integrations/Interfaces/ISingleEmailSender.cs interface published in the base library ordercloud-dotnet-catalyst.
+This project brings email to your ecommerce app using the [MailChimp Transactional API](https://mailchimp.com/developer/transactional/api/) (Formerly Mandrill). Messaging can include marketing campaigns, batches, or single transactional messages send via email, SMS, or another channel. `MailChimpService.cs` implements to the [`ISingleEmailSender`](../OrderCloud.Catalyst/Integrations/Interfaces/ISingleEmailSender.cs) interface published in the base library ordercloud-dotnet-catalyst.
 
 ## Intro to Transactional Email  
 "Transactional" is the term used to describe emails that are sent in response to specific actions the user takes in an app. Think forgot password or order confirmation emails. This is as opposed to batch messages or marketing campaigns. Different regulations apply to these different categories. For example, marketing campaigns should have an unsubscribe feature, whereas that is not required for transactional. Also, most major messaging platforms provide distinct functionality for transactional messages. 
@@ -17,10 +17,10 @@ Here are features which are *not supported* in the interface. You can find these
 - ReplyTo Email and Name
 
 ## Transactional Messaging in OrderCloud 
-All OrderCloud Ecommerce solutions need transactional messages - at a minimum for events like forgot password and order confirmation. The OrderCloud API has a resource called "Message Senders" to support this. Start by reading [this article about message senders](https://ordercloud.io/knowledge-base/message-senders). It includes a list of supported platform events which trigger messages. OrderCloud includes a built-in messaging integration with MailChimp (Mandrill). There are a number of scenarios which the built-in integration *cannot handle*. 
-- If you want to use a provider other than MailChimp Mandrill. Create a custom message sender.
-- If you want to send emails triggered by an event which is not included in the supported list. Hook into custom code.
-- If you need to display dynamic data in an email which is not included in the standard integration's template variables. Create a custom message sender.
+All OrderCloud Ecommerce solutions need transactional messages - at a minimum for events like forgot password and order confirmation. The OrderCloud API has a resource called "Message Senders" to support this. Start by reading [this article about message senders](https://ordercloud.io/knowledge-base/message-senders). It includes a list of supported platform events which trigger messages. OrderCloud includes a built-in messaging integration with MailChimp (Mandrill). This integration allows you to enter a MailChimp API and will send emails based on templates in your account. It includes a set of dynamic data variables for each message type. This is nice because you don't have to write any code to get emails working. However, there are common scenarios which the built-in integration *cannot* handle. 
+- If you want to use a provider other than MailChimp Mandrill. Create a custom message sender and connect it to your API routes.
+- If you want to send emails triggered by an event which is not included in the supported list. Write your own logic, possibly triggered by an OrderCloud webhook.
+- If you want to display dynamic data in an email which is not included in the standard integration's template variables. Create a custom message sender and connect it to your API routes.
 
 In these scenarios this project can help!
 

@@ -41,8 +41,8 @@ namespace OrderCloud.Integrations.Messaging.SendGrid
 			}
 			else if (!response.IsSuccessStatusCode)
 			{
-				var bodyString = await response.Body.ReadAsStringAsync();
-				var body = JsonConvert.DeserializeObject<SendGridErrorResponse>(bodyString);
+				var jsonString = await response.Body.ReadAsStringAsync();
+				var body = JsonConvert.DeserializeObject<SendGridErrorResponse>(jsonString);
 				throw new IntegrationErrorResponseException(overrideConfig ?? _defaultConfig, URL, (int)response.StatusCode, body);
 			}
 		}

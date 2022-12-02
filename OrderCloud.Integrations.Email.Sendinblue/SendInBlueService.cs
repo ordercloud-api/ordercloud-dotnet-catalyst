@@ -1,4 +1,5 @@
-﻿using OrderCloud.Catalyst;
+﻿using Newtonsoft.Json;
+using OrderCloud.Catalyst;
 using sib_api_v3_sdk.Api;
 using sib_api_v3_sdk.Client;
 using sib_api_v3_sdk.Model;
@@ -12,12 +13,13 @@ namespace OrderCloud.Integrations.Messaging.SendInBlue
 {
 	public class SendInBlueService : OCIntegrationService, ISingleEmailSender
 	{
-		private readonly TransactionalEmailsApi _defaultClient; 
+		protected readonly TransactionalEmailsApi _defaultClient;
+		protected readonly string URL = "https://api.sendinblue.com/v3/smtp/email";
 
 		public SendInBlueService(SendInBlueConfig defaultConfig) : base(defaultConfig)
 		{
 			_defaultClient = new TransactionalEmailsApi();
-			Configuration.Default.ApiKey.Add("api-key", defaultConfig.ApiKey);
+			Configuration.Default.ApiKey["api-key"] = defaultConfig.ApiKey;
 		}
 
 		/// <summary>
@@ -39,7 +41,22 @@ namespace OrderCloud.Integrations.Messaging.SendInBlue
 			}
 			
 			var model = SendInBlueMapper.ToSendInBlueSendSmtpEmail(message);
-			await client.SendTransacEmailAsync(model);
+			try
+			{
+				await client.SendTransacEmailAsync(model);
+			} catch(ApiException ex) 
+			{          
+				if (ex.ErrorCode == 401)
+				{
+					throw new IntegrationAuthFailedException(overrideConfig ?? _defaultConfig, URL, ex.ErrorCode);
+				}
+				else
+				{
+					var jsonString = (string)ex.ErrorContent;
+					var body = JsonConvert.DeserializeObject<object>(jsonString);
+					throw new IntegrationErrorResponseException(overrideConfig ?? _defaultConfig, URL, ex.ErrorCode, body);
+				}
+			}
 		}
 	}
 }

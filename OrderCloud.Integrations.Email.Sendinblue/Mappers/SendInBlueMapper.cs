@@ -11,19 +11,23 @@ namespace OrderCloud.Integrations.Messaging.SendInBlue
 		public static SendSmtpEmail ToSendInBlueSendSmtpEmail(EmailMessage message)
 		{
 			if (message == null) return null;
+
+			var from = new SendSmtpEmailSender(message.FromAddress?.Name, message.FromAddress?.Email);
+			var attachments = message.Attachments?.Select(ToSendInBlueAttachment)?.ToList();
+
 			var model = new SendSmtpEmail()
 			{
 				HtmlContent = message.Content,
 				Subject = message.Subject,
-				Sender = new SendSmtpEmailSender()
-				{
-					Name = message.FromAddress?.Name,
-					Email = message.FromAddress?.Email
-				},
-				Attachment = message.Attachments?.Select(ToSendInBlueAttachment)?.ToList(),
-				TemplateId = long.Parse(message.TemplateID),
+				Sender = from,
+				Attachment = attachments.Count > 0 ? attachments : null,
 				Params = message.GlobalTemplateData
 			};
+
+			if (!string.IsNullOrEmpty(message.TemplateID))
+			{
+				model.TemplateId = long.Parse(message.TemplateID);
+			}
 
 			if (message.AllRecipientsVisibleOnSingleThread)
 			{

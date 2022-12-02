@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OrderCloud.Catalyst
 {
-	public static class EmailBuiler
+	public static class EmailBuilder
 	{
 		public static EmailMessage BuildEmail(string to, string from, string subject, string content, List<EmailAttachment> attachments = null)
 		{

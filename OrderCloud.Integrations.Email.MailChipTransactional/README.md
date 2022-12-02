@@ -1,6 +1,6 @@
 ﻿# OrderCloud.Integrations.Messaging.MailChimp
 
-This project brings email to your ecommerce app using the [MailChimp Transactional API](https://mailchimp.com/developer/transactional/api/) (Formerly Mandrill). Messaging can include marketing campaigns, batches, or single transactional messages send via email, SMS, or another channel. `MailChimpService.cs` implements to the [`ISingleEmailSender`](./OrderCloud.Catalyst/Integrations/Interfaces/ISingleEmailSender.cs interface published in the base library ordercloud-dotnet-catalyst.
+This project brings email to your ecommerce app using the [MailChimp Transactional API](https://mailchimp.com/developer/transactional/api/) (Formerly Mandrill). Messaging can include marketing campaigns, batches, or single transactional messages send via email, SMS, or another channel. `MailChimpService.cs` implements to the [ISingleEmailSender](../OrderCloud.Catalyst/Integrations/Interfaces/ISingleEmailSender.cs interface published in the base library ordercloud-dotnet-catalyst.
 
 ## Intro to Transactional Email  
 "Transactional" is the term used to describe emails that are sent in response to specific actions the user takes in an app. Think forgot password or order confirmation emails. This is as opposed to batch messages or marketing campaigns. Different regulations apply to these different categories. For example, marketing campaigns should have an unsubscribe feature, whereas that is not required for transactional. Also, most major messaging platforms provide distinct functionality for transactional messages. 

@@ -10,8 +10,6 @@ public virtual void ConfigureServices(IServiceCollection services) {
 }
 ```
 
-We've also provided implementations for a couple cache technologies that we like. 
-- [LazyCache](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/blob/master/demo/OrderCloud.DemoWebApi/Services/LazyCacheService.cs), which has the advange of requiring no set up.
-- [Redis](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/blob/master/demo/OrderCloud.DemoWebApi/Services/RedisCacheService.cs), which is more complex but stays consistent if you scale your server to multiple instances. 
+We've also provided an implementation for an easy to use C# in-memory cache technology that we like, [LazyCache](./LazyCacheService.cs). If you wanted to use something like Redis, create a RedisService.cs that implments `ISimpleCache`, inject it, and `[OrderCloudUserAuth]` will use that caching technology instead. 
 
 If you don't see a method on the interface you were hoping for, please open an issue.

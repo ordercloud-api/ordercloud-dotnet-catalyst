@@ -11,6 +11,10 @@ namespace OrderCloud.Integrations.Messaging.SendInBlue
 		public static SendSmtpEmail ToSendInBlueSendSmtpEmail(EmailMessage message)
 		{
 			if (message == null) return null;
+			if (!string.IsNullOrEmpty(message.Content))
+			{
+				message.TemplateID = null; // Content takes precendence over TemplateID
+			}
 
 			var from = new SendSmtpEmailSender(message.FromAddress?.Name, message.FromAddress?.Email);
 			var attachments = message.Attachments?.Select(ToSendInBlueAttachment)?.ToList();
@@ -43,12 +47,9 @@ namespace OrderCloud.Integrations.Messaging.SendInBlue
 
 		public static SendSmtpEmailMessageVersions ToMessageVersion(ToEmailAddress address)
 		{
-			if (address == null) return null;
-			return new SendSmtpEmailMessageVersions()
-			{
-				To = new List<SendSmtpEmailTo1>() { new SendSmtpEmailTo1(address.Email, address.Name) },
-				Params = address.TemplateDataOverrides
-			};
+			if (address?.Email == null) return null;
+			var to = new List<SendSmtpEmailTo1>() { new SendSmtpEmailTo1(address.Email, address.Name) };
+			return new SendSmtpEmailMessageVersions(to, address.TemplateDataOverrides);
 		}
 
 		public static SendSmtpEmailTo ToSendSmtpEmailTo(ToEmailAddress address)

@@ -56,7 +56,7 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
         [Test]
         [TestCase("You must specify a key value", true)]
         [TestCase("Invalid API key", true)]
-		[TestCase("No such template \"this-template-doesnt-exist\"", false)]
+		[TestCase("No such template 'this-template-doesnt-exist'", false)]
         public void ShouldThrowUnAuthorizedErrorForCertainMessages(string message, bool shouldBeUnauthorizedException)
         {
             // Arrange

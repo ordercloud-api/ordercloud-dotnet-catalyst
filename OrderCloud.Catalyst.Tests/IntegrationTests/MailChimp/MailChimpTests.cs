@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderCloud.Catalyst.Tests.IntegrationTests.MailChimp
+namespace OrderCloud.Catalyst.Tests.IntegrationTests
 {
     [TestFixture]
     public class MailChimpTests

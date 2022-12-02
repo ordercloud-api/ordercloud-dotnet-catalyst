@@ -22,9 +22,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrderCloud.Catalyst\OrderCloud.Catalyst.csproj" />
-    <ProjectReference Include="..\OrderCloud.Integrations.Email.MailChipTransactional\OrderCloud.Integrations.Messaging.MailChimp.csproj" />
-    <ProjectReference Include="..\OrderCloud.Integrations.Email.SendGrid\OrderCloud.Integrations.Messaging.SendGrid.csproj" />
-    <ProjectReference Include="..\OrderCloud.Integrations.Email.Sendinblue\OrderCloud.Integrations.Messaging.SendInBlue.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Messaging.MailChimp\OrderCloud.Integrations.Messaging.MailChimp.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Messaging.SendGrid\OrderCloud.Integrations.Messaging.SendGrid.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Messaging.Sendinblue\OrderCloud.Integrations.Messaging.SendInBlue.csproj" />
     <ProjectReference Include="..\OrderCloud.Integrations.Payment.BlueSnap\OrderCloud.Integrations.Payment.BlueSnap.csproj" />
     <ProjectReference Include="..\OrderCloud.Integrations.Payment.CardConnect\OrderCloud.Integrations.Payment.CardConnect.csproj" />
     <ProjectReference Include="..\OrderCloud.Integrations.Payment.Stripe\OrderCloud.Integrations.Payment.Stripe.csproj" />

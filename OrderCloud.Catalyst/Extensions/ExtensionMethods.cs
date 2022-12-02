@@ -148,5 +148,20 @@ namespace OrderCloud.Catalyst
 			var span = utc - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 			return (int) span.TotalSeconds;
 		}
+
+		/// <summary>
+		/// Do not use with large files as all the data is put into memory
+		/// </summary>
+		/// <param name="file"></param>
+		/// <returns></returns>
+		public static byte[] ToByteArray(this IFormFile file)
+		{
+			using (var fileStream = file.OpenReadStream())
+			{
+				byte[] buffer = new byte[fileStream.Length];
+				fileStream.Read(buffer, 0, (int)fileStream.Length);
+				return buffer;
+			}
+		}
 	}
 }

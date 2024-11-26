@@ -26,6 +26,11 @@ namespace OrderCloud.Integrations.Payment.PayPal.Models
         public string payer_id { get; set; }
     }
 
+    public class Payee
+    {
+        public string merchant_id { get; set; }
+    }
+
     public class RelatedLink
     {
         public string href { get; set; }
@@ -33,17 +38,38 @@ namespace OrderCloud.Integrations.Payment.PayPal.Models
         public string method { get; set; }
     }
 
+    public class PayPalAddress
+    {
+        public string address_line_1 { get; set; }
+        public string address_line_2 { get; set; }
+
+        public string admin_area_1 { get; set; }
+        public string admin_area_2 { get; set; }
+        public string postal_code { get; set; }
+        public string country_code { get; set; }
+    }
+
+    public class Shipping
+    {
+        public PayPalAddress address { get; set; }
+    }
+
     public class PurchaseUnit
     {
         // The merchant ID for the purchase unit.
         public string reference_id { get; set; }
+        public string description { get; set; }
+        public string invoice_id { get; set; }
         public Amount amount { get; set; }
         public PurchaseUnitPayment payments { get; set; }
+        public Shipping shipping { get; set; }
+        public Payee payee { get; set; }
     }
 
     public class PurchaseUnitPayment
     {
         public List<PurchaseUnitAuthorization> authorizations { get; set; }
+        public List<PurchaseUnitAuthorization> captures { get; set; }
     }
 
     public class PurchaseUnitAuthorization
@@ -53,6 +79,7 @@ namespace OrderCloud.Integrations.Payment.PayPal.Models
         public Amount amount { get; set; }
         public List<RelatedLink> links { get; set; }
     }
+
     public class Amount
     {
         // The three-character ISO-4217 currency code.
@@ -72,11 +99,17 @@ namespace OrderCloud.Integrations.Payment.PayPal.Models
         public PaymentToken token { get; set; }
     }
 
+    public class ExperienceContext
+    {
+        public string shipping_preference { get; set; }
+    }
+
     public class PayPal
     {
         public Name name { get; set; }
         public string email_address { get; set; }
         public string account_id { get; set; }
+        public ExperienceContext experience_context { get; set; }
     }
 
     public class Card

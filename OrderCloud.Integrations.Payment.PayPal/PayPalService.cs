@@ -16,12 +16,12 @@ namespace OrderCloud.Integrations.Payment.PayPal
             throw new NotImplementedException("Not required for PayPal");
         }
 
-        public async Task<CCTransactionResult> InitializePaymentRequestAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+        public async Task<CCTransactionResult> InitializePaymentRequestAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null, bool isCapture = false)
         {
             var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
             var purchaseUnitMapper = new PayPalOrderPaymentMapper();
-            var purchaseUnit = purchaseUnitMapper.MapToPurchaseUnit(transaction);
-            var order = await PayPalClient.CreateAuthorizedOrderAsync(config, purchaseUnit, transaction);
+            var purchaseUnits = purchaseUnitMapper.MapToPurchaseUnit(transaction, config);
+            var order = await PayPalClient.CreateAuthorizedOrderAsync(config, purchaseUnits, transaction, isCapture);
             return new CCTransactionResult
             {
                 Succeeded = new List<string>{ "created", "completed" }.Contains(order.status.ToLowerInvariant()),
@@ -37,19 +37,27 @@ namespace OrderCloud.Integrations.Payment.PayPal
             var authorizedPaymentForOrder = await PayPalClient.AuthorizePaymentForOrderAsync(config, transaction);
             var ccTransactionMapper = new PayPalOrderPaymentMapper();
             return ccTransactionMapper.MapAuthorizedPaymentToCCTransactionResult(authorizedPaymentForOrder);
-            // CCTransactionResult.TransactionID represents the PayPal Authorization ID
         }
 
         public async Task<CCTransactionResult> CapturePriorAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
         {
             var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
             // FollowUpCCTransaction.TransactionID represents the PayPal Authorization ID
-            var capturedPaymentForOrder = await PayPalClient.CapturePaymentAsync(config, transaction);
+            var capturedPaymentForOrder = await PayPalClient.CapturePriorAuthAsync(config, transaction);
             var ccTransactionMapper = new PayPalOrderPaymentMapper();
             var ccTransaction = ccTransactionMapper.MapCapturedPaymentToCCTransactionResult(capturedPaymentForOrder);
             ccTransaction.Amount = transaction.Amount; // PayPal Capture Authorized Payment doesn't return an amount in the response body
             return ccTransaction;
-            // CCTransactionResult.TransactionID represents the PayPal Capture ID
+        }
+
+        public async Task<CCTransactionResult> CapturePaymentAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+        {
+            var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
+            // FollowUpCCTransaction.TransactionID represents the PayPal Authorization ID
+            var capturedPaymentForOrder = await PayPalClient.CapturePaymentAsync(config, transaction);
+            var ccTransactionMapper = new PayPalOrderPaymentMapper();
+            var ccTransaction = ccTransactionMapper.MapCapturedPaymentToCCTransactionResult(capturedPaymentForOrder);
+            return ccTransaction;
         }
 
         public async Task<CCTransactionResult> VoidAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null)

@@ -85,30 +85,34 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
         public CCTransactionResult MapAuthorizedPaymentToCCTransactionResult(PayPalOrder authorizedOrder)
         {
             var innerTransactions = new List<CCTransactionResult>();
-            authorizedOrder.purchase_units.ForEach(u =>
+            authorizedOrder?.purchase_units?.ForEach(u =>
             {
-                var capture = u.payments.authorizations.FirstOrDefault();
-                if (capture != null)
+                var auth = u.payments.authorizations.FirstOrDefault();
+                if (auth != null)
                 {
                     innerTransactions.Add(new CCTransactionResult()
                     {
-                        TransactionID = capture.id,
+                        TransactionID = auth.id,  // Authorization ID needed to Capture payment or Void Authorization
                         Amount = ConvertStringAmountToDecimal(u.amount.value),
-                        Succeeded = capture.status.ToLowerInvariant() == "completed",
-                        MerchantID = u.payee.merchant_id
+                        Succeeded = auth.status.ToLowerInvariant() == "completed",
+                        MerchantID = u?.payee?.merchant_id
                     });
                 }
             });
+            var authorizationId = innerTransactions.Count == 1
+                ? innerTransactions?.FirstOrDefault()?.TransactionID
+                : null;
+            var allPaymentsSucceeded = innerTransactions.All(t => t.Succeeded);
             var ccTransaction = new CCTransactionResult
             {
-                Succeeded = authorizedOrder.status.ToLowerInvariant() == "completed",
-                TransactionID = authorizedOrder.id, // Authorization ID needed to Capture payment or Void Authorization
+                Succeeded = authorizedOrder.status.ToLowerInvariant() == "completed" && allPaymentsSucceeded,
+                TransactionID = authorizationId, // Default to purchase_unit.TransactionID if only one merchant, else null
                 ResponseCode = authorizedOrder.processor_response.response_code,
                 AuthorizationCode = null,
                 AVSResponseCode = authorizedOrder.processor_response.avs_code,
                 Message = null,
                 Amount = authorizedOrder.purchase_units.Sum(unit => ConvertStringAmountToDecimal(unit.amount.value)),
-                InnerTransactions = innerTransactions
+                InnerTransactions = innerTransactions // Include all merchant transaction details as nested values
             };
             return ccTransaction;
         }
@@ -116,30 +120,34 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
         public CCTransactionResult MapCapturedPaymentToCCTransactionResult(PayPalOrder capturedOrder)
         {
             var innerTransactions = new List<CCTransactionResult>();
-            capturedOrder.purchase_units.ForEach(u =>
+            capturedOrder?.purchase_units?.ForEach(u =>
             {
                 var capture = u.payments.captures.FirstOrDefault();
                 if (capture != null)
                 {
                     innerTransactions.Add(new CCTransactionResult()
                     {
-                        TransactionID = capture.id,
+                        TransactionID = capture.id, // Capture ID needed to Refund payment
                         Amount = ConvertStringAmountToDecimal(u.amount.value),
                         Succeeded = capture.status.ToLowerInvariant() == "completed",
-                        MerchantID = u.payee.merchant_id
+                        MerchantID = u?.payee?.merchant_id
                     });
                 }
             });
+            var captureId = innerTransactions.Count == 1
+                ? innerTransactions?.FirstOrDefault()?.TransactionID
+                : null;
+            var allPaymentsSucceeded = innerTransactions.All(t => t.Succeeded);
             return new CCTransactionResult
             {
-                TransactionID = capturedOrder.id, // Capture ID needed to Refund payment
+                TransactionID = captureId, // Default to purchase_unit.TransactionID if only one merchant, else null
                 ResponseCode = capturedOrder.processor_response.response_code,
                 AuthorizationCode = null,
                 AVSResponseCode = capturedOrder.processor_response.avs_code,
                 Message = null,
-                Succeeded = capturedOrder.status.ToLowerInvariant() == "completed",
+                Succeeded = capturedOrder.status.ToLowerInvariant() == "completed" && allPaymentsSucceeded,
                 Amount = capturedOrder.purchase_units.Sum(unit => ConvertStringAmountToDecimal(unit.amount.value)),
-                InnerTransactions = innerTransactions
+                InnerTransactions = innerTransactions // Include all merchant transaction details as nested values
             };
         }
            

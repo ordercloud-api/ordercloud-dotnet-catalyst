@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using OrderCloud.Catalyst;
 using OrderCloud.Integrations.Payment.PayPal.Models;
 
@@ -47,7 +48,7 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
                             },
                             description = transaction?.OrderWorksheet?.Order?.Comments,
                             reference_id = Guid.NewGuid().ToString(),
-                            invoice_id = Guid.NewGuid().ToString(),
+                            invoice_id = transaction?.OrderID,
                         };
                         if (address != null)
                         {
@@ -61,23 +62,25 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
                     }
                 });
             }
-
-            var unit = new PurchaseUnit()
+            else
             {
-                amount = new Amount()
+                var unit = new PurchaseUnit()
                 {
-                    currency_code = transaction.Currency,
-                    value = transaction.Amount.ToString(CultureInfo.InvariantCulture) ?? null
-                }
-            };
-            if (address != null)
-            {
-                unit.shipping = new Shipping()
-                {
-                    address = address
+                    amount = new Amount()
+                    {
+                        currency_code = transaction.Currency,
+                        value = transaction.Amount.ToString(CultureInfo.InvariantCulture) ?? null
+                    }
                 };
+                if (address != null)
+                {
+                    unit.shipping = new Shipping()
+                    {
+                        address = address
+                    };
+                }
+                purchaseUnits.Add(unit);
             }
-            purchaseUnits.Add(unit);
 
             return purchaseUnits;
         }
@@ -105,13 +108,13 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
             var allPaymentsSucceeded = innerTransactions.All(t => t.Succeeded);
             var ccTransaction = new CCTransactionResult
             {
-                Succeeded = authorizedOrder.status.ToLowerInvariant() == "completed" && allPaymentsSucceeded,
+                Succeeded = authorizedOrder?.status.ToLowerInvariant() == "completed" && allPaymentsSucceeded,
                 TransactionID = authorizationId, // Default to purchase_unit.TransactionID if only one merchant, else null
-                ResponseCode = authorizedOrder.processor_response.response_code,
+                ResponseCode = authorizedOrder?.processor_response?.response_code,
                 AuthorizationCode = null,
-                AVSResponseCode = authorizedOrder.processor_response.avs_code,
+                AVSResponseCode = authorizedOrder?.processor_response?.avs_code,
                 Message = null,
-                Amount = authorizedOrder.purchase_units.Sum(unit => ConvertStringAmountToDecimal(unit.amount.value)),
+                Amount = authorizedOrder?.purchase_units != null ? authorizedOrder.purchase_units.Sum(unit => ConvertStringAmountToDecimal(unit.amount.value)) : Convert.ToDecimal(0, CultureInfo.InvariantCulture),
                 InnerTransactions = innerTransactions // Include all merchant transaction details as nested values
             };
             return ccTransaction;
@@ -141,12 +144,12 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
             return new CCTransactionResult
             {
                 TransactionID = captureId, // Default to purchase_unit.TransactionID if only one merchant, else null
-                ResponseCode = capturedOrder.processor_response.response_code,
+                ResponseCode = capturedOrder?.processor_response?.response_code,
                 AuthorizationCode = null,
-                AVSResponseCode = capturedOrder.processor_response.avs_code,
+                AVSResponseCode = capturedOrder?.processor_response?.avs_code,
                 Message = null,
-                Succeeded = capturedOrder.status.ToLowerInvariant() == "completed" && allPaymentsSucceeded,
-                Amount = capturedOrder.purchase_units.Sum(unit => ConvertStringAmountToDecimal(unit.amount.value)),
+                Succeeded = capturedOrder?.status.ToLowerInvariant() == "completed" && allPaymentsSucceeded,
+                Amount = capturedOrder?.purchase_units != null ? capturedOrder.purchase_units.Sum(unit => ConvertStringAmountToDecimal(unit.amount.value)) : Convert.ToDecimal(0, CultureInfo.InvariantCulture),
                 InnerTransactions = innerTransactions // Include all merchant transaction details as nested values
             };
         }

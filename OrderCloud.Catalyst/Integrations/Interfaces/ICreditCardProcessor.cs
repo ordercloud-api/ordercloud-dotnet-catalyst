@@ -79,7 +79,17 @@ namespace OrderCloud.Catalyst
         /// An optional header value used by some processors to enforce idempotency.
         /// </summary>
         public string RequestID { get; set; }
-	}
+        /// <summary>
+        /// An optional list of OrderCloud Order IDs associated with each supplier included in the transaction.
+        /// </summary>
+        public List<SupplierOrderID> SupplierOrderIDs { get; set; }
+    }
+
+    public class SupplierOrderID
+    {
+		public string SupplierID { get; set; }
+		public string OrderID { get; set; }
+    }
 
 	public class CCTransactionResult
 	{

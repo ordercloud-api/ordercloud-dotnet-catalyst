@@ -32,6 +32,9 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
                 {
                     var merchantLines =
                         transaction?.OrderWorksheet?.LineItems?.Where(li => li.Product.DefaultSupplierID == m.SupplierID).ToList();
+                    var merchantInvoice = transaction.SupplierOrderIDs?.FirstOrDefault(t => t.SupplierID == m.SupplierID);
+                    var invoiceID = merchantInvoice != null ? merchantInvoice.OrderID : transaction?.OrderID;
+
                     if (merchantLines != null && merchantLines.Any())
                     {
                         var merchantUnit = new PurchaseUnit()
@@ -48,7 +51,7 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
                             },
                             description = transaction?.OrderWorksheet?.Order?.Comments,
                             reference_id = Guid.NewGuid().ToString(),
-                            invoice_id = transaction?.OrderID,
+                            invoice_id = invoiceID
                         };
                         if (address != null)
                         {

@@ -151,3 +151,30 @@ var token = FakeOrderCloudToken.Create(
 httpClient.DefaultRequestHeaders.Authorization =
     new AuthenticationHeaderValue("Bearer", token);
 ```
+
+
+### Progress tracker
+
+Track long operations such as a large product upload with a timer function that writes updates to the console or function apps.
+
+```c#
+void LogProgress(Progress p) =>
+    Console.WriteLine($"{p.ElapsedTime:hh\\:mm\\:ss} elapsed. {p.ItemsDone} of {p.TotalItems} complete ({p.PercentDone}%)");
+
+var tracker = new Tracker();
+tracker.Every(1.Minutes(), LogProgress);
+tracker.OnComplete(LogProgress);
+tracker.Start();
+tracker.ItemsDiscovered(products.Count);
+
+foreach (var product in products)
+{
+    tracker.ItemStarted();
+    await _oc.Products.CreateAsync(product);
+    tracker.ItemSucceeded();
+}
+
+tracker.Stop();
+tracker.Now(LogProgress);
+await tracker.CompleteAsync();
+```

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>2.4.0</Version>
+    <Version>2.4.1</Version>
     <PackageId>OrderCloud.Integrations.Messaging.SendInBlue</PackageId>
     <Title>OrderCloud Email Integration with Sendinblue</Title>
     <Authors>OrderCloud Team</Authors>
@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="sib_api_v3_sdk" Version="3.3.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OrderCloud.Catalyst\OrderCloud.Catalyst.csproj" />

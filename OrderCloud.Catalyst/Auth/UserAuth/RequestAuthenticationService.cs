@@ -325,7 +325,7 @@ namespace OrderCloud.Catalyst
 			{
 				try
 				{
-					return await _oc.Certs.GetPublicKeyAsync(jwt.KeyID);
+					return await _oc.GetPublicKeyAsync(jwt.KeyID);
 				}
 				catch (OrderCloudException ex)
 				{

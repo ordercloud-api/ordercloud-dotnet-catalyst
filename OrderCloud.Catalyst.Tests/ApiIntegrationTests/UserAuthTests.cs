@@ -287,7 +287,7 @@ namespace OrderCloud.Catalyst.Tests
 			};
 
 			TestStartup.oc.Me.GetAsync(Arg.Any<string>()).Returns<MeUser>(x => { throw error; });
-			TestStartup.oc.Certs.GetPublicKeyAsync(Arg.Any<string>()).Returns<PublicKey>(x => { throw error; });
+			TestStartup.oc.GetPublicKeyAsync(Arg.Any<string>()).Returns<PublicKey>(x => { throw error; });
 
 			var result = await request.GetAsync();
 
@@ -340,7 +340,7 @@ namespace OrderCloud.Catalyst.Tests
 			// But exactly one request to OrderCloud
 			if (useKid)
 			{
-				await TestStartup.oc.Received(1).Certs.GetPublicKeyAsync(Arg.Any<string>());
+				await TestStartup.oc.Received(1).GetPublicKeyAsync(Arg.Any<string>());
 			}
 			else
 			{

@@ -19,9 +19,13 @@ namespace OrderCloud.Integrations.Payment.Stripe
             return token;
         }
 
-        public Task<CCTransactionResult> InitializePaymentRequestAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null, bool isCapture = false)
+        public async Task<CCTransactionResult> InitializePaymentRequestAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null, bool isCapture = false)
         {
-            throw new NotImplementedException();
+            var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
+            var paymentIntentMapper = new StripePaymentIntentMapper();
+            var paymentIntentCreateOptions = paymentIntentMapper.MapPaymentIntentOnlyOptions(transaction);
+            var createdPaymentIntent = await StripeClient.CreatePaymentIntentAsync(paymentIntentCreateOptions, config);
+            return paymentIntentMapper.MapPaymentIntentCreateResponse(createdPaymentIntent);
         }
 
         public Task<CCTransactionResult> CapturePaymentAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
@@ -36,7 +40,7 @@ namespace OrderCloud.Integrations.Payment.Stripe
                 var config = ValidateConfig<StripeConfig>(configOverride ?? _defaultConfig);
                 var paymentIntentMapper = new StripePaymentIntentMapper();
                 var paymentIntentCreateOptions = paymentIntentMapper.MapPaymentIntentCreateAndConfirmOptions(transaction);
-                var createdPaymentIntent = await StripeClient.CreateAndConfirmPaymentIntentAsync(paymentIntentCreateOptions, config);
+                var createdPaymentIntent = await StripeClient.CreatePaymentIntentAsync(paymentIntentCreateOptions, config); // confirms payment intent as well
                 return paymentIntentMapper.MapPaymentIntentCreateAndConfirmResponse(createdPaymentIntent);
             }
         }

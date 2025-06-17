@@ -48,6 +48,21 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
             };
         }
 
+        public PaymentIntentCreateOptions MapPaymentIntentOnlyOptions(AuthorizeCCTransaction transaction)
+        {
+            var coefficient = IsZeroDecimalCurrency(transaction.Currency) ? 1 : 100;
+            return new PaymentIntentCreateOptions()
+            {
+                Amount = Convert.ToInt64((transaction.Amount * coefficient)),
+                Currency = transaction.Currency,
+                Customer = transaction.ProcessorCustomerID,
+                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                {
+                    Enabled = true, // Creates PaymentIntent only- used to send Client Secret back to iframe 
+                }
+            };
+        }
+
         public CCTransactionResult MapPaymentIntentCreateAndConfirmResponse(PaymentIntent createdPaymentIntent) =>
             new CCTransactionResult()
             {
@@ -57,6 +72,12 @@ namespace OrderCloud.Integrations.Payment.Stripe.Mappers
                     createdPaymentIntent
                         .Id, // transaction.TransactionID represents PaymentMethodID, this now represents PaymentIntentID
                 Amount = createdPaymentIntent.Amount
+            };
+
+        public CCTransactionResult MapPaymentIntentCreateResponse(PaymentIntent createdPaymentIntent) =>
+            new CCTransactionResult()
+            {
+                TransactionID = createdPaymentIntent.ClientSecret // transaction.TransactionID represents Client Secret for the Stripe payment iframe in this case
             };
 
         public PaymentIntentCaptureOptions MapPaymentIntentCaptureOptions(FollowUpCCTransaction transaction)

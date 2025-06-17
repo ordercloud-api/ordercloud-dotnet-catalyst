@@ -78,7 +78,7 @@ namespace OrderCloud.Integrations.Payment.Stripe
         /// <summary>
         /// https://stripe.com/docs/api/payment_intents/create
         /// </summary>
-        public static async Task<PaymentIntent> CreateAndConfirmPaymentIntentAsync(PaymentIntentCreateOptions options, StripeConfig config)
+        public static async Task<PaymentIntent> CreatePaymentIntentAsync(PaymentIntentCreateOptions options, StripeConfig config)
         {
             StripeConfiguration.ApiKey = config.SecretKey;
             var service = new PaymentIntentService();

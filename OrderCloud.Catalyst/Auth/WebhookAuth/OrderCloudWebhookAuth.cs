@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Claims;
-
+﻿using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -26,21 +20,21 @@ namespace OrderCloud.Catalyst
 
 	public class OrderCloudWebhookAuthHandler : AuthenticationHandler<OrderCloudWebhookAuthOptions>
 	{
-		private static RequestAuthenticationService _requestAuthenticationService;
+		private readonly IRequestAuthenticationService _auth;
 
 		public OrderCloudWebhookAuthHandler(
 			IOptionsMonitor<OrderCloudWebhookAuthOptions> options, 
 			ILoggerFactory logger, 
 			UrlEncoder encoder, 
 			ISystemClock clock,
-			RequestAuthenticationService requestAuthenticationService
+			IRequestAuthenticationService auth
 			) : base(options, logger, encoder, clock) 
 		{
-			_requestAuthenticationService = requestAuthenticationService;
+			_auth = auth;
 		}
 
 		protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
-			await _requestAuthenticationService.VerifyWebhookHashAsync(Request, Options); // Will throw error if fails
+			await _auth.VerifyWebhookHashAsync(Request, Options); // Will throw error if fails
 			var cid = new ClaimsIdentity("OcWebhook");
 			var ticket = new AuthenticationTicket(new ClaimsPrincipal(cid), "OcWebhook");
 			return AuthenticateResult.Success(ticket);

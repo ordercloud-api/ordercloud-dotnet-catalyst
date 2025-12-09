@@ -1,6 +1,6 @@
 ## OrderCloud User Authentication
 
-When a user authenticates and acquires an access token from OrderCloud.io, typically in a front-end web or mobile app, that token can be used in your custom endpoints to verify the user's identity and roles. Here are the steps involved:
+When a user authenticates and acquires an access token from OrderCloud, typically in a front-end web or mobile app, that token can be used in your custom endpoints to verify the user's identity and roles. Here are the steps involved:
 
 #### 1. Register OrderCloud user authentication and register user context in your [`Startup`](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/startup) class.
 
@@ -91,8 +91,18 @@ Proxy the OrderCloud API, adding your own permission logic
 }
 ```
 
-### DecodedToken and RequestAuthenticationService
-Outside a request to a Controller you can use the injectable `RequestAuthenticationService` to parse and verify a user's token. 
+### DecodedToken and IRequestAuthenticationService
+
+The primary way to enforce authentication in controllers is by using the [OrderCloudUserAuth] attribute on your controller actions. This automatically validates tokens and injects user context for you.
+
+However, if you prefer to handle authentication inside a service (rather than directly in the controller), IRequestAuthenticationService offers an alternative approach. It allows you to verify tokens and retrieve user details programmatically.
+
+> **Important:**
+IRequestAuthenticationService depends on HttpContext and should only be used within the ASP.NET Core pipeline (e.g., controllers, middleware, or services called from them).
+For environments without HttpContext (such as Azure Functions, background services, or console apps), use ITokenValidator instead. ITokenValidator works independently of the current request
+
+
+#### Using IRequestAuthenticationService (ASP.NET Core)
 ```c#
     string rawToken = "...";
     // Parses the token, but does not verify it. 
@@ -100,10 +110,14 @@ Outside a request to a Controller you can use the injectable `RequestAuthenticat
     // Only data on the token is available. user.FirstName and user.xp are not, for example.
     console.log(user.Username)
 
-    // Inject a RequestAuthenticationService to verify. [OrderCloudUserAuth] uses this method under the hood. 
-    DecodedToken verified = await _requestAuthenticationService.VerifyTokenAsync(rawToken); 
+    // Inject a IRequestAuthenticationService to verify. [OrderCloudUserAuth] uses this method under the hood.
+    var options = new OrderCloudUserAuthOptions
+    {
+        ValidClientIDs = new[] { "YOUR_CLIENT_ID" }
+    };
+    DecodedToken verified = await _requestAuthenticationService.VerifyTokenAsync(rawToken, options); 
 
-    // RequestAuthenticationService can also get a DecodedToken from the current HttpContext.
+    // IRequestAuthenticationService can also get a DecodedToken from the current HttpContext.
     // Only use this after calling VerifyTokenAsync, either directly or through [OrderCloudUserAuth].
     DecodedToken unverified = await _requestAuthenticationService.GetDecodedToken(); 
 
@@ -112,16 +126,16 @@ Outside a request to a Controller you can use the injectable `RequestAuthenticat
 
 ```
 
-Inject the RequestAuthenticationService into a command class. Within a method, an OrderCloud request can be made using that user's token. 
+Inject the IRequestAuthenticationService into a command class. Within a method, an OrderCloud request can be made using that user's token. 
 
 ```c#
 public class OrderSubmitCommand 
 {
     private readonly IOrderCloudClient _oc;      // Injected with Integration Client ID context. FullAccess "super user".
-    private readonly RequestAuthenticationService _auth; // User token that made the request 
+    private readonly IRequestAuthenticationService _auth; // User token that made the request 
     private readonly ICreditCardCommand _card;   // Details of card processing left unopinionated
     
-    public OrderSubmitCommand(IOrderCloudClient oc, RequestAuthenticationService auth, ICreditCardCommand card)
+    public OrderSubmitCommand(IOrderCloudClient oc, IRequestAuthenticationService auth, ICreditCardCommand card)
     {
         _oc = oc;
         _auth = auth;
@@ -149,5 +163,35 @@ public class OrderSubmitCommand
 }
 ```     
 
-    
+### Using ITokenValidator (Non-ASP.NET Contexts like Azure Functions)
 
+ITokenValidator does not depend on HttpContext and works anywhere you have the raw token:
+
+
+```c#
+public class TokenValidationExample
+{
+    private readonly ITokenValidator _tokenValidator;
+
+    public TokenValidationExample(ITokenValidator tokenValidator)
+    {
+        _tokenValidator = tokenValidator;
+    }
+
+    public async Task ValidateTokenAsync(string rawToken)
+    {
+        var options = new OrderCloudUserAuthOptions
+        {
+            ValidClientIDs = new[] { "YOUR_CLIENT_ID" }
+        };
+
+        // Validate token and enforce roles/user types if needed
+        DecodedToken decoded = await _tokenValidator.ValidateAccessTokenAsync(
+            rawToken,
+            options
+        );
+
+        Console.WriteLine($"Token is valid for user: {decoded.Username}");
+    }
+}
+```

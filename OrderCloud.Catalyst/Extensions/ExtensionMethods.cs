@@ -3,6 +3,7 @@ using Flurl.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
@@ -30,19 +31,51 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public static IServiceCollection AddOrderCloudUserAuth(this IServiceCollection services, Action<OrderCloudUserAuthOptions> configureOptions)
 		{
-			services
-				.AddHttpContextAccessor()
-				.AddSingleton<RequestAuthenticationService>()
-				.AddSingleton<ISimpleCache, LazyCacheService>() // Can override by registering own implmentation
-				.AddAuthentication()
-				.AddScheme<OrderCloudUserAuthOptions, OrderCloudUserAuthHandler>("OrderCloudUser", null, configureOptions);
-			return services;
+            services.AddOrderCloudSharedAuthServices();
+
+            services
+                .AddHttpContextAccessor()
+                .AddAuthentication()
+                .AddScheme<OrderCloudUserAuthOptions, OrderCloudUserAuthHandler>("OrderCloudUser", configureOptions);
+
+            return services;
 		}
 
-		/// <summary>
-		/// Chain to IServiceCollection (typically in Startup.ConfigureServices) to enable validation of incoming webhooks.
-		/// </summary>
-		public static IServiceCollection AddOrderCloudWebhookAuth(this IServiceCollection services, Action<OrderCloudWebhookAuthOptions> configureOptions)
+        /// <summary>
+        /// Chain to IServiceCollection (typically in Startup.ConfigureServices) to enable authenticating by passing a valid
+        /// OrderCloud userinfo token in the Authorization header. Add [OrderCloudUserInfoAuth] attribute to specific controllers or actions
+        /// where this should be enforced. Typical use case is custom endpoints for front-end user apps.
+        /// </summary>
+        public static IServiceCollection AddOrderCloudUserInfoAuth(this IServiceCollection services)
+        {
+			services.AddOrderCloudSharedAuthServices();
+
+            services
+                .AddHttpContextAccessor()
+                .AddAuthentication()
+                .AddScheme<OrderCloudUserInfoAuthOptions, OrderCloudUserInfoAuthHandler>("OrderCloudUserInfo", options => { });
+
+            return services;
+        }
+
+
+        /// <summary>
+        /// Shared infrastructure needed by both OrderCloudUser and OrderCloudUserInfo schemes.
+        /// Uses TryAddSingleton to avoid duplicate singletons when both methods are called.
+        /// </summary>
+        private static IServiceCollection AddOrderCloudSharedAuthServices(this IServiceCollection services)
+        {
+            services.AddHttpContextAccessor();
+            services.TryAddSingleton<ITokenValidator, TokenValidator>();
+            services.TryAddSingleton<IRequestAuthenticationService, RequestAuthenticationService>();
+            services.TryAddSingleton<ISimpleCache, LazyCacheService>(); // Can override by registering your own implementation first
+            return services;
+        }
+
+        /// <summary>
+        /// Chain to IServiceCollection (typically in Startup.ConfigureServices) to enable validation of incoming webhooks.
+        /// </summary>
+        public static IServiceCollection AddOrderCloudWebhookAuth(this IServiceCollection services, Action<OrderCloudWebhookAuthOptions> configureOptions)
 		{
 			services.AddAuthentication()
 				.AddScheme<OrderCloudWebhookAuthOptions, OrderCloudWebhookAuthHandler>("OrderCloudWebhook", null, configureOptions);
@@ -61,10 +94,22 @@ namespace OrderCloud.Catalyst
 				.ToList();
 		}
 
-		/// <summary>
-		/// Looks for a UserTypeRestrictedToAttribute on the current route to find allowed user types.
-		/// </summary>
-		public static List<CommerceRole> GetAllowedUserTypes(this HttpContext context)
+        /// <summary>
+        /// Looks for an OrderCloudUserInfoAuthAttribute on the current route to find required roles.
+        /// </summary>
+        public static List<string> GetRequiredUserInfoRoles(this HttpContext context)
+        {
+            var endpointFeature = context.Features[typeof(IEndpointFeature)] as IEndpointFeature;
+            return endpointFeature?.Endpoint?.Metadata
+                .Where(x => x.GetType() == typeof(OrderCloudUserInfoAuthAttribute))
+                .SelectMany(x => (x as OrderCloudUserInfoAuthAttribute).OrderCloudRoles)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Looks for a UserTypeRestrictedToAttribute on the current route to find allowed user types.
+        /// </summary>
+        public static List<CommerceRole> GetAllowedUserTypes(this HttpContext context)
 		{
 			var endpointFeature = context.Features[typeof(IEndpointFeature)] as IEndpointFeature;
 

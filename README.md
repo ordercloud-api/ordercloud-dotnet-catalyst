@@ -152,6 +152,7 @@ httpClient.DefaultRequestHeaders.Authorization =
     new AuthenticationHeaderValue("Bearer", token);
 ```
 
+Similarly, for `[OrderCloudUserInfoToken]` you can use `FakeUserInfoToken`
 
 ### Progress tracker
 

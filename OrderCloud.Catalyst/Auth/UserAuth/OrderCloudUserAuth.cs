@@ -45,25 +45,25 @@ namespace OrderCloud.Catalyst
 
 	public class OrderCloudUserAuthHandler : AuthenticationHandler<OrderCloudUserAuthOptions>
 	{
-		private static RequestAuthenticationService _tokenProvider;
+		private readonly IRequestAuthenticationService _auth;
 
 		public OrderCloudUserAuthHandler(
 			IOptionsMonitor<OrderCloudUserAuthOptions> options,
 			ILoggerFactory logger,
 			UrlEncoder encoder,
 			ISystemClock clock,
-			RequestAuthenticationService tokenProvider
+			IRequestAuthenticationService auth
 			)
 			: base(options, logger, encoder, clock)
 		{
-			_tokenProvider = tokenProvider;
+            _auth = auth;
 		}
 
 		protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
 			try {
 				var requiredRoles = Context.GetRequiredOrderCloudRoles();
 				var allowedUserTypes = Context.GetAllowedUserTypes();
-				var token = await _tokenProvider.VerifyTokenAsync(Request, Options, requiredRoles, allowedUserTypes);
+				var token = await _auth.VerifyTokenAsync(Request, Options, requiredRoles, allowedUserTypes);
 				var cid = new ClaimsIdentity("OcUser");
 				cid.AddClaims(token.Roles.Select(r => new Claim(ClaimTypes.Role, r)));
 				cid.AddClaim(new Claim("AccessToken", token.AccessToken));

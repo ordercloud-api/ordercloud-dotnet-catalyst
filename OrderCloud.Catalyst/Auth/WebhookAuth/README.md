@@ -26,7 +26,7 @@ public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConf
 
 You can verify a webhook request without using an attribute on a route. Use the raw functionality from a service. This may be helpful for azure functions or other contexts.
 ```c#
-private readonly RequestAuthenticationService _authService;
+private readonly IRequestAuthenticationService _authService;
 private readonly AppSettings _settings;
 ...
 var options = new OrderCloudWebhookAuthOptions() { HashKey = _settings.OrderCloudSettings.WebhookHash }; // "my-secret-key"

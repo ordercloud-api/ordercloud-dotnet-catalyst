@@ -1,12 +1,12 @@
+using Microsoft.AspNetCore.Mvc;
+using OrderCloud.SDK;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using OrderCloud.SDK;
-using OrderCloud.Catalyst;
 using RequiredAttribute = System.ComponentModel.DataAnnotations.RequiredAttribute;
 
 namespace OrderCloud.Catalyst.TestApi
@@ -14,12 +14,12 @@ namespace OrderCloud.Catalyst.TestApi
 	[Route("demo")]
 	public class DemoController : CatalystController
 	{
-		private readonly RequestAuthenticationService _tokenProvider;
+		private readonly IRequestAuthenticationService _auth;
 		private readonly IOrderCloudClient _oc; 
 
-		public DemoController(RequestAuthenticationService tokenProvider, IOrderCloudClient oc)
+		public DemoController(IRequestAuthenticationService auth, IOrderCloudClient oc)
 		{
-			_tokenProvider = tokenProvider;
+			_auth = auth;
 			_oc = oc;
 		}
 
@@ -28,7 +28,20 @@ namespace OrderCloud.Catalyst.TestApi
 			return "hello shopper!";
 		}
 
-		[HttpGet("admin"), OrderCloudUserAuth(ApiRole.OrderAdmin)]
+		[HttpGet("simpleuserinfo"), OrderCloudUserInfoAuth]
+		public object SimpleUserInfo()
+		{
+			return "hello userinfo!";
+		}
+
+        [HttpGet("customuserinfo"), OrderCloudUserInfoAuth("CustomRole")]
+        public object CustomUserInfo()
+        {
+            return "hello custom userinfo!";
+        }
+
+
+        [HttpGet("admin"), OrderCloudUserAuth(ApiRole.OrderAdmin)]
 		public object Admin() => "hello admin!";
 
 		[HttpGet("either"), OrderCloudUserAuth("Shopper", "OrderAdmin")]
@@ -94,21 +107,49 @@ namespace OrderCloud.Catalyst.TestApi
 			};
 		}
 
-		[HttpGet("username"), OrderCloudUserAuth]
+        [HttpGet("userinfocontext"), OrderCloudUserInfoAuth]
+        public SimplifiedUser GetUserInfoContext()
+        {
+            return new SimplifiedUser()
+            {
+                AvailableRoles = UserInfoContext.Roles.ToList(),
+                Username = UserInfoContext.Username
+            };
+        }
+
+        [HttpPost("userinfocontext/{token}")]
+        public async Task<SimplifiedUser> SetUserInfoContext(string token)
+        {
+            var user = await _auth.VerifyUserInfoTokenAsync(token);
+            return new SimplifiedUser()
+            {
+                AvailableRoles = user.Roles.ToList(),
+                Username = user.Username
+            };
+        }
+
+        [HttpGet("username"), OrderCloudUserAuth]
 		public string GetUserName()
 		{
 			Thread.Sleep(1000); // pause for 1 sec
 			return UserContext.Username;
 		}
 
-		[HttpPost("usercontext/{token}")]
+        [HttpGet("userinfousername"), OrderCloudUserInfoAuth]
+        public string GetUserInfoUserName()
+        {
+            Thread.Sleep(1000); // pause for 1 sec
+            return UserInfoContext.Username;
+        }
+
+        [HttpPost("usercontext/{token}")]
 		public async Task<SimplifiedUser> SetUserContext(string token)
 		{
 			var opts = new OrderCloudUserAuthOptions()
 			{
 				AnyClientIDCanAccess = true
 			};
-			var user = await _tokenProvider.VerifyTokenAsync(token, opts);
+			var user = await _auth.VerifyTokenAsync(token, opts);
 			return new SimplifiedUser() { 
 				AvailableRoles = user.Roles.ToList(),
 				Username = user.Username, 

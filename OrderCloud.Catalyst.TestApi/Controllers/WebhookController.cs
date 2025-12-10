@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using OrderCloud.Catalyst;
+﻿using Microsoft.AspNetCore.Mvc;
 using OrderCloud.SDK;
 using System.Threading.Tasks;
 
@@ -8,10 +6,10 @@ namespace OrderCloud.Catalyst.TestApi
 {
 	public class WebhookController : CatalystController
 	{
-		private RequestAuthenticationService _service;
+		private IRequestAuthenticationService _service;
 		private TestSettings _settings;
 
-		public WebhookController(RequestAuthenticationService service, TestSettings settings)
+		public WebhookController(IRequestAuthenticationService service, TestSettings settings)
 		{
 			_service = service;
 			_settings = settings;

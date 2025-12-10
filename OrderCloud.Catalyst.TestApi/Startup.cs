@@ -1,13 +1,15 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using OrderCloud.SDK;
-using NSubstitute;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Http;
+using NSubstitute;
+using OrderCloud.SDK;
+using OrderCloud.Catalyst;
+using System.Threading.Tasks;
 
 namespace OrderCloud.Catalyst.TestApi
 {
@@ -45,6 +47,7 @@ namespace OrderCloud.Catalyst.TestApi
 				builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }));
 			services
 				.AddOrderCloudUserAuth(opts => opts.AddValidClientIDs(UnitTestClientID))
+				.AddOrderCloudUserInfoAuth()
 				.AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
 				.AddSingleton<ISimpleCache, LazyCacheService>() // Replace LazyCacheService with RedisService if you have multiple server instances.
 				.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig()
@@ -106,7 +109,16 @@ namespace OrderCloud.Catalyst.TestApi
 				AuthUrl = "mockdomain.com",
 			});
 			oc.Me.GetAsync(Arg.Any<string>()).Returns(new MeUser { Username = "joe", Active = true, AvailableRoles = new[] { "Shopper" } });
-			services.AddSingleton(oc);
+
+
+			oc
+				.GetPublicKeyAsync(Arg.Is<string>(k => k == TestRsaKeyProvider.AllowedKid))
+				.Returns(Task.FromResult(TestRsaKeyProvider.ToOrderCloudPublicKey(TestRsaKeyProvider.AllowedRsa)));
+            oc
+                .GetPublicKeyAsync(Arg.Is<string>(k => k == TestRsaKeyProvider.DeniedKid))
+                .Returns(Task.FromResult(TestRsaKeyProvider.ToOrderCloudPublicKey(TestRsaKeyProvider.DeniedRsa)));
+
+            services.AddSingleton(oc);
 		}
 
 		public override void Configure(IApplicationBuilder app, IWebHostEnvironment env)

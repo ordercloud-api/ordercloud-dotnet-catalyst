@@ -47,6 +47,11 @@ namespace OrderCloud.Catalyst
 		public string CompanyID { get; }
 
         /// <summary>
+        /// Currency on the token. "currency" claim. Only present if user is assigned locale.
+        /// </summary>
+        public string Currency { get; }
+
+        /// <summary>
         /// The authentication Url on the token. "iss" claim. Always non-null.
         /// </summary>
         public string AuthUrl { get; }
@@ -84,6 +89,7 @@ namespace OrderCloud.Catalyst
             Roles = lookup["availableroles"].ToList();
             Groups = lookup["groups"].ToList();
             CompanyID = lookup["companyID"].FirstOrDefault();
+            Currency = lookup["currency"].FirstOrDefault();
             AuthUrl = lookup["iss"].FirstOrDefault();
             ApiUrl = lookup["aud"].FirstOrDefault();
             ExpiresUTC = int.Parse(lookup["exp"].FirstOrDefault() ?? throw new ArgumentNullException("Token must contain \"exp\" claim")).FromUnixEpoch();
